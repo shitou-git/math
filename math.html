@@ -86,10 +86,15 @@
         /* 通用游戏页面样式 */
         .game-page {
             display: none;
+            text-align: left;
         }
 
         .game-page.active {
             display: block;
+        }
+
+        .game-page .header {
+            text-align: center;
         }
 
         .back-btn {
@@ -114,7 +119,35 @@
             background: rgba(255,255,255,0.3);
         }
 
-        .header {
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+        }
+
+        .game-rules {
+            background: rgba(255,255,255,0.9);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+            color: #1a1a1a;
+        }
+
+        .game-rules h4 {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            color: #1a1a1a;
+        }
+
+        .game-rules p {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
             text-align: center;
             margin-bottom: 30px;
             color: white;
@@ -721,6 +754,24 @@
                 font-size: 16px;
             }
 
+            .game-rules {
+                padding: 12px;
+                margin-top: 15px;
+            }
+
+            .game-rules h4 {
+                font-size: 15px;
+            }
+
+            .game-rules p {
+                font-size: 13px;
+            }
+
+            .footer {
+                padding: 15px;
+                font-size: 12px;
+            }
+
             /* 数独移动端适配 */
             .controls {
                 gap: 12px;
@@ -798,7 +849,7 @@
         }
 
         /* 小屏幕手机适配 */
-        @media (max-width: 500px) {
+        @media (max-width: 480px) {
             .home-page h1 {
                 font-size: 26px;
                 margin-bottom: 25px;
@@ -1307,6 +1358,10 @@
                     <button class="btn btn-secondary" onclick="showMagicSolution()">显示答案</button>
                     <button class="btn btn-primary" onclick="checkMagicAnswer()">检查答案</button>
                 </div>
+                <div class="game-rules">
+                    <h4>🎯 玩法规则</h4>
+                    <p>在空格中填入数字，使每行、每列和对角线上的三个数字之和都相等（幻和）。</p>
+                </div>
             </div>
         </div>
 
@@ -1416,13 +1471,12 @@
                     <button class="action-btn solve" id="sudokuSolve">显示答案</button>
                 </div>
                 <div class="message" id="sudokuMessage"></div>
+                <div class="game-rules">
+                    <h4>🎯 玩法规则</h4>
+                    <p>在空格中填入数字 1-9，使每行、每列和每个宫格内的数字都不重复。九宫格：每行、每列、每个3×3小宫格含1-9各一次。四宫格：每行、每列、每个2×2小宫格含1-4各一次。六宫格：每行、每列、每个2×3小宫格含1-6各一次。</p>
+                </div>
             </div>
         </div>
-    </div>
-       <!-- 页脚 -->
-<footer class="mt-12 mx-auto text-center text-black text-sm">
-    <p>© @Stone | 锻炼逻辑思维的经典数字游戏</p>
-</footer>
     </div>
 
     <script>
@@ -1521,20 +1575,33 @@
         function generateMagicSquare(size) {
             const idx = Math.floor(Math.random() * magicTemplates.length);
             const template = magicTemplates[idx];
-            const offset = Math.floor(Math.random() * 15) + 1; // 随机偏移量1-15
+            
+            // 根据难度设置不同的偏移量范围
+            let offset;
+            if (magicDifficulty === 'easy') {
+                // 简单模式：幻和 <= 39 (原始幻和15 + 3*offset <= 39 => offset <= 8)
+                offset = Math.floor(Math.random() * 8) + 1; // 1-8
+            } else if (magicDifficulty === 'medium') {
+                // 中等模式：幻和 <= 60 (15 + 3*offset <= 60 => offset <= 15)
+                offset = Math.floor(Math.random() * 15) + 1; // 1-15
+            } else {
+                // 困难模式：更大的数字范围
+                offset = Math.floor(Math.random() * 30) + 1; // 1-30
+            }
+            
             const magicSquare = template.map(row => row.map(num => num + offset));
-            // 计算最小和最大数字
             magicMinNum = Math.min(...magicSquare.flat());
             magicMaxNum = Math.max(...magicSquare.flat());
             return magicSquare;
         }
 
         function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
             }
-            return array;
+            return shuffled;
         }
 
         function createMagicPuzzle(grid, holes) {
@@ -1545,9 +1612,9 @@
                     positions.push([i, j]);
                 }
             }
-            shuffleArray(positions);
+            const shuffledPositions = shuffleArray(positions);
             for (let i = 0; i < holes; i++) {
-                const [row, col] = positions[i];
+                const [row, col] = shuffledPositions[i];
                 puzzle[row][col] = 0;
             }
             return puzzle;
@@ -2609,5 +2676,8 @@
             return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
         }
     </script>
+    <div class="footer">
+        <p>@Stone | 锻炼逻辑思维的经典数字游戏</p>
+    </div>
 </body>
 </html>
