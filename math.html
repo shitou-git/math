@@ -1402,7 +1402,7 @@
                     <p></p>
                 </div>
                 <div class="action-buttons">
-                    <button class="action-btn" onclick="resetPoint24Game()">重新开始</button>
+                    <button class="action-btn" onclick="resetPoint24Game()">下一题</button>
                     <button class="action-btn solve" onclick="showPoint24Solution()">显示答案</button>
                     <button class="action-btn check" onclick="checkPoint24Answer()">提交答案</button>
                 </div>
@@ -1556,7 +1556,7 @@
         let magicMinNum = 1;
         let magicMaxNum = 9;
         let magicStartTime = 0;
-
+// 幻方倒计时
         const magicCountdownConfig = {
             easy: 2,
             medium: 5,
@@ -1798,11 +1798,11 @@
         let point24Answer = 0;
         let point24Expression = '';
         let point24StartTime = 0;
-
+//加减法倒计时
         const point24CountdownConfig = {
             easy: 2,
-            medium: 5,
-            hard: 10
+            medium: 3,
+            hard: 5
         };
 
         function hideMagicResult() {
@@ -2002,8 +2002,8 @@
 
         const multdivCountdownConfig = {
             easy: 2,
-            medium: 5,
-            hard: 10
+            medium: 3,
+            hard: 5
         };
 
         function hideMultdivResult() {
@@ -2260,7 +2260,7 @@
         const sudokuSolveTimeConfig = {
             4: 120,
             6: 240,
-            9: 600
+            9: 300
         };
 
         const sudokuDifficultyConfig = {
