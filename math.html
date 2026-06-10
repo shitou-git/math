@@ -1353,14 +1353,14 @@
                     <h3></h3>
                     <p></p>
                 </div>
-                <div class="actions">
-                    <button class="btn btn-secondary" onclick="resetMagicGame()">重新开始</button>
-                    <button class="btn btn-secondary" onclick="showMagicSolution()">显示答案</button>
-                    <button class="btn btn-primary" onclick="checkMagicAnswer()">检查答案</button>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="resetMagicGame()">重新开始</button>
+                    <button class="action-btn solve" onclick="showMagicSolution()">显示答案</button>
+                    <button class="action-btn check" onclick="checkMagicAnswer()">检查答案</button>
                 </div>
                 <div class="game-rules">
                     <h4>🎯 玩法规则</h4>
-                    <p>在空格中填入数字，使每行、每列和对角线上的三个数字之和都相等（幻和）。</p>
+                    <p>在空格中填入数字 0-9，使每行、每列和对角线上的三个数字之和都相等（幻和）。</p>
                 </div>
             </div>
         </div>
@@ -1374,7 +1374,7 @@
             </div>
             <div class="game-container">
                 <div class="difficulty-selector">
-                    <button class="diff-btn active" data-level="easy">低级</button>
+                    <button class="diff-btn active" data-level="easy">初级</button>
                     <button class="diff-btn" data-level="medium">中级</button>
                     <button class="diff-btn" data-level="hard">高级</button>
                 </div>
@@ -1393,10 +1393,10 @@
                     <h3></h3>
                     <p></p>
                 </div>
-                <div class="actions">
-                    <button class="btn btn-secondary" onclick="resetPoint24Game()">重新开始</button>
-                    <button class="btn btn-secondary" onclick="showPoint24Solution()">显示答案</button>
-                    <button class="btn btn-primary" onclick="checkPoint24Answer()">提交答案</button>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="resetPoint24Game()">重新开始</button>
+                    <button class="action-btn solve" onclick="showPoint24Solution()">显示答案</button>
+                    <button class="action-btn check" onclick="checkPoint24Answer()">提交答案</button>
                 </div>
             </div>
         </div>
@@ -1410,7 +1410,7 @@
             </div>
             <div class="game-container">
                 <div class="difficulty-selector">
-                    <button class="diff-btn active" data-level="easy">低级</button>
+                    <button class="diff-btn active" data-level="easy">初级</button>
                     <button class="diff-btn" data-level="medium">中级</button>
                     <button class="diff-btn" data-level="hard">高级</button>
                 </div>
@@ -1429,10 +1429,10 @@
                     <h3></h3>
                     <p></p>
                 </div>
-                <div class="actions">
-                    <button class="btn btn-secondary" onclick="resetMultdivGame()">重新开始</button>
-                    <button class="btn btn-secondary" onclick="showMultdivSolution()">显示答案</button>
-                    <button class="btn btn-primary" onclick="checkMultdivAnswer()">提交答案</button>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="resetMultdivGame()">重新开始</button>
+                    <button class="action-btn solve" onclick="showMultdivSolution()">显示答案</button>
+                    <button class="action-btn check" onclick="checkMultdivAnswer()">提交答案</button>
                 </div>
             </div>
         </div>
@@ -1452,9 +1452,9 @@
                         <button class="level-btn" data-size="9">高级</button>
                     </div>
                     <div class="difficulty-selector">
-                        <button class="difficulty-btn active" data-difficulty="easy">简单</button>
-                        <button class="difficulty-btn" data-difficulty="medium">中等</button>
-                        <button class="difficulty-btn" data-difficulty="hard">困难</button>
+                        <button class="difficulty-btn active" data-difficulty="easy">初级</button>
+                        <button class="difficulty-btn" data-difficulty="medium">中级</button>
+                        <button class="difficulty-btn" data-difficulty="hard">高级</button>
                     </div>
                     <div class="timer hidden" id="sudokuTimerContainer">
                         <span class="timer-label">用时：</span>
@@ -1556,8 +1556,8 @@
         };
 
         const magicDifficultyConfig = {
-            easy: { size: 3, holes: 2 },
-            medium: { size: 3, holes: 4 },
+            easy: { size: 3, holes: 4 },
+            medium: { size: 3, holes: 5 },
             hard: { size: 3, holes: 6 }
         };
 
