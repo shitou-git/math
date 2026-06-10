@@ -319,18 +319,21 @@
         }
 
         .magic-cell {
-            width: 70px;
-            height: 70px;
+            width: 90px;
+            height: 90px;
             background: white;
             border: none;
             text-align: center;
-            font-size: 28px;
+            font-size: 36px;
             font-weight: bold;
             outline: none;
             transition: all 0.2s ease;
             -webkit-user-select: none;
             user-select: none;
             touch-action: manipulation;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .magic-cell.readonly {
@@ -463,16 +466,34 @@
             margin: 20px 0;
         }
 
+        .point-24-display > div {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 70px;
+            padding: 8px 15px;
+        }
+
+        .point-24-display > div > span:first-child {
+            font-size: 32px;
+        }
+
         .point-24-display .expression {
             font-size: 32px;
             font-weight: bold;
-            color: #1e293b;
+            color: #667eea;
+            height: 50px;
             min-height: 50px;
-            padding: 10px 20px;
+            max-height: 50px;
+            padding: 0 15px;
             background: #f8fafc;
             border-radius: 12px;
             border: 2px solid #e2e8f0;
             margin-bottom: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
         }
 
         .point-24-ops {
@@ -632,9 +653,12 @@
             }
 
             .magic-cell {
-                width: 55px;
-                height: 55px;
-                font-size: 20px;
+                width: 70px;
+                height: 70px;
+                font-size: 28px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
 
             .magic-num-pad {
@@ -648,27 +672,39 @@
             }
 
             .point-24-display > div {
-                padding: 15px;
-                gap: 8px;
+                padding: 8px 12px;
+                gap: 6px;
+                min-height: 60px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .point-24-display > div > span:first-child {
+                font-size: 22px;
             }
 
             #point24Problem {
-                font-size: 24px;
+                font-size: 22px;
             }
 
             #point24Expression {
-                font-size: 24px;
-                min-width: 60px;
+                font-size: 22px;
+                height: 40px;
+                min-height: 40px;
+                max-height: 40px;
             }
 
             /* 乘除法计算移动端适配 */
             #multdivProblem {
-                font-size: 24px;
+                font-size: 22px;
             }
 
             #multdivExpression {
-                font-size: 24px;
-                min-width: 60px;
+                font-size: 22px;
+                height: 40px;
+                min-height: 40px;
+                max-height: 40px;
             }
 
             .solution-display {
@@ -802,17 +838,39 @@
             }
 
             .magic-cell {
-                width: 48px;
-                height: 48px;
-                font-size: 18px;
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .point-24-display > div {
+                padding: 6px 10px;
+                gap: 5px;
+                min-height: 50px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .point-24-display > div > span:first-child {
+                font-size: 20px;
             }
 
             #point24Problem, #point24Expression {
                 font-size: 20px;
+                height: 36px;
+                min-height: 36px;
+                max-height: 36px;
             }
 
             #multdivProblem, #multdivExpression {
                 font-size: 20px;
+                height: 36px;
+                min-height: 36px;
+                max-height: 36px;
             }
 
             .grid-4 .cell {
@@ -1266,9 +1324,9 @@
                     <button class="diff-btn" data-level="hard">高级</button>
                 </div>
                 <div class="point-24-display" style="margin-bottom: 20px; text-align: center;">
-                    <div style="font-size: 36px; padding: 20px; display: inline-flex; align-items: center; gap: 10px;">
+                    <div style="font-size: 36px; padding: 10px 20px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 80px;">
                         <span id="point24Problem"></span>
-                        <span class="expression" id="point24Expression" style="color: #667eea; min-width: 80px;"></span>
+                        <span class="expression" id="point24Expression"></span>
                     </div>
                 </div>
                 <div class="magic-num-pad" id="point24NumPad"></div>
@@ -1302,9 +1360,9 @@
                     <button class="diff-btn" data-level="hard">高级</button>
                 </div>
                 <div class="point-24-display" style="margin-bottom: 20px; text-align: center;">
-                    <div style="font-size: 36px; padding: 20px; display: inline-flex; align-items: center; gap: 10px;">
+                    <div style="font-size: 36px; padding: 10px 20px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 80px;">
                         <span id="multdivProblem"></span>
-                        <span class="expression" id="multdivExpression" style="color: #667eea; min-width: 80px;"></span>
+                        <span class="expression" id="multdivExpression"></span>
                     </div>
                 </div>
                 <div class="magic-num-pad" id="multdivNumPad"></div>
@@ -1790,8 +1848,11 @@
                 const seconds = elapsedSeconds % 60;
                 const timeStr = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
                 resultPanel.querySelector('h3').textContent = '🎉 恭喜你！答案正确！';
-                resultPanel.querySelector('p').textContent = `你用了 ${timeStr} 完成计算！`;
+                resultPanel.querySelector('p').textContent = `你用了 ${timeStr} 完成计算！2秒后自动下一题...`;
                 stopTimer();
+                setTimeout(() => {
+                    resetPoint24Game();
+                }, 2000);
             } else {
                 resultPanel.classList.add('show', 'error');
                 resultPanel.querySelector('h3').textContent = '答案不对';
@@ -2040,8 +2101,11 @@
                 const seconds = elapsedSeconds % 60;
                 const timeStr = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
                 resultPanel.querySelector('h3').textContent = '🎉 恭喜你！答案正确！';
-                resultPanel.querySelector('p').textContent = `你用了 ${timeStr} 完成计算！`;
+                resultPanel.querySelector('p').textContent = `你用了 ${timeStr} 完成计算！2秒后自动下一题...`;
                 stopTimer();
+                setTimeout(() => {
+                    resetMultdivGame();
+                }, 2000);
             } else {
                 resultPanel.classList.add('show', 'error');
                 resultPanel.querySelector('h3').textContent = '答案不对';
