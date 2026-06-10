@@ -1939,102 +1939,110 @@
 
         function generateMultdivProblem() {
             let num1, num2, num3, num4, operator1, operator2, answer;
-            
+
             if (multdivDifficulty === 'easy') {
-                // 低级：乘除法结果在100以内
-                // 随机选择一个运算类型
                 const opType = Math.floor(Math.random() * 2);
                 if (opType === 0) {
-                    // 乘法
-                    num1 = Math.floor(Math.random() * 9) + 2; // 2-10
-                    num2 = Math.floor(Math.random() * 9) + 2; // 2-10
+                    num1 = Math.floor(Math.random() * 9) + 2;
+                    num2 = Math.floor(Math.random() * 9) + 2;
                     answer = num1 * num2;
-                    return {
-                        expression: `${num1} × ${num2} = `,
-                        answer: answer
-                    };
+                    return { expression: `${num1} × ${num2} = `, answer: answer };
                 } else {
-                    // 除法（确保能整除）
-                    num2 = Math.floor(Math.random() * 9) + 2; // 2-10
-                    answer = Math.floor(Math.random() * 9) + 2; // 2-10
+                    num2 = Math.floor(Math.random() * 9) + 2;
+                    answer = Math.floor(Math.random() * 9) + 2;
                     num1 = num2 * answer;
-                    return {
-                        expression: `${num1} ÷ ${num2} = `,
-                        answer: answer
-                    };
+                    return { expression: `${num1} ÷ ${num2} = `, answer: answer };
                 }
             } else if (multdivDifficulty === 'medium') {
-                // 中级：乘除法结果在500以内
                 const opType = Math.floor(Math.random() * 2);
                 if (opType === 0) {
-                    // 乘法
-                    num1 = Math.floor(Math.random() * 20) + 2; // 2-21
-                    num2 = Math.floor(Math.random() * 20) + 2; // 2-21
+                    num1 = Math.floor(Math.random() * 20) + 2;
+                    num2 = Math.floor(Math.random() * 20) + 2;
                     answer = num1 * num2;
-                    return {
-                        expression: `${num1} × ${num2} = `,
-                        answer: answer
-                    };
+                    return { expression: `${num1} × ${num2} = `, answer: answer };
                 } else {
-                    // 除法（确保能整除）
-                    num2 = Math.floor(Math.random() * 20) + 2; // 2-21
-                    answer = Math.floor(Math.random() * 20) + 2; // 2-21
+                    num2 = Math.floor(Math.random() * 20) + 2;
+                    answer = Math.floor(Math.random() * 20) + 2;
                     num1 = num2 * answer;
-                    return {
-                        expression: `${num1} ÷ ${num2} = `,
-                        answer: answer
-                    };
+                    return { expression: `${num1} ÷ ${num2} = `, answer: answer };
                 }
             } else {
-                // 高级：加减乘除混合运算
-                const formatNum = (n) => n.toString();
-                
-                // 随机选择运算类型：加减乘除
-                const ops = ['+', '-', '×', '÷'];
-                
-                // 生成三个数和两个运算符
-                num1 = Math.floor(Math.random() * 50) + 1;
-                num2 = Math.floor(Math.random() * 20) + 1;
-                num3 = Math.floor(Math.random() * 20) + 1;
-                operator1 = ops[Math.floor(Math.random() * 4)];
-                operator2 = ops[Math.floor(Math.random() * 4)];
-                
-                // 根据运算符计算结果
-                let temp1, temp2;
-                
-                if (operator1 === '÷') {
-                    // 确保除法能整除
-                    num2 = Math.max(1, num2);
-                    temp1 = num1 / num2;
-                    num1 = Math.floor(temp1) * num2;
-                } else if (operator1 === '+') {
-                    temp1 = num1 + num2;
-                } else if (operator1 === '-') {
-                    // 确保结果为正
-                    if (num1 < num2) [num1, num2] = [num2, num1];
-                    temp1 = num1 - num2;
-                } else {
-                    temp1 = num1 * num2;
+                // 高级：加减乘除混合运算，按四则运算优先级计算
+                for (let attempt = 0; attempt < 100; attempt++) {
+                    const ops = ['+', '-', '×', '÷'];
+                    num1 = Math.floor(Math.random() * 50) + 1;
+                    num2 = Math.floor(Math.random() * 20) + 1;
+                    num3 = Math.floor(Math.random() * 20) + 1;
+                    operator1 = ops[Math.floor(Math.random() * 4)];
+                    operator2 = ops[Math.floor(Math.random() * 4)];
+
+                    // 处理所有除法：确保能整除
+                    if (operator1 === '÷') {
+                        const d1 = Math.floor(Math.random() * 10) + 1;   // 除数
+                        const q1 = Math.floor(Math.random() * 10) + 1;   // 商
+                        num1 = q1 * d1;
+                        num2 = d1;
+                    }
+                    if (operator2 === '÷') {
+                        const d2 = Math.floor(Math.random() * 10) + 1;   // 除数
+                        const q2 = Math.floor(Math.random() * 10) + 1;   // 商
+                        num2 = q2 * d2;
+                        num3 = d2;
+                    }
+
+                    // 按四则运算优先级计算结果
+                    // 先处理 operator1 和 operator2 的优先级，计算中间步骤
+                    let step1, step2, result;
+
+                    // 判断优先级
+                    const priority = { '+': 1, '-': 1, '×': 2, '÷': 2 };
+                    const p1 = priority[operator1];
+                    const p2 = priority[operator2];
+
+                    if (p2 > p1) {
+                        // 先算 op2，再算 op1
+                        if (operator2 === '+') step1 = num2 + num3;
+                        else if (operator2 === '-') step1 = num2 - num3;
+                        else if (operator2 === '×') step1 = num2 * num3;
+                        else if (operator2 === '÷') step1 = num2 / num3;
+
+                        if (operator1 === '+') result = num1 + step1;
+                        else if (operator1 === '-') result = num1 - step1;
+                        else if (operator1 === '×') result = num1 * step1;
+                        else if (operator1 === '÷') result = num1 / step1;
+                    } else {
+                        // 先算 op1，再算 op2（或左到右同级）
+                        if (operator1 === '+') step1 = num1 + num2;
+                        else if (operator1 === '-') step1 = num1 - num2;
+                        else if (operator1 === '×') step1 = num1 * num2;
+                        else if (operator1 === '÷') step1 = num1 / num2;
+
+                        if (operator2 === '+') result = step1 + num3;
+                        else if (operator2 === '-') result = step1 - num3;
+                        else if (operator2 === '×') result = step1 * num3;
+                        else if (operator2 === '÷') {
+                            // 确保能整除
+                            if (step1 % num3 !== 0) continue;
+                            result = step1 / num3;
+                        }
+                    }
+
+                    // 验证结果是正整数
+                    if (result !== undefined && result > 0 && Number.isInteger(result)) {
+                        answer = result;
+                        return {
+                            expression: `${num1} ${operator1} ${num2} ${operator2} ${num3} = `,
+                            answer: answer
+                        };
+                    }
                 }
-                
-                if (operator2 === '÷') {
-                    num3 = Math.max(1, num3);
-                    temp2 = temp1 / num3;
-                    num3 = Math.floor(temp2) * num3;
-                } else if (operator2 === '+') {
-                    temp2 = temp1 + num3;
-                } else if (operator2 === '-') {
-                    temp2 = temp1 - num3;
-                } else {
-                    temp2 = temp1 * num3;
-                }
-                
-                answer = Math.round(temp2 * 100) / 100;
-                
-                return {
-                    expression: `${num1} ${operator1} ${num2} ${operator2} ${num3} = `,
-                    answer: answer
-                };
+
+                // fallback
+                num1 = Math.floor(Math.random() * 50) + 10;
+                num2 = Math.floor(Math.random() * 50) + 10;
+                num3 = Math.floor(Math.random() * 50) + 10;
+                answer = num1 + num2 + num3;
+                return { expression: `${num1} + ${num2} + ${num3} = `, answer: answer };
             }
         }
 
