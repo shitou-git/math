@@ -509,6 +509,8 @@
 
         .point-24-display > div > span:first-child {
             font-size: 32px;
+            font-weight: bold;
+            color: #1a1a1a;
         }
 
         .point-24-display .expression {
@@ -719,6 +721,8 @@
 
             #point24Problem {
                 font-size: 22px;
+                font-weight: bold;
+                color: #1a1a1a;
             }
 
             #point24Expression {
@@ -731,6 +735,8 @@
             /* 乘除法计算移动端适配 */
             #multdivProblem {
                 font-size: 22px;
+                font-weight: bold;
+                color: #1a1a1a;
             }
 
             #multdivExpression {
@@ -910,8 +916,10 @@
                 font-size: 20px;
             }
 
-            #point24Problem, #point24Expression {
+            #point24Problem, #multdivProblem {
                 font-size: 20px;
+                font-weight: bold;
+                color: #1a1a1a;
                 height: 36px;
                 min-height: 36px;
                 max-height: 36px;
@@ -1354,7 +1362,7 @@
                     <p></p>
                 </div>
                 <div class="action-buttons">
-                    <button class="action-btn" onclick="resetMagicGame()">重新开始</button>
+                    <button class="action-btn" onclick="resetMagicGame()">下一题</button>
                     <button class="action-btn solve" onclick="showMagicSolution()">显示答案</button>
                     <button class="action-btn check" onclick="checkMagicAnswer()">检查答案</button>
                 </div>
@@ -1430,7 +1438,7 @@
                     <p></p>
                 </div>
                 <div class="action-buttons">
-                    <button class="action-btn" onclick="resetMultdivGame()">重新开始</button>
+                    <button class="action-btn" onclick="resetMultdivGame()">下一题</button>
                     <button class="action-btn solve" onclick="showMultdivSolution()">显示答案</button>
                     <button class="action-btn check" onclick="checkMultdivAnswer()">提交答案</button>
                 </div>
@@ -1452,9 +1460,9 @@
                         <button class="level-btn" data-size="9">高级</button>
                     </div>
                     <div class="difficulty-selector">
-                        <button class="difficulty-btn active" data-difficulty="easy">初级</button>
-                        <button class="difficulty-btn" data-difficulty="medium">中级</button>
-                        <button class="difficulty-btn" data-difficulty="hard">高级</button>
+                        <button class="difficulty-btn active" data-difficulty="easy">简单</button>
+                        <button class="difficulty-btn" data-difficulty="medium">中等</button>
+                        <button class="difficulty-btn" data-difficulty="hard">困难</button>
                     </div>
                     <div class="timer hidden" id="sudokuTimerContainer">
                         <span class="timer-label">用时：</span>
