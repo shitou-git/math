@@ -471,6 +471,7 @@
             justify-content: center;
             min-height: 70px;
             padding: 8px 15px;
+            gap: 10px;
         }
 
         .point-24-display > div > span:first-child {
@@ -480,31 +481,33 @@
         }
 
         .point-24-display .expression {
-            font-size: 32px;
+            font-size: 20px;
             font-weight: bold;
             color: #667eea;
-            height: 50px;
-            min-height: 50px;
-            max-height: 50px;
+            height: 40px;
+            min-height: 40px;
             padding: 0 15px;
             background: #f8fafc;
             border-radius: 12px;
             border: 2px solid #e2e8f0;
-            margin-bottom: 10px;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             overflow: hidden;
+            text-align: left;
+            min-width: 100px;
         }
 
         .point-24-display .expression.error {
             border-color: #ef4444;
             color: #ef4444;
+            justify-content: flex-end;
         }
 
         .point-24-display .expression.success {
             border-color: #22c55e;
             color: #22c55e;
+            justify-content: flex-end;
         }
 
         .point-24-ops {
@@ -1360,9 +1363,11 @@
                     <button class="diff-btn" data-level="medium">中级</button>
                     <button class="diff-btn" data-level="hard">高级</button>
                 </div>
-                <div class="point-24-display" style="margin-bottom: 20px; text-align: center;">
-                    <div style="font-size: 36px; padding: 10px 20px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 80px;">
+                <div class="point-24-display">
+                    <div style="justify-content: center;">
                         <span id="point24Problem"></span>
+                    </div>
+                    <div style="justify-content: center;">
                         <span class="expression" id="point24Expression"></span>
                     </div>
                 </div>
@@ -1420,9 +1425,11 @@
                     <button class="diff-btn" data-level="medium">中级</button>
                     <button class="diff-btn" data-level="hard">高级</button>
                 </div>
-                <div class="point-24-display" style="margin-bottom: 20px; text-align: center;">
-                    <div style="font-size: 36px; padding: 10px 20px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 80px;">
+                <div class="point-24-display">
+                    <div style="justify-content: center;">
                         <span id="multdivProblem"></span>
+                    </div>
+                    <div style="justify-content: center;">
                         <span class="expression" id="multdivExpression"></span>
                     </div>
                 </div>
