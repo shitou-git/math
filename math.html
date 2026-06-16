@@ -1914,52 +1914,50 @@
                 const diff2 = roundNum2 - num2;
                 
                 if (diff1 > 0 && diff1 <= 5 && num1 >= 10) {
-                    tips.push(`【凑整法】${num1}离${roundNum1}差${diff1}，把${num2}拆成${diff1}+${num2-diff1}，先算${num1}+${diff1}=${roundNum1}，再算${roundNum1}+${num2-diff1}=${answer}`);
+                    tips.push(`【凑整法】${num1}离${roundNum1}差${diff1}，把${num2}拆成${diff1}+${num2-diff1}，先算${num1}+${diff1}=${roundNum1}，再加上${num2-diff1}`);
                 } else if (diff2 > 0 && diff2 <= 5 && num2 >= 10) {
-                    tips.push(`【凑整法】${num2}离${roundNum2}差${diff2}，把${num1}拆成${diff2}+${num1-diff2}，先算${num2}+${diff2}=${roundNum2}，再算${roundNum2}+${num1-diff2}=${answer}`);
+                    tips.push(`【凑整法】${num2}离${roundNum2}差${diff2}，把${num1}拆成${diff2}+${num1-diff2}，先算${num2}+${diff2}=${roundNum2}，再加上${num1-diff2}`);
                 }
 
                 // 技巧二：多加要减去（凑整补差法）
                 if (num2 === 9 || num2 === 19 || num2 === 29 || num2 === 99 || num2 === 199) {
                     const round = Math.ceil(num2 / 10) * 10;
                     const over = round - num2;
-                    tips.push(`【多加要减去】${num2}接近${round}，先算${num1}+${round}=${num1+round}，多加了${over}，再${num1+round}-${over}=${answer}`);
+                    tips.push(`【多加要减去】${num2}接近${round}，先算${num1}+${round}，多加了${over}，再减去${over}`);
                 } else if (num1 === 9 || num1 === 19 || num1 === 29 || num1 === 99 || num1 === 199) {
                     const round = Math.ceil(num1 / 10) * 10;
                     const over = round - num1;
-                    tips.push(`【多加要减去】${num1}接近${round}，先算${round}+${num2}=${round+num2}，多加了${over}，再${round+num2}-${over}=${answer}`);
+                    tips.push(`【多加要减去】${num1}接近${round}，先算${round}+${num2}，多加了${over}，再减去${over}`);
                 }
 
                 // 技巧三：互补数先加（找好朋友数）
                 if (remainder1 + remainder2 === 10) {
-                    tips.push(`【互补数先加】${remainder1}找${remainder2}，个位凑10！${num1}+${num2}=${Math.floor(num1/10)*10 + Math.floor(num2/10)*10 + 10}=${answer}`);
+                    tips.push(`【互补数先加】${remainder1}找${remainder2}凑10！个位凑成10后，十位相加更简单`);
                 }
 
                 // 技巧四：拆分分组法
                 if (num1 >= 10 && num2 >= 10) {
-                    tips.push(`【拆分分组法】十位加十位：${tens1}+${tens2}=${tens1+tens2}，个位加个位：${remainder1}+${remainder2}=${remainder1+remainder2}，总和：${tens1+tens2}+${remainder1+remainder2}=${answer}`);
+                    tips.push(`【拆分分组法】十位加十位：${tens1}+${tens2}，个位加个位：${remainder1}+${remainder2}，最后合并`);
                 }
 
                 // 技巧五：找朋友法（加9变加10减1）
                 if (remainder2 === 9) {
-                    tips.push(`【找朋友法】个位是9，+9=+10-1！${num1}+${num2}=${num1}+${num2+1}-1=${num1+num2+1}-1=${answer}`);
+                    tips.push(`【找朋友法】个位是9，+9可以变成+10-1，这样更好算`);
                 } else if (remainder1 === 9) {
-                    tips.push(`【找朋友法】个位是9，+9=+10-1！${num1}+${num2}=${num1+1}+${num2}-1=${num1+1+num2}-1=${answer}`);
+                    tips.push(`【找朋友法】个位是9，+9可以变成+10-1，这样更好算`);
                 }
 
                 // 技巧六：基准数法（两个数相近）
                 if (Math.abs(num1 - num2) <= 10 && num1 >= 50) {
-                    const base = Math.min(num1, num2);
-                    const diff = Math.abs(num1 - num2);
-                    tips.push(`【基准数法】${num1}和${num2}很接近，以${base}为基准：${base}×2${diff>0?'+'+diff:''}=${answer}`);
+                    tips.push(`【基准数法】${num1}和${num2}很接近，以较小的数为基准再调整`);
                 }
 
                 // 技巧七：简单凑十（个位数相加）
                 if (num1 < 10 && num2 < 10) {
                     if (remainder1 + remainder2 === 10) {
-                        tips.push(`【凑十法】${remainder1}+${remainder2}=10，直接得${answer}`);
+                        tips.push(`【凑十法】${remainder1}+${remainder2}=10，凑成整十更简单`);
                     } else {
-                        tips.push(`【直接相加】${remainder1}+${remainder2}=${answer}`);
+                        tips.push(`【直接相加】个位直接相加即可`);
                     }
                 }
 
@@ -1970,57 +1968,51 @@
                 const roundNum = Math.ceil(num2 / 10) * 10;
                 const diff = roundNum - num2;
                 if (diff > 0 && diff <= 5 && num2 >= 10) {
-                    tips.push(`【凑整减法】${num2}接近${roundNum}，先算${num1}-${roundNum}=${num1-roundNum}，多减了${diff}，再加回${diff}得${num1-roundNum+diff}`);
+                    tips.push(`【凑整减法】${num2}接近${roundNum}，先算${num1}-${roundNum}，多减了${diff}，再加回${diff}`);
                 }
 
                 // 技巧二：拆分减数减法
                 if (num2 >= 10 && num2 < 100) {
-                    tips.push(`【拆分减数】把${num2}拆成${tens2}+${remainder2}，先算${num1}-${tens2}=${num1-tens2}，再算${num1-tens2}-${remainder2}=${answer}`);
+                    tips.push(`【拆分减数】把${num2}拆成${tens2}+${remainder2}，先减整十，再减个位`);
                 }
 
                 // 技巧三：同尾数相减秒杀
                 if (remainder1 === remainder2) {
-                    tips.push(`【同尾数相减】个位都是${remainder1}，直接抵消！${num1}-${num2}=${(Math.floor(num1/10)-Math.floor(num2/10))*10}=${answer}`);
+                    tips.push(`【同尾数相减】个位都是${remainder1}，直接抵消，只需算十位`);
                 }
 
                 // 技巧四：退位减法口诀
                 if (remainder1 < remainder2) {
-                    const newOnes = remainder1 + 10;
-                    const newTens = Math.floor(num1 / 10) - 1;
-                    tips.push(`【退位减法】个位${remainder1}-${remainder2}不够减，十位借1当10，${newOnes}-${remainder2}=${newOnes-remainder2}，十位${Math.floor(num1/10)}-1-${Math.floor(num2/10)}=${newTens-Math.floor(num2/10)}，结果${answer}`);
+                    tips.push(`【退位减法】个位${remainder1}<${remainder2}不够减，十位借1当10，个位变成${remainder1+10}再减`);
                 }
 
                 // 技巧五：直接相减（不退位）
                 if (remainder1 >= remainder2) {
-                    tips.push(`【直接相减】个位${remainder1}-${remainder2}=${remainder1-remainder2}，十位${tens1}-${tens2}=${tens1-tens2}，合起来是${answer}`);
+                    tips.push(`【直接相减】个位够减直接相减，十位相减，最后合并`);
                 }
 
                 // 技巧六：补差减法（两个数很接近）
                 if (num1 - num2 < 10 && num1 > num2) {
-                    tips.push(`【补差减法】${num1}和${num2}很接近，差${num1-num2}，直接得${answer}`);
+                    tips.push(`【补差减法】${num1}和${num2}很接近，直接算差距即可`);
                 }
 
                 // 技巧七：找朋友法（减9变减10加1）
                 if (remainder2 === 9 && num2 >= 9) {
-                    const round = num2 + 1;
-                    tips.push(`【找朋友法】减9=减10+1！${num1}-${num2}=${num1}-${round}+1=${num1-round+1}=${answer}`);
+                    tips.push(`【找朋友法】个位是9，减9可以变成减10加1，这样更好算`);
                 }
 
                 // 技巧八：百位减法速算（被减数是整百）
                 if (num1 % 100 === 0 && num2 < num1) {
-                    const hundreds = Math.floor(num1 / 100) - Math.floor(num2 / 100) - 1;
-                    const tens = 9 - Math.floor(num2 / 10) % 10;
-                    const ones = 10 - num2 % 10;
-                    tips.push(`【百位减法】${num1}-${num2}：百位${Math.floor(num1/100)}-1-${Math.floor(num2/100)}=${hundreds}，十位9-${Math.floor(num2/10)%10}=${tens}，个位10-${num2%10}=${ones}，结果${hundreds}${tens}${ones}`);
+                    tips.push(`【百位减法】整百数减小数，百位减1作补偿，十位和个位用补数`);
                 }
             }
 
             // 通用提示兜底
             if (tips.length === 0) {
                 if (operator === '+') {
-                    tips.push(`从个位开始加：${remainder1}+${remainder2}${remainder1+remainder2>=10?'，满十进一':''}`);
+                    tips.push(`从个位开始加起${remainder1+remainder2>=10?'，满十要进一':''}`);
                 } else {
-                    tips.push(`从个位开始减：${remainder1}-${remainder2}${remainder1<remainder2?'，不够减要借位':''}`);
+                    tips.push(`从个位开始减起${remainder1<remainder2?'，不够减要借位':''}`);
                 }
             }
 
