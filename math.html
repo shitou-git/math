@@ -1425,8 +1425,8 @@
                         <span id="multdivProblem"></span>
                         <span class="expression" id="multdivExpression"></span>
                     </div>
-                    <div id="multdivTip" style="font-size: 14px; color: #666; margin-top: 10px; text-align: center; display: none;">
-                        <span id="multdivTipText"></span>
+                    <div id="multdivTip" class="tip-panel">
+                        <p id="multdivTipText"></p>
                     </div>
                 </div>
                 <div class="magic-num-pad" id="multdivNumPad"></div>
@@ -2397,7 +2397,7 @@
             const tipPanel = document.getElementById('multdivTip');
             const tipText = document.getElementById('multdivTipText');
             if (multdivProblem.tip) {
-                tipText.textContent = '💡 ' + multdivProblem.tip;
+                tipText.textContent = multdivProblem.tip;
                 tipPanel.style.display = 'block';
             } else {
                 tipPanel.style.display = 'none';
