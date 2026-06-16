@@ -2051,19 +2051,17 @@
             const requiredMinutes = point24CountdownConfig[point24Difficulty] || 2;
             if (elapsedMinutes < requiredMinutes) {
                 const remaining = Math.ceil(requiredMinutes - elapsedMinutes);
-                const resultPanel = document.getElementById('point24Result');
-                resultPanel.classList.remove('show', 'success');
-                resultPanel.classList.add('show', 'error');
-                resultPanel.querySelector('h3').textContent = '倒计时还没结束';
-                resultPanel.querySelector('p').textContent = `还剩 ${remaining} 分钟才能显示答案`;
+                const expressionEl = document.getElementById('point24Expression');
+                expressionEl.classList.remove('success');
+                expressionEl.classList.add('error');
+                expressionEl.textContent = `还需${remaining}分钟`;
+                setTimeout(() => {
+                    expressionEl.classList.remove('error');
+                    expressionEl.textContent = '';
+                }, 2000);
                 return;
             }
             if (!currentProblem) {
-                const resultPanel = document.getElementById('point24Result');
-                resultPanel.classList.remove('show', 'success');
-                resultPanel.classList.add('show', 'error');
-                resultPanel.querySelector('h3').textContent = '请先开始游戏';
-                resultPanel.querySelector('p').textContent = '请点击重新开始按钮开始游戏';
                 return;
             }
             const solutionEl = document.getElementById('solutionText');
@@ -2074,7 +2072,6 @@
         }
 
         function resetPoint24Game() {
-            document.getElementById('point24Result').classList.remove('show');
             point24StartTime = Date.now();
             renderPoint24Numbers();
             startTimer();
@@ -2315,19 +2312,17 @@
             const requiredMinutes = multdivCountdownConfig[multdivDifficulty] || 2;
             if (elapsedMinutes < requiredMinutes) {
                 const remaining = Math.ceil(requiredMinutes - elapsedMinutes);
-                const resultPanel = document.getElementById('multdivResult');
-                resultPanel.classList.remove('show', 'success');
-                resultPanel.classList.add('show', 'error');
-                resultPanel.querySelector('h3').textContent = '倒计时还没结束';
-                resultPanel.querySelector('p').textContent = `还剩 ${remaining} 分钟才能显示答案`;
+                const expressionEl = document.getElementById('multdivExpression');
+                expressionEl.classList.remove('success');
+                expressionEl.classList.add('error');
+                expressionEl.textContent = `还需${remaining}分钟`;
+                setTimeout(() => {
+                    expressionEl.classList.remove('error');
+                    expressionEl.textContent = '';
+                }, 2000);
                 return;
             }
             if (!multdivProblem) {
-                const resultPanel = document.getElementById('multdivResult');
-                resultPanel.classList.remove('show', 'success');
-                resultPanel.classList.add('show', 'error');
-                resultPanel.querySelector('h3').textContent = '请先开始游戏';
-                resultPanel.querySelector('p').textContent = '请点击重新开始按钮开始游戏';
                 return;
             }
             const solutionEl = document.getElementById('multdivSolutionText');
@@ -2339,7 +2334,6 @@
         }
 
         function resetMultdivGame() {
-            document.getElementById('multdivResult').classList.remove('show');
             multdivStartTime = Date.now();
             renderMultdivNumbers();
             startTimer();
