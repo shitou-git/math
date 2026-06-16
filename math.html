@@ -2039,7 +2039,8 @@
 
         function appendPoint24Number(num) {
             hidePoint24Result();
-            point24Expression += num;
+            // 从个位开始输入：输入的数字依次放在最左边（个位）
+            point24Expression = String(num) + point24Expression;
             document.getElementById('point24Expression').textContent = point24Expression;
         }
 
@@ -2085,7 +2086,7 @@
             }
             
             const userAnswer = parseInt(point24Expression);
-            
+
             if (userAnswer === point24Answer) {
                 resultPanel.classList.add('show', 'success');
                 const elapsedSeconds = Math.floor((Date.now() - point24StartTime) / 1000);
@@ -2101,7 +2102,9 @@
             } else {
                 resultPanel.classList.add('show', 'error');
                 resultPanel.querySelector('h3').textContent = '答案不对';
-                resultPanel.querySelector('p').textContent = '';
+                resultPanel.querySelector('p').textContent = '输入栏已清空，请重新输入';
+                // 答案错误时清空输入栏
+                clearPoint24Expression();
             }
         }
 
@@ -2313,7 +2316,8 @@
 
         function appendMultdivNumber(num) {
             hideMultdivResult();
-            multdivExpression += num;
+            // 从个位开始输入：输入的数字依次放在最左边（个位）
+            multdivExpression = String(num) + multdivExpression;
             document.getElementById('multdivExpression').textContent = multdivExpression;
         }
 
@@ -2362,7 +2366,9 @@
             } else {
                 resultPanel.classList.add('show', 'error');
                 resultPanel.querySelector('h3').textContent = '答案不对';
-                resultPanel.querySelector('p').textContent = '';
+                resultPanel.querySelector('p').textContent = '输入栏已清空，请重新输入';
+                // 答案错误时清空输入栏
+                clearMultdivExpression();
             }
         }
 
