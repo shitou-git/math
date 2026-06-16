@@ -2045,7 +2045,7 @@
         }
 
         function clearPoint24Expression() {
-            hidePoint24Result();
+            // 只清空输入表达式，不再调用 hidePoint24Result()，避免隐藏错误提示
             point24Expression = '';
             document.getElementById('point24Expression').textContent = '';
         }
@@ -2322,7 +2322,7 @@
         }
 
         function clearMultdivExpression() {
-            hideMultdivResult();
+            // 只清空输入表达式，不再调用 hideMultdivResult()，避免隐藏错误提示
             multdivExpression = '';
             document.getElementById('multdivExpression').textContent = '';
         }
