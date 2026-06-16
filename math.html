@@ -2039,8 +2039,8 @@
 
         function appendPoint24Number(num) {
             hidePoint24Result();
-            // 从个位开始输入：输入的数字依次放在最左边（个位）
-            point24Expression = String(num) + point24Expression;
+            // 正向输入：输入的数字依次放在右边（正常顺序）
+            point24Expression += num;
             document.getElementById('point24Expression').textContent = point24Expression;
         }
 
@@ -2316,8 +2316,8 @@
 
         function appendMultdivNumber(num) {
             hideMultdivResult();
-            // 从个位开始输入：输入的数字依次放在最左边（个位）
-            multdivExpression = String(num) + multdivExpression;
+            // 正向输入：输入的数字依次放在右边（正常顺序）
+            multdivExpression += num;
             document.getElementById('multdivExpression').textContent = multdivExpression;
         }
 
