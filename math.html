@@ -1064,6 +1064,71 @@
             box-shadow: 0 2px 8px rgba(168, 237, 234, 0.3);
         }
 
+        .counter-panel {
+            margin: 20px auto 0 auto;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, #fff9f0 0%, #fff5f8 100%);
+            border-radius: 12px;
+            border: 1px solid #f0e0d0;
+            max-width: 500px;
+        }
+
+        .counter-items {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .counter-item {
+            display: inline-flex;
+            align-items: center;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        .counter-item.correct {
+            color: #2a9d8f;
+            border: 1px solid #a8edea;
+        }
+
+        .counter-item.wrong {
+            color: #e76f51;
+            border: 1px solid #fed6e3;
+        }
+
+        .counter-label {
+            font-size: 14px;
+            margin-right: 4px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .counter-reset-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            background: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            color: #555;
+            transition: all 0.2s;
+        }
+
+        .counter-reset-btn:hover {
+            background: #f8f8f8;
+            border-color: #bbb;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        .counter-reset-btn:active {
+            transform: scale(0.97);
+        }
+
         .game-wrapper {
             display: flex;
             justify-content: center;
@@ -1379,6 +1444,13 @@
                     <button class="action-btn solve" onclick="showPoint24Solution()">显示答案</button>
                     <button class="action-btn check" onclick="checkPoint24Answer()">提交答案</button>
                 </div>
+                <div class="counter-panel">
+                    <div class="counter-items">
+                        <div class="counter-item correct"><span class="counter-label">正确：</span><span id="point24CorrectCount">0</span></div>
+                        <div class="counter-item wrong"><span class="counter-label">错误：</span><span id="point24WrongCount">0</span></div>
+                        <button class="counter-reset-btn" onclick="confirmResetCounter('point24')">🔄 重置</button>
+                    </div>
+                </div>
                 <div class="game-rules" style="margin-top: 20px;">
                     <h4>📚 加减法速算技巧教程</h4>
                     <div style="text-align: left; line-height: 1.8; font-size: 14px; color: #333;">
@@ -1455,6 +1527,13 @@
                     <button class="action-btn" onclick="resetMultdivGame()">下一题</button>
                     <button class="action-btn solve" onclick="showMultdivSolution()">显示答案</button>
                     <button class="action-btn check" onclick="checkMultdivAnswer()">提交答案</button>
+                </div>
+                <div class="counter-panel">
+                    <div class="counter-items">
+                        <div class="counter-item correct"><span class="counter-label">正确：</span><span id="multdivCorrectCount">0</span></div>
+                        <div class="counter-item wrong"><span class="counter-label">错误：</span><span id="multdivWrongCount">0</span></div>
+                        <button class="counter-reset-btn" onclick="confirmResetCounter('multdiv')">🔄 重置</button>
+                    </div>
                 </div>
                 <div class="game-rules" style="margin-top: 20px;">
                     <h4>📚 乘除法速算技巧教程</h4>
@@ -2095,6 +2174,7 @@
                 expressionEl.classList.remove('error');
                 expressionEl.classList.add('success');
                 expressionEl.textContent = '✓ 正确';
+                incrementCounter('point24', 'correct');
                 const elapsedSeconds = Math.floor((Date.now() - point24StartTime) / 1000);
                 const minutes = Math.floor(elapsedSeconds / 60);
                 const seconds = elapsedSeconds % 60;
@@ -2107,6 +2187,7 @@
                 expressionEl.classList.remove('success');
                 expressionEl.classList.add('error');
                 expressionEl.textContent = '✗ 错误';
+                incrementCounter('point24', 'wrong');
                 point24Expression = '';
                 // 1.5秒后清除错误状态
                 setTimeout(() => {
@@ -2463,6 +2544,7 @@
                 expressionEl.classList.remove('error');
                 expressionEl.classList.add('success');
                 expressionEl.textContent = '✓ 正确';
+                incrementCounter('multdiv', 'correct');
                 const elapsedSeconds = Math.floor((Date.now() - multdivStartTime) / 1000);
                 const minutes = Math.floor(elapsedSeconds / 60);
                 const seconds = elapsedSeconds % 60;
@@ -2475,6 +2557,7 @@
                 expressionEl.classList.remove('success');
                 expressionEl.classList.add('error');
                 expressionEl.textContent = '✗ 错误';
+                incrementCounter('multdiv', 'wrong');
                 multdivExpression = '';
                 // 1.5秒后清除错误状态
                 setTimeout(() => {
@@ -2524,6 +2607,56 @@
                 multdivDifficulty = btn.dataset.level;
                 resetMultdivGame();
             });
+        });
+
+        // ========== 计数器工具函数（LocalStorage 持久化） ==========
+        const STORAGE_KEY_MAP = {
+            point24: { correct: 'point24CorrectCount', wrong: 'point24WrongCount' },
+            multdiv: { correct: 'multdivCorrectCount', wrong: 'multdivWrongCount' }
+        };
+
+        function getCounter(game, type) {
+            const key = STORAGE_KEY_MAP[game][type];
+            const value = localStorage.getItem(key);
+            return value ? parseInt(value, 10) : 0;
+        }
+
+        function setCounter(game, type, value) {
+            const key = STORAGE_KEY_MAP[game][type];
+            localStorage.setItem(key, value);
+        }
+
+        function renderCounter(game) {
+            const correctEl = document.getElementById(game + 'CorrectCount');
+            const wrongEl = document.getElementById(game + 'WrongCount');
+            if (correctEl) correctEl.textContent = getCounter(game, 'correct');
+            if (wrongEl) wrongEl.textContent = getCounter(game, 'wrong');
+        }
+
+        function incrementCounter(game, type) {
+            const current = getCounter(game, type);
+            setCounter(game, type, current + 1);
+            renderCounter(game);
+        }
+
+        function confirmResetCounter(game) {
+            const labelMap = { point24: '加减法', multdiv: '乘除法' };
+            const label = labelMap[game] || '当前页面';
+            const ok = confirm(`确定要重置${label}的计数器吗？此操作不可撤销。`);
+            if (ok) {
+                const confirmAgain = confirm('再次确认：真的要重置计数器吗？');
+                if (confirmAgain) {
+                    setCounter(game, 'correct', 0);
+                    setCounter(game, 'wrong', 0);
+                    renderCounter(game);
+                }
+            }
+        }
+
+        // 页面加载时自动初始化两个页面的计数器显示
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCounter('point24');
+            renderCounter('multdiv');
         });
 
         // ========== 数独游戏代码 ==========
