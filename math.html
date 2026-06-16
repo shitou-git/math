@@ -1420,6 +1420,7 @@
                         <span class="expression" id="point24Expression"></span>
                     </div>
                 </div>
+                <div id="point24Result" class="result-panel"></div>
                 <div id="point24Tip" class="tip-panel">
                     <p id="point24TipText"></p>
                 </div>
@@ -1484,14 +1485,11 @@
                         <span class="expression" id="multdivExpression"></span>
                     </div>
                 </div>
+                <div id="multdivResult" class="result-panel"></div>
                 <div class="magic-num-pad" id="multdivNumPad"></div>
                 <div id="multdivSolution" class="solution-display" style="display:none;">
                     <h4>正确答案:</h4>
                     <div class="solution" id="multdivSolutionText"></div>
-                </div>
-                <div class="result-panel" id="multdivResult">
-                    <h3></h3>
-                    <p></p>
                 </div>
                 <div class="action-buttons">
                     <button class="action-btn" onclick="resetMultdivGame()">下一题</button>
@@ -2101,10 +2099,14 @@
                 }, 2000);
             } else {
                 resultPanel.classList.add('show', 'error');
-                resultPanel.querySelector('h3').textContent = '答案不对';
-                resultPanel.querySelector('p').textContent = '输入栏已清空，请重新输入';
+                resultPanel.querySelector('h3').textContent = '答案错误';
+                resultPanel.querySelector('p').textContent = '';
                 // 答案错误时清空输入栏
                 clearPoint24Expression();
+                // 1.5秒后自动关闭错误提示
+                setTimeout(() => {
+                    resultPanel.classList.remove('show', 'error');
+                }, 1500);
             }
         }
 
@@ -2365,10 +2367,14 @@
                 }, 2000);
             } else {
                 resultPanel.classList.add('show', 'error');
-                resultPanel.querySelector('h3').textContent = '答案不对';
-                resultPanel.querySelector('p').textContent = '输入栏已清空，请重新输入';
+                resultPanel.querySelector('h3').textContent = '答案错误';
+                resultPanel.querySelector('p').textContent = '';
                 // 答案错误时清空输入栏
                 clearMultdivExpression();
+                // 1.5秒后自动关闭错误提示
+                setTimeout(() => {
+                    resultPanel.classList.remove('show', 'error');
+                }, 1500);
             }
         }
 
