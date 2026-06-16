@@ -1886,94 +1886,141 @@
             let tips = [];
 
             if (operator === '+') {
-                // 凑十法提示
                 const remainder1 = num1 % 10;
                 const remainder2 = num2 % 10;
+                const tens1 = Math.floor(num1 / 10) * 10;
+                const tens2 = Math.floor(num2 / 10) * 10;
+                const ones1 = num1 % 10;
+                const ones2 = num2 % 10;
 
+                // 1. 凑十法（个位正好凑10）
                 if (remainder1 + remainder2 === 10) {
-                    tips.push(`凑十法：${remainder1} + ${remainder2} = 10，可以先把个位凑成10再算十位`);
-                } else if (remainder1 + remainder2 > 10) {
-                    const diff = 10 - remainder1;
-                    tips.push(`凑十法：${num1} 的个位是${remainder1}，可以先凑成 ${num1 + diff}，再加上 ${num2 - diff}`);
-                } else if (remainder1 + remainder2 < 10) {
-                    tips.push(`直接相加：个位 ${remainder1} + ${remainder2} = ${remainder1 + remainder2}，十位 ${Math.floor(num1/10)}0 + ${Math.floor(num2/10)}0 = ${(Math.floor(num1/10)+Math.floor(num2/10))*10}`);
+                    tips.push(`凑十法：个位${remainder1}+${remainder2}=10，可以先把个位凑成10，再算十位${Math.floor(num1/10)+Math.floor(num2/10)}，结果是${(Math.floor(num1/10)+Math.floor(num2/10))}0+10=${answer}`);
                 }
 
-                // 凑百法提示
+                // 2. 个位相加满10进位
+                if (remainder1 + remainder2 > 10) {
+                    const carry = Math.floor((remainder1 + remainder2) / 10);
+                    tips.push(`进位法：个位${remainder1}+${remainder2}=${remainder1+remainder2}，向十位进${carry}，个位是${remainder1+remainder2-10}，十位${Math.floor(num1/10)}+${Math.floor(num2/10)}+${carry}=${Math.floor(num1/10)+Math.floor(num2/10)+carry}`);
+                }
+
+                // 3. 凑百法
                 const nearestHundred1 = Math.round(num1 / 100) * 100;
                 const nearestHundred2 = Math.round(num2 / 100) * 100;
-                
-                if (nearestHundred1 !== num1 && Math.abs(nearestHundred1 - num1) <= 10) {
+                if (num1 >= 100 && Math.abs(nearestHundred1 - num1) <= 10 && nearestHundred1 !== num1) {
                     const diff = nearestHundred1 - num1;
-                    tips.push(`凑百法：${num1} 接近 ${nearestHundred1}，可以先算 ${nearestHundred1} + ${num2}，再${diff > 0 ? '减去' : '加上'} ${Math.abs(diff)}`);
-                }
-                if (nearestHundred2 !== num2 && Math.abs(nearestHundred2 - num2) <= 10) {
+                    tips.push(`凑百法：把${num1}凑成${nearestHundred1}，${num1}+${num2}=${nearestHundred1}+${num2}${diff>0?'-'+diff:'+'+(-diff)}=${answer}`);
+                } else if (num2 >= 100 && Math.abs(nearestHundred2 - num2) <= 10 && nearestHundred2 !== num2) {
                     const diff = nearestHundred2 - num2;
-                    tips.push(`凑百法：${num2} 接近 ${nearestHundred2}，可以先算 ${num1} + ${nearestHundred2}，再${diff > 0 ? '减去' : '加上'} ${Math.abs(diff)}`);
+                    tips.push(`凑百法：把${num2}凑成${nearestHundred2}，${num1}+${num2}=${num1}+${nearestHundred2}${diff>0?'-'+diff:'+'+(-diff)}=${answer}`);
                 }
 
-                // 拆分法提示
-                const tens1 = Math.floor(num1 / 10) * 10;
-                const ones1 = num1 % 10;
-                const tens2 = Math.floor(num2 / 10) * 10;
-                const ones2 = num2 % 10;
-                if (num1 >= 10 && num2 >= 10) {
-                    tips.push(`拆分法：${num1} = ${tens1} + ${ones1}，${num2} = ${tens2} + ${ones2}，可以先算十位相加，再算个位相加`);
+                // 4. 拆分法（按位拆）
+                if (num1 >= 10 && num2 >= 10 && num1 < 100 && num2 < 100) {
+                    tips.push(`拆分法：${num1}=${tens1}+${ones1}，${num2}=${tens2}+${ones2}，先算十位${tens1/10}+${tens2/10}=${(tens1+tens2)/10}，再算个位${ones1}+${ones2}=${ones1+ones2}`);
                 }
 
-                // 基准数法提示
-                if (num1 >= 100 && num2 >= 100) {
-                    const base = Math.min(num1, num2);
-                    const diff = Math.abs(num1 - num2);
-                    tips.push(`基准数法：以 ${base} 为基准，${num1} + ${num2} = ${base} × 2 ${num1 > num2 ? '+' : '-'} ${diff}`);
+                // 5. 找朋友法（一个数加9就是减1）
+                if (num2 === 9) {
+                    tips.push(`找朋友法：+9=+10-1，先算${num1}+10=${num1+10}，再减1得${answer}`);
+                } else if (num1 === 9) {
+                    tips.push(`找朋友法：9+${num2}可以转化为${num2}+10-1，先算${num2}+10=${num2+10}，再减1得${answer}`);
                 }
 
-            } else {
-                // 减法技巧
-                const remainder1 = num1 % 10;
-                const remainder2 = num2 % 10;
-
-                // 退位减法提示
-                if (remainder1 < remainder2) {
-                    tips.push(`退位减法：个位 ${remainder1} < ${remainder2}，需要从十位借1当10，然后再减`);
-                } else {
-                    tips.push(`直接相减：个位 ${remainder1} - ${remainder2} = ${remainder1 - remainder2}，十位 ${Math.floor(num1/10)}0 - ${Math.floor(num2/10)}0 = ${(Math.floor(num1/10)-Math.floor(num2/10))*10}`);
-                }
-
-                // 凑整减法提示
-                if (num2 % 10 !== 0) {
-                    const roundNum = Math.ceil(num2 / 10) * 10;
-                    const diff = roundNum - num2;
-                    if (diff <= 5 && diff > 0) {
-                        tips.push(`凑整减法：${num2} 接近 ${roundNum}，可以先算 ${num1} - ${roundNum}，再加上 ${diff}`);
+                // 6. 拆小数法
+                if (num2 >= 20 && num2 % 10 !== 0 && num2 < 100 && num1 >= 20) {
+                    const half = Math.floor(num2 / 20) * 10;
+                    const rest = num2 - half;
+                    if (half > 0) {
+                        tips.push(`拆小数法：把${num2}拆成${half}+${rest}，先算${num1}+${half}=${num1+half}，再加${rest}得${answer}`);
                     }
                 }
 
-                // 补数法提示
+                // 7. 基准数法
+                if (num1 >= 100 && num2 >= 100 && Math.abs(num1 - num2) <= 20) {
+                    const base = Math.min(num1, num2);
+                    const diff = Math.abs(num1 - num2);
+                    tips.push(`基准数法：以${base}为基准，两个数都接近${base}，${num1}+${num2}=${base}*2+${diff}=${answer}`);
+                }
+
+            } else {
+                // 减法
+                const remainder1 = num1 % 10;
+                const remainder2 = num2 % 10;
+                const tens1 = Math.floor(num1 / 10) * 10;
+                const tens2 = Math.floor(num2 / 10) * 10;
+                const ones2 = num2 % 10;
+
+                // 1. 直接相减（不退位）
+                if (remainder1 >= remainder2) {
+                    tips.push(`直接相减：个位${remainder1}-${remainder2}=${remainder1-remainder2}，十位${Math.floor(num1/10)*10}-${Math.floor(num2/10)*10}=${Math.floor(num1/10)*10-Math.floor(num2/10)*10}，结果是${answer}`);
+                }
+
+                // 2. 退位减法（个位不够减）
+                if (remainder1 < remainder2) {
+                    const tensDigit1 = Math.floor(num1 / 10) % 10;
+                    if (tensDigit1 > 0) {
+                        tips.push(`退位减法：个位${remainder1}不够减${remainder2}，从十位借1变成${remainder1+10}，${remainder1+10}-${remainder2}=${remainder1+10-remainder2}，十位变成${tensDigit1-1}，结果是${answer}`);
+                    } else {
+                        tips.push(`退位减法：个位${remainder1}不够减${remainder2}，需要借位，先从十位借，十位也不够要继续借`);
+                    }
+                }
+
+                // 3. 凑整减法（减数接近整十）
+                if (num2 % 10 !== 0 && num2 >= 10) {
+                    const roundNum = Math.ceil(num2 / 10) * 10;
+                    const diff = roundNum - num2;
+                    if (diff <= 3) {
+                        tips.push(`凑整减法：把${num2}看作${roundNum}，${num1}-${roundNum}=${num1-roundNum}，再补回${diff}得${num1-roundNum+diff}`);
+                    }
+                }
+
+                // 4. 多减再加法
+                if (num2 % 10 !== 0 && num2 >= 10) {
+                    const roundNum = Math.floor(num2 / 10) * 10;
+                    if (roundNum > 0) {
+                        const diff = num2 - roundNum;
+                        if (diff <= 3) {
+                            tips.push(`多减再加：把${num2}看作${roundNum}，${num1}-${roundNum}=${num1-roundNum}，多减了${diff}要加回来，结果是${num1-roundNum+diff}`);
+                        }
+                    }
+                }
+
+                // 5. 减9加1
+                if (num2 === 9) {
+                    tips.push(`找朋友法：-9=-10+1，先算${num1}-10=${num1-10}，再加1得${answer}`);
+                } else if (num2 === 19) {
+                    tips.push(`找朋友法：-19=-20+1，先算${num1}-20=${num1-20}，再加1得${answer}`);
+                }
+
+                // 6. 补数法
                 if (num1 % 100 === 0 && num2 < 100) {
                     const complement = 100 - num2;
-                    tips.push(`补数法：${num2} 的补数是 ${complement}，${num1} - ${num2} = ${num1 - 100} + ${complement}`);
+                    tips.push(`补数法：${num2}的补数是${complement}，${num1}-${num2}=${num1-100}+${complement}=${answer}`);
                 }
 
-                // 拆分减法提示
+                // 7. 拆分法
                 if (num1 >= 100 && num2 >= 10) {
-                    const tens2 = Math.floor(num2 / 10) * 10;
-                    const ones2 = num2 % 10;
-                    tips.push(`拆分法：${num2} = ${tens2} + ${ones2}，可以先算 ${num1} - ${tens2}，再减去 ${ones2}`);
+                    tips.push(`拆分法：把${num2}拆成${tens2}+${ones2}，先算${num1}-${tens2}=${num1-tens2}，再减${ones2}得${num1-tens2-ones2}`);
+                }
+
+                // 8. 倒着数法（适用于小数字）
+                if (num1 < 100 && num2 < 100 && num2 <= 20) {
+                    tips.push(`倒着数：从${num1}开始倒数${num2}个，例如${num1-1}, ${num1-2}, ..., ${answer}`);
                 }
             }
 
-            // 如果没有特殊技巧，给出通用提示
+            // 通用提示
             if (tips.length === 0) {
                 if (operator === '+') {
-                    tips.push(`通用技巧：可以从个位开始相加，满十进一；也可以按数位拆分分别相加`);
+                    tips.push(`从个位开始相加：${num1 % 10} + ${num2 % 10} = ${(num1+num2)%10}`);
                 } else {
-                    tips.push(`通用技巧：可以从个位开始相减，如果不够减就向高位借位`);
+                    tips.push(`从个位开始相减：${num1 % 10} - ${num2 % 10}`);
                 }
             }
 
-            // 返回最相关的提示
-            return tips.length > 0 ? tips[0] : '';
+            // 随机选择一条提示，让提示更丰富
+            return tips[Math.floor(Math.random() * tips.length)];
         }
 
         function renderPoint24NumPad() {
