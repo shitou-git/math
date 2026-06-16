@@ -1425,6 +1425,9 @@
                         <span id="multdivProblem"></span>
                         <span class="expression" id="multdivExpression"></span>
                     </div>
+                    <div id="multdivTip" style="font-size: 14px; color: #666; margin-top: 10px; text-align: center; display: none;">
+                        <span id="multdivTipText"></span>
+                    </div>
                 </div>
                 <div class="magic-num-pad" id="multdivNumPad"></div>
                 <div id="multdivSolution" class="solution-display" style="display:none;">
@@ -1435,6 +1438,29 @@
                     <button class="action-btn" onclick="resetMultdivGame()">下一题</button>
                     <button class="action-btn solve" onclick="showMultdivSolution()">显示答案</button>
                     <button class="action-btn check" onclick="checkMultdivAnswer()">提交答案</button>
+                </div>
+                <div class="game-rules" style="margin-top: 20px;">
+                    <h4>📚 乘除法速算技巧教程</h4>
+                    <div style="text-align: left; line-height: 1.8; font-size: 14px; color: #333;">
+                        <p><strong>一、乘法凑整法</strong></p>
+                        <p>• 利用10、100、1000等整十整百数简化计算。</p>
+                        <p style="margin-left: 15px; color: #666;">例：12 × 25 = 3 × (4 × 25) = 3 × 100 = 300</p>
+                        <p><strong>二、分解因数法</strong></p>
+                        <p>• 把一个数分解成容易计算的因数。</p>
+                        <p style="margin-left: 15px; color: #666;">例：36 × 15 = 36 × (3 × 5) = 108 × 5 = 540</p>
+                        <p><strong>三、乘法分配律</strong></p>
+                        <p>• 利用(a+b)×c = a×c + b×c简化计算。</p>
+                        <p style="margin-left: 15px; color: #666;">例：99 × 7 = (100 - 1) × 7 = 700 - 7 = 693</p>
+                        <p><strong>四、除法凑整法</strong></p>
+                        <p>• 被除数和除数同时扩大相同倍数，商不变。</p>
+                        <p style="margin-left: 15px; color: #666;">例：350 ÷ 25 = (350 × 4) ÷ (25 × 4) = 1400 ÷ 100 = 14</p>
+                        <p><strong>五、除法拆分法</strong></p>
+                        <p>• 把除数拆分成因数，转化为连除。</p>
+                        <p style="margin-left: 15px; color: #666;">例：48 ÷ 12 = 48 ÷ (4 × 3) = 48 ÷ 4 ÷ 3 = 4</p>
+                        <p><strong>六、分数与小数互转</strong></p>
+                        <p>• 熟悉常见分数与小数的转换。</p>
+                        <p style="margin-left: 15px; color: #666;">例：0.25 = 1/4，0.5 = 1/2，0.75 = 3/4</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2129,12 +2155,14 @@
                     num1 = Math.floor(Math.random() * 9) + 2;
                     num2 = Math.floor(Math.random() * 9) + 2;
                     answer = num1 * num2;
-                    return { expression: `${num1} × ${num2} = `, answer: answer };
+                    const tip = generateMultdivTip(num1, num2, '×', answer);
+                    return { expression: `${num1} × ${num2} = `, answer: answer, tip: tip };
                 } else {
                     num2 = Math.floor(Math.random() * 9) + 2;
                     answer = Math.floor(Math.random() * 9) + 2;
                     num1 = num2 * answer;
-                    return { expression: `${num1} ÷ ${num2} = `, answer: answer };
+                    const tip = generateMultdivTip(num1, num2, '÷', answer);
+                    return { expression: `${num1} ÷ ${num2} = `, answer: answer, tip: tip };
                 }
             } else if (multdivDifficulty === 'medium') {
                 const opType = Math.floor(Math.random() * 2);
@@ -2142,12 +2170,14 @@
                     num1 = Math.floor(Math.random() * 20) + 2;
                     num2 = Math.floor(Math.random() * 20) + 2;
                     answer = num1 * num2;
-                    return { expression: `${num1} × ${num2} = `, answer: answer };
+                    const tip = generateMultdivTip(num1, num2, '×', answer);
+                    return { expression: `${num1} × ${num2} = `, answer: answer, tip: tip };
                 } else {
                     num2 = Math.floor(Math.random() * 20) + 2;
                     answer = Math.floor(Math.random() * 20) + 2;
                     num1 = num2 * answer;
-                    return { expression: `${num1} ÷ ${num2} = `, answer: answer };
+                    const tip = generateMultdivTip(num1, num2, '÷', answer);
+                    return { expression: `${num1} ÷ ${num2} = `, answer: answer, tip: tip };
                 }
             } else {
                 // 高级：加减乘除混合运算，按四则运算优先级计算
@@ -2229,6 +2259,99 @@
             }
         }
 
+        function generateMultdivTip(num1, num2, operator, answer) {
+            let tips = [];
+
+            if (operator === '×') {
+                const remainder1 = num1 % 10;
+                const remainder2 = num2 % 10;
+
+                if (num2 === 25) {
+                    tips.push(`凑整法：${num1} × 25，可以把${num1}拆成${num1/4}×4，然后4×25=100`);
+                } else if (num1 === 25) {
+                    tips.push(`凑整法：25 × ${num2}，可以把${num2}拆成${num2/4}×4，然后4×25=100`);
+                } else if (num2 === 125) {
+                    tips.push(`凑整法：${num1} × 125，可以把${num1}拆成${num1/8}×8，然后8×125=1000`);
+                } else if (num1 === 125) {
+                    tips.push(`凑整法：125 × ${num2}，可以把${num2}拆成${num2/8}×8，然后8×125=1000`);
+                }
+
+                if (num2 === 5 || num1 === 5) {
+                    const otherNum = num2 === 5 ? num1 : num2;
+                    tips.push(`凑整法：×5可以转化为÷2×10，${otherNum}${operator}5 = ${otherNum}×10÷2`);
+                }
+
+                if (num2 === 9 || num2 === 99 || num2 === 999) {
+                    tips.push(`分配律：${num2}接近${num2+1}，可以用${num2+1}-1代替，${num1}×(${num2+1}-1)`);
+                } else if (num1 === 9 || num1 === 99 || num1 === 999) {
+                    tips.push(`分配律：${num1}接近${num1+1}，可以用${num1+1}-1代替，(${num1+1}-1)×${num2}`);
+                }
+
+                if (num1 % 10 === 0 || num2 % 10 === 0) {
+                    const roundNum = num1 % 10 === 0 ? num1 : num2;
+                    const otherNum = num1 % 10 === 0 ? num2 : num1;
+                    tips.push(`简便计算：${roundNum}末尾有0，可以先算${roundNum/10}×${otherNum}，再在结果末尾加一个0`);
+                }
+
+                if (num1 >= 10 && num2 >= 10) {
+                    const tens1 = Math.floor(num1 / 10) * 10;
+                    const ones1 = num1 % 10;
+                    tips.push(`分配律：${num1} = ${tens1} + ${ones1}，可以拆成${tens1}×${num2} + ${ones1}×${num2}`);
+                }
+
+                const factors = getFactors(num2);
+                if (factors.length > 2) {
+                    tips.push(`分解因数：${num2}可以分解为${factors.slice(1, -1).join('×')}，${num1}×${num2} = ${num1}${factors.slice(1, -1).map(f => '×' + f).join('')}`);
+                }
+            } else if (operator === '÷') {
+                if (num2 === 5) {
+                    tips.push(`简便计算：÷5可以转化为×2÷10，${num1}÷5 = ${num1}×2÷10`);
+                } else if (num2 === 25) {
+                    tips.push(`简便计算：÷25可以转化为×4÷100，${num1}÷25 = ${num1}×4÷100`);
+                } else if (num2 === 125) {
+                    tips.push(`简便计算：÷125可以转化为×8÷1000，${num1}÷125 = ${num1}×8÷1000`);
+                }
+
+                const factors = getFactors(num2);
+                if (factors.length > 2) {
+                    tips.push(`拆分法：${num2}可以分解为${factors.slice(1, -1).join('×')}，${num1}÷${num2} = ${num1}${factors.slice(1, -1).map(f => '÷' + f).join('')}`);
+                }
+
+                if (num1 % 10 === 0) {
+                    tips.push(`简便计算：${num1}末尾有0，可以先同时除以10，变成${num1/10}÷${num2/10}`);
+                }
+
+                if (num1 >= 100 && num2 < 10) {
+                    const tens = Math.floor(num1 / 10) * 10;
+                    const ones = num1 % 10;
+                    tips.push(`拆分法：${num1} = ${tens} + ${ones}，可以拆成${tens}÷${num2} + ${ones}÷${num2}`);
+                }
+            }
+
+            if (tips.length === 0) {
+                if (operator === '×') {
+                    tips.push(`直接计算：${num1} × ${num2}，可以逐位相乘再相加`);
+                } else {
+                    tips.push(`直接计算：${num1} ÷ ${num2}，可以用长除法计算`);
+                }
+            }
+
+            return tips[Math.floor(Math.random() * tips.length)];
+        }
+
+        function getFactors(n) {
+            const factors = [];
+            for (let i = 1; i <= Math.sqrt(n); i++) {
+                if (n % i === 0) {
+                    factors.push(i);
+                    if (i !== n / i) {
+                        factors.push(n / i);
+                    }
+                }
+            }
+            return factors.sort((a, b) => a - b);
+        }
+
         function renderMultdivNumPad() {
             const pad = document.getElementById('multdivNumPad');
             pad.innerHTML = '';
@@ -2270,6 +2393,16 @@
             document.getElementById('multdivProblem').textContent = multdivProblem.expression;
             document.getElementById('multdivExpression').textContent = '';
             document.getElementById('multdivSolution').style.display = 'none';
+
+            const tipPanel = document.getElementById('multdivTip');
+            const tipText = document.getElementById('multdivTipText');
+            if (multdivProblem.tip) {
+                tipText.textContent = '💡 ' + multdivProblem.tip;
+                tipPanel.style.display = 'block';
+            } else {
+                tipPanel.style.display = 'none';
+            }
+
             renderMultdivNumPad();
         }
 
