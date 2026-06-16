@@ -2037,7 +2037,7 @@
                 expressionEl.classList.remove('success');
                 expressionEl.classList.add('error');
                 expressionEl.textContent = '✗ 错误';
-                clearPoint24Expression();
+                point24Expression = '';
                 // 1.5秒后清除错误状态
                 setTimeout(() => {
                     expressionEl.classList.remove('error');
@@ -2298,7 +2298,7 @@
                 expressionEl.classList.remove('success');
                 expressionEl.classList.add('error');
                 expressionEl.textContent = '✗ 错误';
-                clearMultdivExpression();
+                multdivExpression = '';
                 // 1.5秒后清除错误状态
                 setTimeout(() => {
                     expressionEl.classList.remove('error');
