@@ -282,41 +282,29 @@
 
         .result-panel {
             display: none;
-            text-align: center;
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 20px;
+            text-align: left;
+            padding: 5px 0;
+            margin: 5px 0;
         }
 
         .result-panel.success {
-            background: #dcfce7;
-            border: 2px solid #22c55e;
+            background: transparent;
+            border: none;
         }
 
         .result-panel.error {
-            background: #fee2e2;
-            border: 2px solid #ef4444;
+            background: transparent;
+            border: none;
         }
 
         .result-panel.show {
             display: block;
-            animation: slideIn 0.4s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .result-panel h3 {
-            font-size: 20px;
-            margin-bottom: 10px;
+            font-size: 16px;
+            margin: 0;
+            font-weight: 500;
         }
 
         .result-panel.success h3 {
@@ -328,8 +316,7 @@
         }
 
         .result-panel p {
-            color: #64748b;
-            font-size: 14px;
+            display: none;
         }
 
         .tip-panel {
@@ -1420,7 +1407,7 @@
                         <span class="expression" id="point24Expression"></span>
                     </div>
                 </div>
-                <div id="point24Result" class="result-panel"></div>
+                <div id="point24Result" class="result-panel"><h3></h3><p></p></div>
                 <div id="point24Tip" class="tip-panel">
                     <p id="point24TipText"></p>
                 </div>
@@ -1428,10 +1415,6 @@
                 <div id="point24Solution" class="solution-display" style="display:none;">
                     <h4>正确答案:</h4>
                     <div class="solution" id="solutionText"></div>
-                </div>
-                <div class="result-panel" id="point24Result">
-                    <h3></h3>
-                    <p></p>
                 </div>
                 <div class="action-buttons">
                     <button class="action-btn" onclick="resetPoint24Game()">下一题</button>
@@ -1485,7 +1468,7 @@
                         <span class="expression" id="multdivExpression"></span>
                     </div>
                 </div>
-                <div id="multdivResult" class="result-panel"></div>
+                <div id="multdivResult" class="result-panel"><h3></h3><p></p></div>
                 <div class="magic-num-pad" id="multdivNumPad"></div>
                 <div id="multdivSolution" class="solution-display" style="display:none;">
                     <h4>正确答案:</h4>
