@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数学游戏集合</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div id="homePage" class="home-page">
+            <h1>🎯 数学游戏集合</h1>
+            <div class="game-cards">
+                <div class="game-card" data-game="sudoku">
+                    <div class="game-icon">📊</div>
+                    <h2>数独</h2>
+                    <p>锻炼逻辑思维的经典数字游戏</p>
+                </div>
+                <div class="game-card" data-game="magic">
+                    <div class="game-icon">✨</div>
+                    <h2>幻方</h2>
+                    <p>每行每列对角线和相等的神奇方格</p>
+                </div>
+                <div class="game-card" data-game="point24">
+                    <div class="game-icon">🔢</div>
+                    <h2>加减法计算</h2>
+                    <p>练习加减法，锻炼计算能力</p>
+                </div>
+                <div class="game-card" data-game="multdiv">
+                    <div class="game-icon">✖️</div>
+                    <h2>乘除法计算</h2>
+                    <p>练习乘除法，提升运算技巧</p>
+                </div>
+                <div class="game-card" data-game="aoshu">
+                    <div class="game-icon">🧮</div>
+                    <h2>奥数</h2>
+                    <p>拓展思维，挑战奥数难题</p>
+                </div>
+                <div class="game-card" data-game="formulas">
+                    <div class="game-icon">📐</div>
+                    <h2>公式大全</h2>
+                    <p>常用公式速查手册</p>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 30px;">
+                <div style="display: inline-flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;" onclick="window.open('https://shitou-git.github.io/chat/index', '_blank')">
+                    <img src="Z.webp" style="width: 64px; height: 64px; border-radius: 10px;">
+                    <span style="font-size: 14px; font-weight: 600;">灵知</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="magicPage" class="game-page">
+            <button class="back-btn" onclick="goHome()">← 返回首页</button>
+            <div class="header">
+                <h1>✨ 幻方游戏</h1>
+                <p>点击空白格子，再点击下方数字填写</p>
+            </div>
+            <div class="game-container">
+                <div class="difficulty-selector">
+                    <button class="diff-btn active" data-level="easy">简单</button>
+                    <button class="diff-btn" data-level="medium">中等</button>
+                    <button class="diff-btn" data-level="hard">困难</button>
+                </div>
+                <div class="magic-square-grid">
+                    <div id="magicGrid" class="magic-grid grid-3"></div>
+                </div>
+                <div class="magic-num-pad" id="magicNumPad"></div>
+                <div class="result-panel" id="magicResult">
+                    <h3></h3>
+                    <p></p>
+                </div>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="resetMagicGame()">新游戏</button>
+                    <button class="action-btn solve" onclick="showMagicSolution()">显示答案</button>
+                    <button class="action-btn check" onclick="checkMagicAnswer()">检查答案</button>
+                </div>
+                <div class="game-rules">
+                    <h4>🎯 玩法规则</h4>
+                    <p>在空格中填入数字，使每行、每列和对角线上的三个数字之和都相等（幻和）。</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="point24Page" class="game-page">
+            <button class="back-btn" onclick="goHome()">← 返回首页</button>
+            <div class="header">
+                <h1>🔢 加减法计算</h1>
+                <p>根据题目，使用数字按钮输入答案</p>
+            </div>
+            <div class="game-container">
+                <div class="difficulty-selector">
+                    <button class="diff-btn active" data-level="easy">初级</button>
+                    <button class="diff-btn" data-level="medium">中级</button>
+                    <button class="diff-btn" data-level="hard">高级</button>
+                </div>
+                <div class="point-24-display" style="margin-bottom: 20px; text-align: center;">
+                    <div style="font-size: 36px; padding: 10px 20px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 80px;">
+                        <span id="point24Problem"></span>
+                        <span class="expression" id="point24Expression"></span>
+                    </div>
+                </div>
+                <div id="point24Tip" class="tip-panel">
+                    <p id="point24TipText"></p>
+                </div>
+                <div class="magic-num-pad" id="point24NumPad"></div>
+                <div id="point24Solution" class="solution-display" style="display:none;">
+                    <h4>正确答案:</h4>
+                    <div class="solution" id="solutionText"></div>
+                </div>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="resetPoint24Game()">下一题</button>
+                    <button class="action-btn solve" onclick="showPoint24Solution()">显示答案</button>
+                    <button class="action-btn check" onclick="checkPoint24Answer()">提交答案</button>
+                </div>
+                <div class="counter-panel">
+                    <div class="counter-items">
+                        <div class="counter-item correct"><span class="counter-label">正确：</span><span id="point24CorrectCount">0</span></div>
+                        <div class="counter-item wrong"><span class="counter-label">错误：</span><span id="point24WrongCount">0</span></div>
+                        <button class="counter-reset-btn" onclick="confirmResetCounter('point24')">🔄 重置</button>
+                    </div>
+                </div>
+                <div class="game-rules" style="margin-top: 20px;">
+                    <h4>📚 加减法速算技巧教程</h4>
+                    <div style="text-align: left; line-height: 1.8; font-size: 14px; color: #333;">
+                        <p><strong>【加法速算八大技巧】</strong></p>
+                        <p><strong>1. 凑整法（最万能）</strong></p>
+                        <p style="margin-left: 15px; color: #666;">口诀：看大数，拆小数，先凑整，再加余。</p>
+                        <p style="margin-left: 15px; color: #666;">例：28 + 15 = 28 + 2 + 13 = 30 + 13 = 43</p>
+                        <p><strong>2. 多加要减去</strong></p>
+                        <p style="margin-left: 15px; color: #666;">口诀：接近整数先凑整，多加几，减几。</p>
+                        <p style="margin-left: 15px; color: #666;">例：36 + 19 = 36 + 20 - 1 = 55</p>
+                        <p><strong>3. 互补数先加</strong></p>
+                        <p style="margin-left: 15px; color: #666;">口诀：1找9，2找8，3找7，4找6，5找5。</p>
+                        <p style="margin-left: 15px; color: #666;">例：36 + 24 = 60（个位6+4=10）</p>
+                        <p><strong>4. 拆分分组法</strong></p>
+                        <p style="margin-left: 15px; color: #666;">口诀：十位加十位，个位加个位，最后合并。</p>
+                        <p style="margin-left: 15px; color: #666;">例：56 + 37 = 50+30 + 6+7 = 80 + 13 = 93</p>
+                        <p><strong>5. 找朋友法</strong></p>
+                        <p style="margin-left: 15px; color: #666;">+9=+10-1，例：25 + 9 = 25 + 10 - 1 = 34</p>
+                        <p><strong>6. 基准数法</strong></p>
+                        <p style="margin-left: 15px; color: #666;">两个数相近时使用，例：98 + 95 = 95×2 + 3 = 193</p>
+                        <p><br><strong>【减法速算八大技巧】</strong></p>
+                        <p><strong>1. 凑整减法（最常用）</strong></p>
+                        <p style="margin-left: 15px; color: #666;">口诀：减数凑整数，多减几，加几。</p>
+                        <p style="margin-left: 15px; color: #666;">例：53 - 19 = 53 - 20 + 1 = 34</p>
+                        <p><strong>2. 拆分减数减法</strong></p>
+                        <p style="margin-left: 15px; color: #666;">口诀：先减整，再减零。</p>
+                        <p style="margin-left: 15px; color: #666;">例：72 - 36 = 72 - 30 - 6 = 36</p>
+                        <p><strong>3. 同尾数相减秒杀</strong></p>
+                        <p style="margin-left: 15px; color: #666;">个位相同直接抵消，例：86 - 26 = 60</p>
+                        <p><strong>4. 退位减法</strong></p>
+                        <p style="margin-left: 15px; color: #666;">口诀：个位不够十位凑，十位借1当作10。</p>
+                        <p style="margin-left: 15px; color: #666;">例：62 - 38 = 24（个位12-8=4，十位5-3=2）</p>
+                        <p><strong>5. 找朋友法</strong></p>
+                        <p style="margin-left: 15px; color: #666;">-9=-10+1，例：75 - 19 = 75 - 20 + 1 = 56</p>
+                        <p><strong>6. 补差减法</strong></p>
+                        <p style="margin-left: 15px; color: #666;">两个数接近时直接算差距，例：91 - 87 = 4</p>
+                        <p><strong>7. 连减变减和</strong></p>
+                        <p style="margin-left: 15px; color: #666;">a-b-c = a-(b+c)，例：135 - 27 - 73 = 135 - 100 = 35</p>
+                        <p><strong>8. 百位减法速算</strong></p>
+                        <p style="margin-left: 15px; color: #666;">例：500 - 246 = 254（百位5-1-2=2，十位9-4=5，个位10-6=4）</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="multdivPage" class="game-page">
+            <button class="back-btn" onclick="goHome()">← 返回首页</button>
+            <div class="header">
+                <h1>✖️ 乘除法计算</h1>
+                <p>根据题目，使用数字按钮输入答案</p>
+            </div>
+            <div class="game-container">
+                <div class="difficulty-selector">
+                    <button class="diff-btn active" data-level="easy">初级</button>
+                    <button class="diff-btn" data-level="medium">中级</button>
+                    <button class="diff-btn" data-level="hard">高级</button>
+                </div>
+                <div class="point-24-display" style="margin-bottom: 20px; text-align: center;">
+                    <div style="font-size: 36px; padding: 10px 20px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 80px;">
+                        <span id="multdivProblem"></span>
+                        <span class="expression" id="multdivExpression"></span>
+                    </div>
+                    <div id="multdivTip" class="tip-panel">
+                        <p id="multdivTipText"></p>
+                    </div>
+                </div>
+                <div class="magic-num-pad" id="multdivNumPad"></div>
+                <div id="multdivSolution" class="solution-display" style="display:none;">
+                    <h4>正确答案:</h4>
+                    <div class="solution" id="multdivSolutionText"></div>
+                </div>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="resetMultdivGame()">下一题</button>
+                    <button class="action-btn solve" onclick="showMultdivSolution()">显示答案</button>
+                    <button class="action-btn check" onclick="checkMultdivAnswer()">提交答案</button>
+                </div>
+                <div class="counter-panel">
+                    <div class="counter-items">
+                        <div class="counter-item correct"><span class="counter-label">正确：</span><span id="multdivCorrectCount">0</span></div>
+                        <div class="counter-item wrong"><span class="counter-label">错误：</span><span id="multdivWrongCount">0</span></div>
+                        <button class="counter-reset-btn" onclick="confirmResetCounter('multdiv')">🔄 重置</button>
+                    </div>
+                </div>
+                <div class="game-rules" style="margin-top: 20px;">
+                    <h4>📚 乘除法速算技巧教程</h4>
+                    <div style="text-align: left; line-height: 1.8; font-size: 14px; color: #333;">
+                        <p><strong>一、乘法凑整法</strong></p>
+                        <p>• 利用10、100、1000等整十整百数简化计算。</p>
+                        <p style="margin-left: 15px; color: #666;">例：12 × 25 = 3 × (4 × 25) = 3 × 100 = 300</p>
+                        <p><strong>二、分解因数法</strong></p>
+                        <p>• 把一个数分解成容易计算的因数。</p>
+                        <p style="margin-left: 15px; color: #666;">例：36 × 15 = 36 × (3 × 5) = 108 × 5 = 540</p>
+                        <p><strong>三、乘法分配律</strong></p>
+                        <p>• 利用(a+b)×c = a×c + b×c简化计算。</p>
+                        <p style="margin-left: 15px; color: #666;">例：99 × 7 = (100 - 1) × 7 = 700 - 7 = 693</p>
+                        <p><strong>四、除法凑整法</strong></p>
+                        <p>• 被除数和除数同时扩大相同倍数，商不变。</p>
+                        <p style="margin-left: 15px; color: #666;">例：350 ÷ 25 = (350 × 4) ÷ (25 × 4) = 1400 ÷ 100 = 14</p>
+                        <p><strong>五、除法拆分法</strong></p>
+                        <p>• 把除数拆分成因数，转化为连除。</p>
+                        <p style="margin-left: 15px; color: #666;">例：48 ÷ 12 = 48 ÷ (4 × 3) = 48 ÷ 4 ÷ 3 = 4</p>
+                        <p><strong>六、分数与小数互转</strong></p>
+                        <p>• 熟悉常见分数与小数的转换。</p>
+                        <p style="margin-left: 15px; color: #666;">例：0.25 = 1/4，0.5 = 1/2，0.75 = 3/4</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="sudokuPage" class="game-page">
+            <button class="back-btn" onclick="goHome()">← 返回首页</button>
+            <div class="header">
+                <h1>📊 数独游戏</h1>
+                <p>锻炼逻辑思维的经典数字游戏</p>
+            </div>
+            <div class="game-container">
+                <div class="controls">
+                    <div class="level-selector">
+                        <button class="level-btn active" data-size="4">初级</button>
+                        <button class="level-btn" data-size="6">中级</button>
+                        <button class="level-btn" data-size="9">高级</button>
+                    </div>
+                    <div class="difficulty-selector">
+                        <button class="difficulty-btn active" data-difficulty="easy">简单</button>
+                        <button class="difficulty-btn" data-difficulty="medium">中等</button>
+                        <button class="difficulty-btn" data-difficulty="hard">困难</button>
+                    </div>
+                    <div class="timer hidden" id="sudokuTimerContainer">
+                        <span class="timer-label">用时：</span>
+                        <span id="sudokuTimer">00:00</span>
+                    </div>
+                </div>
+                <div class="game-wrapper">
+                    <div class="sudoku-grid grid-4" id="sudokuGrid"></div>
+                </div>
+                <div class="number-pad" id="sudokuNumberPad"></div>
+                <div class="action-buttons">
+                    <button class="action-btn" id="sudokuNewGame">新游戏</button>
+                    <button class="action-btn check" id="sudokuCheck">检查答案</button>
+                    <button class="action-btn solve" id="sudokuSolve">显示答案</button>
+                </div>
+                <div class="message" id="sudokuMessage"></div>
+                <div class="game-rules">
+                    <h4>🎯 玩法规则</h4>
+                    <p>在空格中填入数字 1-9，使每行、每列和每个宫格内的数字都不重复。九宫格：每行、每列、每个3×3小宫格含1-9各一次。四宫格：每行、每列、每个2×2小宫格含1-4各一次。六宫格：每行、每列、每个2×3小宫格含1-6各一次。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+    <div class="footer">
+        <p>@Stone | 锻炼逻辑思维的经典数字游戏</p>
+    </div>
+</body>
+</html>
