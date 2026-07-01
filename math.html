@@ -1946,11 +1946,18 @@
             let num1, num2, operator, answer, tip = '';
 
             if (point24Difficulty === 'easy') {
-                num1 = Math.floor(Math.random() * 90) + 10;
-                num2 = Math.floor(Math.random() * 90) + 10;
                 operator = Math.random() > 0.5 ? '+' : '-';
-                if (operator === '-' && num1 < num2) {
-                    [num1, num2] = [num2, num1];
+                if (operator === '+') {
+                    num1 = Math.floor(Math.random() * 81) + 10;
+                    const maxNum2 = 100 - num1;
+                    const minNum2 = Math.min(10, maxNum2);
+                    num2 = Math.floor(Math.random() * (maxNum2 - minNum2 + 1)) + minNum2;
+                } else {
+                    num1 = Math.floor(Math.random() * 90) + 10;
+                    num2 = Math.floor(Math.random() * 90) + 10;
+                    if (num1 < num2) {
+                        [num1, num2] = [num2, num1];
+                    }
                 }
                 answer = operator === '+' ? num1 + num2 : num1 - num2;
             } else if (point24Difficulty === 'medium') {
