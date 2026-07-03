@@ -1822,6 +1822,7 @@ function renderLearnDots(){
     wrap.appendChild(d);
   });
 }
+let _skipAutospeak = false;
 function renderLearnCard(){
   const words = getLearnThemeWords(state.learnTheme);
   const idx = getLearnIndex(state.learnTheme);
@@ -1843,15 +1844,18 @@ function renderLearnCard(){
   void em.offsetWidth;
   em.style.animation = "";
   renderLearnDots();
-  // 自动朗读
-  if(state.autospeak) setTimeout(()=>speak(w.en), 300);
+  // 自动朗读(手动发音时跳过,避免重复)
+  if(_skipAutospeak){
+    _skipAutospeak = false;
+  }else if(state.autospeak){
+    setTimeout(()=>speak(w.en), 300);
+  }
 }
 function nextWord(known){
   if(known){
     const words = getLearnThemeWords(state.learnTheme);
     const curIdx = getLearnIndex(state.learnTheme);
     const w = words[curIdx];
-    // 用单词原主题写入 learned,保证 all 模式下也正确归属
     state.learned[learnedKey(w.theme, w.en)] = {zh:w.zh,emoji:w.emoji};
     saveState();
     beep("ok");
@@ -1866,6 +1870,7 @@ function nextWord(known){
     const words = getLearnThemeWords(state.learnTheme);
     const idx = getLearnIndex(state.learnTheme);
     speak(words[idx].en);
+    _skipAutospeak = true;
   }
   renderLearnCard();
 }
