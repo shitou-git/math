@@ -299,6 +299,67 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
 .modal-actions{display:flex;gap:12px;justify-content:center}
 .modal-actions .btn{min-width:120px}
 
+/* ====================== 小测验弹窗 ====================== */
+.test-box{max-width:480px;width:92%;padding:28px 24px}
+.test-header{margin-bottom:8px}
+.test-title{font-size:26px;color:var(--primary);text-align:center;margin-bottom:14px}
+.test-progress-bar{
+  height:10px;background:#f0e2d0;border-radius:999px;overflow:hidden;margin-bottom:6px;
+}
+.test-progress-fill{
+  height:100%;background:linear-gradient(90deg,#FF9F68,#5FCC8F);
+  transition:width .35s ease;width:0%;
+}
+.test-progress-text{text-align:center;color:var(--text-soft);font-size:14px}
+.test-prompt{
+  font-size:96px;text-align:center;margin:18px 0 6px;line-height:1.2;
+  animation:popIn .4s ease;user-select:none;
+}
+.test-prompt.listen{font-size:80px;cursor:pointer;filter:drop-shadow(0 4px 8px rgba(0,0,0,.15));transition:transform .15s}
+.test-prompt.listen:hover{transform:scale(1.1)}
+.test-prompt.word{font-size:48px;font-weight:700;font-family:"Baloo 2";color:var(--text)}
+.test-prompt-zh{text-align:center;color:var(--text-soft);font-size:17px;margin-bottom:22px}
+.test-options{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.test-option{
+  font-family:"Baloo 2",inherit;cursor:pointer;border:3px solid #f0e2d0;
+  background:var(--card);color:var(--text);font-size:19px;font-weight:600;
+  padding:14px 10px;border-radius:18px;box-shadow:0 4px 0 #e6d8c6;
+  transition:transform .12s, box-shadow .12s, background .15s, border-color .15s;
+  min-height:60px;line-height:1.3;
+}
+.test-option:hover:not(:disabled){transform:translateY(-2px);border-color:var(--primary)}
+.test-option:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 #e6d8c6}
+.test-option.correct{
+  background:var(--success);color:#fff;border-color:#3ea872;box-shadow:0 4px 0 #3ea872;
+}
+.test-option.wrong{
+  background:var(--error);color:#fff;border-color:#d94f4f;box-shadow:0 4px 0 #d94f4f;
+  animation:quizShake .4s;
+}
+.test-option:disabled{cursor:default}
+@keyframes quizShake{
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-8px)}
+  75%{transform:translateX(8px)}
+}
+/* 结果区 */
+.test-result-title{font-size:30px;color:var(--primary);text-align:center;margin-bottom:10px}
+.test-result-stars{font-size:40px;text-align:center;letter-spacing:6px;margin-bottom:6px}
+.test-result-score{font-size:22px;text-align:center;color:var(--text);font-family:"Baloo 2";margin-bottom:16px}
+.test-wrong-wrap{margin-bottom:18px;max-height:180px;overflow-y:auto}
+.test-wrong-item{
+  display:flex;align-items:center;gap:10px;padding:8px 12px;
+  background:#FFF8F0;border-radius:12px;margin-bottom:6px;font-size:16px;
+}
+.test-wrong-item .em{font-size:26px}
+.test-wrong-item b{font-family:"Baloo 2";color:var(--primary)}
+@media (max-width:480px){
+  .test-options{grid-template-columns:1fr;gap:10px}
+  .test-prompt{font-size:80px}
+  .test-prompt.listen{font-size:64px}
+  .test-prompt.word{font-size:40px}
+}
+
 /* 飘字效果 */
 .float-score{
   position:fixed;font-size:28px;font-weight:700;color:var(--success);
@@ -629,6 +690,33 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
     <div style="display:flex;gap:10px;justify-content:center">
       <button class="btn success small" onclick="nextLevel()">下一关 ➜</button>
       <button class="btn ghost small" onclick="closeModal()">回首页</button>
+    </div>
+  </div>
+</div>
+
+<!-- 小测验弹窗 -->
+<div class="modal-mask" id="quiz-mask">
+  <div class="modal-box test-box">
+    <!-- 答题区 -->
+    <div id="quiz-panel">
+      <div class="test-header">
+        <div class="test-title">📝 小测验</div>
+        <div class="test-progress-bar"><div class="test-progress-fill" id="quiz-progress-fill"></div></div>
+        <div class="test-progress-text" id="quiz-progress-text">第 1 / 5 题</div>
+      </div>
+      <div class="test-prompt" id="quiz-prompt">🐱</div>
+      <div class="test-prompt-zh" id="quiz-prompt-zh">这个图片对应的单词是？</div>
+      <div class="test-options" id="quiz-options"></div>
+    </div>
+    <!-- 结果区 -->
+    <div id="quiz-result" style="display:none">
+      <div class="test-result-title">测验完成！</div>
+      <div class="test-result-stars" id="quiz-result-stars">⭐⭐⭐</div>
+      <div class="test-result-score" id="quiz-result-score">5 / 5</div>
+      <div class="test-wrong-wrap" id="quiz-wrong-wrap"></div>
+      <div style="text-align:center">
+        <button class="btn success" onclick="continueAfterQuiz()">继续学习 ➜</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1332,7 +1420,11 @@ const state = {
   learnIndexes:{},
   // 积分
   stars:0,
-  badges:{}
+  badges:{},
+  // 小测验：最近点击"认识啦"的单词队列与计数
+  recentLearned:[],
+  testCounter:0,
+  testActive:false
 };
 
 /* ====================== 学习记录 helper ====================== */
@@ -1782,10 +1874,19 @@ function nextWord(){
   const curIdx = getLearnIndex(state.learnTheme);
   const w = words[curIdx];
   state.learned[learnedKey(w.theme, w.en)] = {zh:w.zh,emoji:w.emoji};
+  // 记录最近点击"认识啦"的单词，用于小测验出题
+  state.recentLearned.push({en:w.en, zh:w.zh, emoji:w.emoji, theme:w.theme});
   saveState();
   beep("ok");
   addStars(1);
   setLearnIndex(state.learnTheme, curIdx + 1);
+  // 每累计 TEST_TRIGGER_COUNT 个新词触发一次小测验
+  state.testCounter++;
+  if(state.testCounter >= TEST_TRIGGER_COUNT){
+    state.testCounter = 0;
+    startQuiz();
+    return;  // 测试期间不渲染下一张卡片，测试结束后由 continueAfterQuiz 渲染
+  }
   renderLearnCard();
 }
 function prevWord(){
@@ -1797,6 +1898,179 @@ function prevWord(){
 }
 function initLearn(){
   initThemeTabs();
+  renderLearnCard();
+}
+
+/* ====================== 学习小测验 ====================== */
+// 每学 TEST_TRIGGER_COUNT 个新词触发一次小测验，对最近这几个单词进行测试
+const TEST_TRIGGER_COUNT = 5;
+
+// 开始一次测验：取最近 TEST_TRIGGER_COUNT 个单词逐一出题
+function startQuiz(){
+  if(state.recentLearned.length === 0) return;
+  state.testActive = true;
+  stopSpeak();
+  // 取最近的若干个词（不足时取全部）
+  const pool = state.recentLearned.slice(-TEST_TRIGGER_COUNT);
+  state.quizQuestions = pool.map(w => makeQuizQuestion(w));
+  state.quizIndex = 0;
+  state.quizScore = 0;
+  state.quizWrong = [];
+  // 切换到答题视图
+  document.getElementById("quiz-panel").style.display = "block";
+  document.getElementById("quiz-result").style.display = "none";
+  document.getElementById("quiz-mask").classList.add("show");
+  renderQuizQuestion();
+}
+
+// 从全词库随机抽取 n 个干扰词（与目标词不同英文）
+function getQuizDistractors(word, n){
+  const all = [];
+  Object.keys(wordDatabase).forEach(k=>{
+    wordDatabase[k].words.forEach(w=>{
+      if(w.en !== word.en) all.push(w);
+    });
+  });
+  shuffle(all);
+  return all.slice(0, n);
+}
+
+// 为一个单词生成一道题，题型在三种里随机
+function makeQuizQuestion(word){
+  const types = ["emoji2en", "en2zh", "listen2en"];
+  const type = types[Math.floor(Math.random() * types.length)];
+  const distractors = getQuizDistractors(word, 3);
+  // 复制一份再洗牌，避免污染原数组
+  const opts = shuffleArr([word, ...distractors]);
+  let options, correct, promptText, promptZh, promptClass;
+  if(type === "emoji2en"){
+    options = opts.map(w=>({label:w.en, value:w.en}));
+    correct = word.en;
+    promptText = word.emoji;
+    promptZh = "这个图片对应的单词是？";
+    promptClass = "";
+  }else if(type === "en2zh"){
+    options = opts.map(w=>({label:w.zh, value:w.zh}));
+    correct = word.zh;
+    promptText = word.en;
+    promptZh = "这个单词的意思是？";
+    promptClass = "word";
+  }else{  // listen2en：听发音选单词
+    options = opts.map(w=>({label:w.en, value:w.en}));
+    correct = word.en;
+    promptText = "🔊";
+    promptZh = "听到的单词是？（点击可重听）";
+    promptClass = "listen";
+  }
+  return {type, word, options, correct, promptText, promptZh, promptClass};
+}
+
+// 不污染原数组的洗牌，返回新数组
+function shuffleArr(arr){
+  const a = arr.slice();
+  shuffle(a);
+  return a;
+}
+
+// 渲染当前题目
+function renderQuizQuestion(){
+  const q = state.quizQuestions[state.quizIndex];
+  const total = state.quizQuestions.length;
+  // 进度
+  document.getElementById("quiz-progress-text").textContent = "第 " + (state.quizIndex+1) + " / " + total + " 题";
+  document.getElementById("quiz-progress-fill").style.width = (state.quizIndex / total * 100) + "%";
+  // 题干
+  const promptEl = document.getElementById("quiz-prompt");
+  promptEl.textContent = q.promptText;
+  promptEl.className = "test-prompt " + q.promptClass;
+  promptEl.onclick = null;
+  document.getElementById("quiz-prompt-zh").textContent = q.promptZh;
+  // 选项
+  const optsWrap = document.getElementById("quiz-options");
+  optsWrap.innerHTML = "";
+  q.options.forEach(opt=>{
+    const btn = document.createElement("button");
+    btn.className = "test-option";
+    btn.textContent = opt.label;
+    btn.onclick = ()=> answerQuiz(opt.value, btn);
+    optsWrap.appendChild(btn);
+  });
+  // 听音题：自动播放一次，并允许点击题干预览图标重听
+  if(q.type === "listen2en"){
+    promptEl.onclick = ()=> speak(q.word.en);
+    setTimeout(()=> speak(q.word.en), 350);
+  }
+}
+
+// 作答处理：判定对错、高亮、进入下一题
+function answerQuiz(value, btn){
+  const q = state.quizQuestions[state.quizIndex];
+  // 锁定所有选项，防止重复点击
+  document.querySelectorAll(".test-option").forEach(b=>{
+    b.disabled = true;
+  });
+  if(value === q.correct){
+    btn.classList.add("correct");
+    state.quizScore++;
+    beep("ok");
+  }else{
+    btn.classList.add("wrong");
+    state.quizWrong.push(q.word);
+    // 高亮正确答案
+    document.querySelectorAll(".test-option").forEach(b=>{
+      if(b.textContent === q.correct) b.classList.add("correct");
+    });
+    beep("err");
+  }
+  // 延迟后进入下一题
+  setTimeout(()=>{
+    state.quizIndex++;
+    if(state.quizIndex >= state.quizQuestions.length){
+      finishQuiz();
+    }else{
+      renderQuizQuestion();
+    }
+  }, 1100);
+}
+
+// 测验结束：显示成绩、错题回顾、发放奖励
+function finishQuiz(){
+  const total = state.quizQuestions.length;
+  const score = state.quizScore;
+  // 进度条满
+  document.getElementById("quiz-progress-fill").style.width = "100%";
+  // 星级评定：全对3星，60%以上2星，否则1星
+  let stars = 1;
+  if(score === total) stars = 3;
+  else if(score >= Math.ceil(total * 0.6)) stars = 2;
+  document.getElementById("quiz-result-stars").textContent = "⭐".repeat(stars) + "☆".repeat(3-stars);
+  document.getElementById("quiz-result-score").textContent = score + " / " + total;
+  // 错题列表
+  const wrongWrap = document.getElementById("quiz-wrong-wrap");
+  if(state.quizWrong.length === 0){
+    wrongWrap.innerHTML = "<div style='text-align:center;color:var(--success);font-size:18px;padding:8px'>🎉 全部答对，太棒了！</div>";
+  }else{
+    let html = "<div style='color:var(--text-soft);font-size:15px;margin-bottom:8px'>错题回顾：</div>";
+    state.quizWrong.forEach(w=>{
+      html += "<div class='test-wrong-item'><span class='em'>" + (w.emoji||'🔤') + "</span> <b>" + w.en + "</b> <span style='color:var(--text-soft)'>— " + w.zh + "</span></div>";
+    });
+    wrongWrap.innerHTML = html;
+  }
+  // 奖励星星：每答对一题得2颗
+  addStars(score * 2);
+  // 切换到结果视图
+  document.getElementById("quiz-panel").style.display = "none";
+  document.getElementById("quiz-result").style.display = "block";
+  beep("win");
+  state.testActive = false;
+}
+
+// 测验后继续学习：关闭弹窗、清空本次数据、渲染下一张卡片
+function continueAfterQuiz(){
+  document.getElementById("quiz-mask").classList.remove("show");
+  state.recentLearned = [];
+  state.quizWrong = [];
+  state.quizQuestions = null;
   renderLearnCard();
 }
 
@@ -2168,6 +2442,8 @@ function resetProgress(){
       state.gScore = 0;
       state.stars = 0;
       state.badges = {};
+      state.recentLearned = [];
+      state.testCounter = 0;
       saveState();
       toast("已重置 ✅");
       renderHomeStats();
