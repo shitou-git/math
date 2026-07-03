@@ -1535,58 +1535,73 @@ const TTS_ENDPOINT = "https://tts.chatlz.dpdns.org/tts";
 let _ttsAudio = null;       // 当前播放的 Audio 对象
 let _ttsLoading = false;     // 正在请求中
 
-function speak(text){
-  if(!text) return;
-  // 取消上一次播放
+function speak(text, onEnd){
+  if(!text){ onEnd && onEnd(); return; }
   stopSpeak();
   if(state.voice === "browser"){
-    if(!("speechSynthesis" in window)){ toast("当前浏览器不支持朗读"); return; }
+    if(!("speechSynthesis" in window)){ onEnd && onEnd(); return; }
     try{
       const u = new SpeechSynthesisUtterance(text);
       u.lang = "en-US"; u.rate = state.rate;
+      u.onend = ()=> onEnd && onEnd();
+      u.onerror = ()=> onEnd && onEnd();
       window.speechSynthesis.cancel();
       window.speechSynthesis.speak(u);
-    }catch(e){ toast("朗读失败："+e.message); }
+    }catch(e){ onEnd && onEnd(); }
     return;
   }
-  // Edge-TTS 调用
+  // Edge-TTS 调用（带超时）
   _ttsLoading = true;
   const url = `${TTS_ENDPOINT}?text=${encodeURIComponent(text)}&voice=${encodeURIComponent(state.voice)}`;
-  fetch(url)
+  const controller = new AbortController();
+  const timeoutId = setTimeout(()=> controller.abort(), 5000);
+  fetch(url, {signal: controller.signal})
     .then(r=>{
       if(!r.ok) throw new Error("TTS HTTP "+r.status);
       return r.blob();
     })
     .then(blob=>{
       _ttsLoading = false;
+      clearTimeout(timeoutId);
       if(blob.size < 200) throw new Error("音频为空");
       const objUrl = URL.createObjectURL(blob);
       const audio = new Audio(objUrl);
       audio.playbackRate = state.rate;
       _ttsAudio = audio;
-      audio.onended = ()=>{ URL.revokeObjectURL(objUrl); _ttsAudio = null; };
+      audio.onended = ()=>{
+        URL.revokeObjectURL(objUrl);
+        _ttsAudio = null;
+        onEnd && onEnd();
+      };
       audio.onerror = ()=>{
-        URL.revokeObjectURL(objUrl); _ttsAudio = null;
+        URL.revokeObjectURL(objUrl);
+        _ttsAudio = null;
         console.warn("音频播放失败");
+        onEnd && onEnd();
       };
       const playPromise = audio.play();
       if(playPromise && playPromise.catch){
         playPromise.catch(err=>{
-          // 自动播放被拦截，提示用户点击
           console.warn("播放被拦截:", err.message);
+          onEnd && onEnd();
         });
       }
     })
     .catch(err=>{
       _ttsLoading = false;
+      clearTimeout(timeoutId);
       console.warn("Edge-TTS 失败，回退浏览器朗读:", err.message);
       // 回退原生
       if("speechSynthesis" in window){
         try{
           const u = new SpeechSynthesisUtterance(text);
           u.lang = "en-US"; u.rate = state.rate;
+          u.onend = ()=> onEnd && onEnd();
+          u.onerror = ()=> onEnd && onEnd();
           window.speechSynthesis.speak(u);
-        }catch(e){}
+        }catch(e){ onEnd && onEnd(); }
+      }else{
+        onEnd && onEnd();
       }
     });
 }
@@ -1670,14 +1685,17 @@ function renderDialog(){
   }
 }
 
-// 串行播放队列：等前一个 onended 再播放下一个
+// 串行播放队列：等前一个播完再播下一个。重复调用会打断当前并重置队列。
 let _speakQueue = [];
 let _speakQueueRunning = false;
 function speakSequential(texts){
-  // 取消旧队列
+  // 打断当前播放 + 重置队列
+  stopSpeak();
   _speakQueue = texts.slice();
-  if(_speakQueueRunning) return;
-  _speakQueueRunning = true;
+  // 标记运行后立即启动（即便之前也在运行，也从新队列重新开始）
+  if(!_speakQueueRunning){
+    _speakQueueRunning = true;
+  }
   playNextInQueue();
 }
 function playNextInQueue(){
@@ -1686,64 +1704,11 @@ function playNextInQueue(){
     return;
   }
   const text = _speakQueue.shift();
-  speakWithEnd(text, ()=>{
+  speak(text, ()=>{
     playNextInQueue();
   });
 }
 
-// speakWithEnd: 与 speak 相同功能，但支持 onEnd 回调（音频真正播放完后触发）
-function speakWithEnd(text, onEnd){
-  if(!text){ onEnd && onEnd(); return; }
-  stopSpeak();
-  if(state.voice === "browser"){
-    if("speechSynthesis" in window){
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = "en-US"; u.rate = state.rate;
-      u.onend = ()=> onEnd && onEnd();
-      u.onerror = ()=> onEnd && onEnd();
-      window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(u);
-    }else{
-      onEnd && onEnd();
-    }
-    return;
-  }
-  const url = `${TTS_ENDPOINT}?text=${encodeURIComponent(text)}&voice=${encodeURIComponent(state.voice)}`;
-  fetch(url)
-    .then(r=>{ if(!r.ok) throw new Error("TTS HTTP "+r.status); return r.blob(); })
-    .then(blob=>{
-      if(blob.size < 200) throw new Error("音频为空");
-      const objUrl = URL.createObjectURL(blob);
-      const audio = new Audio(objUrl);
-      audio.playbackRate = state.rate;
-      _ttsAudio = audio;
-      audio.onended = ()=>{
-        URL.revokeObjectURL(objUrl);
-        _ttsAudio = null;
-        onEnd && onEnd();
-      };
-      audio.onerror = ()=>{
-        URL.revokeObjectURL(objUrl);
-        _ttsAudio = null;
-        onEnd && onEnd();
-      };
-      const p = audio.play();
-      if(p && p.catch) p.catch(()=>{ onEnd && onEnd(); });
-    })
-    .catch(err=>{
-      _ttsLoading = false;
-      // 回退浏览器
-      if("speechSynthesis" in window){
-        const u = new SpeechSynthesisUtterance(text);
-        u.lang = "en-US"; u.rate = state.rate;
-        u.onend = ()=> onEnd && onEnd();
-        u.onerror = ()=> onEnd && onEnd();
-        window.speechSynthesis.speak(u);
-      }else{
-        onEnd && onEnd();
-      }
-    });
-}
 function nextDialog(known){
   if(known){
     beep("ok");
