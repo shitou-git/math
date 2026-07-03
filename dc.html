@@ -193,6 +193,88 @@ body{
   75%{transform:rotateY(180deg) translateX(8px)}
 }
 
+/* 主题下拉菜单 */
+.theme-dropdown{
+  position:relative;max-width:400px;margin:0 auto 18px;
+}
+.theme-select{
+  font-family:inherit;cursor:pointer;border:none;border-radius:999px;
+  padding:14px 22px;font-size:20px;background:var(--card);color:var(--text);
+  box-shadow:0 4px 0 #e6d8c6;width:100%;text-align:left;display:flex;
+  align-items:center;justify-content:space-between;gap:10px;
+}
+.theme-select:active{transform:translateY(2px);box-shadow:0 2px 0 #e6d8c6}
+.theme-select .arrow{font-size:18px;transition:transform .2s}
+.theme-dropdown.open .theme-select .arrow{transform:rotate(180deg)}
+.theme-options{
+  position:absolute;top:calc(100% + 8px);left:0;right:0;
+  background:var(--card);border-radius:20px;box-shadow:var(--shadow);
+  padding:8px;max-height:320px;overflow-y:auto;display:none;z-index:20;
+}
+.theme-dropdown.open .theme-options{display:block;animation:viewIn .2s ease}
+.theme-option{
+  padding:10px 16px;border-radius:16px;cursor:pointer;font-size:18px;
+  display:flex;align-items:center;gap:10px;
+}
+.theme-option:hover{background:#FFF8F0}
+.theme-option.active{background:var(--primary);color:#fff}
+
+/* 记忆倒计时条 */
+.mem-bar{
+  position:relative;height:36px;margin:12px auto 18px;
+  border-radius:999px;overflow:hidden;max-width:500px;
+  text-align:center;display:flex;align-items:center;justify-content:center;
+}
+.mem-bar-inner{
+  position:absolute;inset:0;background:linear-gradient(90deg,#FF9F68,#5FCC8F);
+  animation:memBar 5s linear forwards;
+}
+@keyframes memBar{
+  from{width:100%}to{width:0%}
+}
+.mem-bar span{
+  position:relative;z-index:1;color:#fff;font-size:18px;font-weight:700;
+}
+
+/* 首页积分宠物栏 */
+.home-stats-bar{
+  display:flex;justify-content:center;gap:20px;margin-bottom:20px;flex-wrap:wrap;
+}
+.stat-card{
+  background:var(--card);border-radius:999px;padding:12px 24px;
+  box-shadow:0 4px 0 #e6d8c6;display:flex;align-items:center;gap:10px;
+}
+.stat-card .ico{font-size:32px}
+.stat-card .val{font-size:24px;font-weight:700;font-family:"Baloo 2";color:var(--primary)}
+.stat-card .lbl{font-size:14px;color:var(--text-soft)}
+
+/* 宠物区域 */
+.pet-area{
+  background:var(--card);border-radius:28px;padding:20px;margin:24px auto 16px;
+  max-width:400px;box-shadow:var(--shadow);text-align:center;
+}
+.pet-emoji{font-size:100px;display:block;margin:8px 0;animation:bob 2s ease-in-out infinite}
+.pet-name{font-size:22px;color:var(--text-soft)}
+.pet-happy{
+  height:16px;border-radius:999px;overflow:hidden;background:#e6d8c6;margin:12px 0;
+}
+.pet-happy-inner{
+  height:100%;background:linear-gradient(90deg,#FF6B9D,#FF9F68);transition:width .3s;
+}
+.pet-tip{font-size:14px;color:var(--text-soft);margin-top:8px}
+
+/* 成就徽章 */
+.badge-grid{
+  display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:16px;
+}
+.badge{
+  width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:#f0e2d0;font-size:24px;transition:transform .15s;
+}
+.badge.unlocked{background:linear-gradient(135deg,#FFD700,#FFA500);box-shadow:0 3px 0 #b8860b}
+.badge.unlocked:hover{transform:scale(1.15)}
+.badge.locked{opacity:.4;filter:grayscale(1)}
+
 /* 通关弹窗 */
 .modal-mask{
   position:fixed;inset:0;background:rgba(74,58,42,.45);backdrop-filter:blur(4px);
@@ -227,6 +309,9 @@ body{
   box-shadow:0 4px 0 #e6d8c6;cursor:pointer;transition:transform .15s;
 }
 .nb-card:hover{transform:translateY(-4px)}
+.nb-card-known{
+  border:3px solid var(--success);
+}
 .nb-card .em{font-size:48px;display:block}
 .nb-card .en{font-size:22px;font-weight:700;font-family:"Baloo 2";margin-top:6px}
 .nb-card .zh{font-size:14px;color:var(--text-soft)}
@@ -298,6 +383,37 @@ body{
       <h1 class="home-title">英语单词大冒险</h1>
       <p class="home-sub">和卡通小伙伴一起学单词～</p>
     </div>
+    <!-- 积分栏 -->
+    <div class="home-stats-bar">
+      <div class="stat-card">
+        <span class="ico">⭐</span>
+        <span class="val" id="home-stars">0</span>
+        <span class="lbl">星星</span>
+      </div>
+      <div class="stat-card">
+        <span class="ico">🏆</span>
+        <span class="val" id="home-level">1</span>
+        <span class="lbl">关卡</span>
+      </div>
+      <div class="stat-card">
+        <span class="ico">📖</span>
+        <span class="val" id="home-words">0</span>
+        <span class="lbl">已学</span>
+      </div>
+    </div>
+    <!-- 宠物区域 -->
+    <div class="pet-area" id="pet-area">
+      <span class="pet-emoji" id="pet-emoji">🐱</span>
+      <div class="pet-name" id="pet-name">小猫咪 · 等级 1</div>
+      <div class="pet-happy"><div class="pet-happy-inner" id="pet-happy-bar" style="width:50%"></div></div>
+      <div class="pet-tip">学习喂养宠物，让它开心成长！</div>
+      <button class="btn small pink" onclick="feedPet()">🍖 喂养 (+10星星)</button>
+    </div>
+    <!-- 成就徽章 -->
+    <div style="text-align:center;margin:16px 0">
+      <div style="font-size:18px;color:var(--text-soft);margin-bottom:8px">🏅 我的成就</div>
+      <div class="badge-grid" id="badge-grid"></div>
+    </div>
     <div class="menu-grid">
       <div class="menu-card" onclick="go('learn-view')">
         <span class="ico">📚</span>
@@ -333,7 +449,13 @@ body{
       <button class="back-btn" onclick="go('home-view')">← 返回</button>
       <h2 class="page-title">📖 单词学习</h2>
     </div>
-    <div class="theme-tabs" id="theme-tabs"></div>
+    <div class="theme-dropdown" id="theme-dropdown">
+      <button class="theme-select" onclick="toggleThemeDropdown()">
+        <span id="theme-select-label">🐱 动物</span>
+        <span class="arrow">▼</span>
+      </button>
+      <div class="theme-options" id="theme-options"></div>
+    </div>
     <div class="learn-card">
       <span class="learn-emoji" id="learn-emoji">🐱</span>
       <div class="learn-word" id="learn-word">cat</div>
@@ -367,7 +489,22 @@ body{
   <section class="view" id="notebook-view">
     <div class="topbar">
       <button class="back-btn" onclick="go('home-view')">← 返回</button>
-      <h2 class="page-title">📒 我的单词本</h2>
+      <h2 class="page-title">📒 单词本</h2>
+    </div>
+    <!-- 模式切换 -->
+    <div style="display:flex;justify-content:center;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+      <button class="speed-btn nb-mode active" data-mode="learned">已学单词 <span id="nb-learned-count">0</span></button>
+      <button class="speed-btn nb-mode" data-mode="all">全部单词 <span id="nb-all-count">0</span></button>
+    </div>
+    <!-- 主题筛选（仅全部模式显示） -->
+    <div id="nb-filter-wrap" style="display:none;margin-bottom:16px">
+      <div class="theme-dropdown" id="nb-theme-dropdown">
+        <button class="theme-select" onclick="toggleNbThemeDropdown()">
+          <span id="nb-theme-label">📚 全部主题</span>
+          <span class="arrow">▼</span>
+        </button>
+        <div class="theme-options" id="nb-theme-options"></div>
+      </div>
     </div>
     <div id="notebook-content"></div>
   </section>
@@ -434,17 +571,25 @@ body{
       <button class="back-btn" onclick="go('home-view')">← 返回</button>
       <h2 class="page-title">💬 对话学习</h2>
     </div>
-    <div class="theme-tabs" id="dialog-theme-tabs"></div>
+    <div class="theme-dropdown" id="dialog-theme-dropdown">
+      <button class="theme-select" onclick="toggleDialogThemeDropdown()">
+        <span id="dialog-theme-select-label">👋 打招呼</span>
+        <span class="arrow">▼</span>
+      </button>
+      <div class="theme-options" id="dialog-theme-options"></div>
+    </div>
     <div class="learn-card" style="max-width:600px">
       <div style="font-size:28px;color:#9C8A78;margin-bottom:12px;text-align:center" id="dialog-progress"></div>
       <div style="background:#FFF8F0;border-radius:20px;padding:20px;margin-bottom:16px;text-align:left">
         <div style="font-size:14px;color:#FF6B9D;margin-bottom:6px">👦 问：</div>
         <div style="font-size:26px;font-weight:700;font-family:'Baloo 2';color:#4A3A2A" id="dialog-q">Hello!</div>
+        <div style="font-size:15px;color:#9C8A78;margin-top:4px" id="dialog-qzh">你好！</div>
         <button class="btn sky small" onclick="speak(document.getElementById('dialog-q').textContent)" style="margin-top:8px">🔊 听发音</button>
       </div>
       <div style="background:#F0FFF4;border-radius:20px;padding:20px;margin-bottom:20px;text-align:left">
         <div style="font-size:14px;color:#5FCC8F;margin-bottom:6px">👧 答：</div>
         <div style="font-size:26px;font-weight:700;font-family:'Baloo 2';color:#4A3A2A" id="dialog-a">Hi!</div>
+        <div style="font-size:15px;color:#9C8A78;margin-top:4px" id="dialog-azh">嗨！</div>
         <button class="btn success small" onclick="speak(document.getElementById('dialog-a').textContent)" style="margin-top:8px">🔊 听发音</button>
       </div>
       <div class="learn-actions">
@@ -510,21 +655,21 @@ const wordDatabase = {
     {en:"orange",zh:"橙子",emoji:"🍊"},
     {en:"pear",zh:"梨",emoji:"🍐"},
     {en:"water",zh:"水",emoji:"💧"},
-    {en:"juice",zh:"果汁",emoji:"🧃"},
+    {en:"juice",zh:"果汁",emoji:"🍹"},
     {en:"ice cream",zh:"冰淇淋",emoji:"🍦"},
     {en:"cookie",zh:"饼干",emoji:"🍪"},
     {en:"noodles",zh:"面条",emoji:"🍜"},
-    {en:"vegetable",zh:"蔬菜",emoji:"🥬"},
-    {en:"meat",zh:"肉",emoji:"🥩"},
+    {en:"vegetable",zh:"蔬菜",emoji:"🥦"},
+    {en:"meat",zh:"肉",emoji:"🍖"},
     {en:"chicken",zh:"鸡肉",emoji:"🍗"},
     {en:"tea",zh:"茶",emoji:"🍵"},
     {en:"tomato",zh:"西红柿",emoji:"🍅"},
     {en:"potato",zh:"土豆",emoji:"🥔"},
     {en:"fruit",zh:"水果",emoji:"🍎"},
     {en:"hamburger",zh:"汉堡包",emoji:"🍔"},
-    {en:"salad",zh:"沙拉",emoji:"🥗"},
-    {en:"tofu",zh:"豆腐",emoji:"🧊"},
-    {en:"jiaozi",zh:"饺子",emoji:"🥟"},
+    {en:"salad",zh:"沙拉",emoji:"🥙"},
+    {en:"tofu",zh:"豆腐",emoji:"⬜"},
+    {en:"jiaozi",zh:"饺子",emoji:"🍥"},
     {en:"peach",zh:"桃子",emoji:"🍑"},
     {en:"melon",zh:"西瓜",emoji:"🍉"},
     {en:"strawberry",zh:"草莓",emoji:"🍓"},
@@ -535,7 +680,7 @@ const wordDatabase = {
     {en:"blue",zh:"蓝色",emoji:"🔵"},
     {en:"green",zh:"绿色",emoji:"🟢"},
     {en:"yellow",zh:"黄色",emoji:"🟡"},
-    {en:"pink",zh:"粉色",emoji:"🩷"},
+    {en:"pink",zh:"粉色",emoji:"💗"},
     {en:"orange",zh:"橙色",emoji:"🟠"},
     {en:"white",zh:"白色",emoji:"⚪"},
     {en:"black",zh:"黑色",emoji:"⚫"},
@@ -581,10 +726,10 @@ const wordDatabase = {
     {en:"wind",zh:"风",emoji:"💨"},
     {en:"fire",zh:"火",emoji:"🔥"},
     {en:"water",zh:"水",emoji:"💧"},
-    {en:"stone",zh:"石头",emoji:"🪨"},
+    {en:"stone",zh:"石头",emoji:"🗿"},
     {en:"grass",zh:"草",emoji:"🌿"},
-    {en:"lake",zh:"湖",emoji:"🏞️"},
-    {en:"hill",zh:"小山",emoji:"⛰️"},
+    {en:"lake",zh:"湖",emoji:"🌊"},
+    {en:"hill",zh:"小山",emoji:"🗻"},
     {en:"bridge",zh:"桥",emoji:"🌉"}
   ]},
   school:{ name:{en:"School",zh:"学习用品"}, icon:"📚", words:[
@@ -592,17 +737,17 @@ const wordDatabase = {
     {en:"pen",zh:"钢笔",emoji:"✏️"},
     {en:"pencil",zh:"铅笔",emoji:"✏️"},
     {en:"bag",zh:"书包",emoji:"🎒"},
-    {en:"desk",zh:"书桌",emoji:"🖥️"},
+    {en:"desk",zh:"书桌",emoji:"💻"},
     {en:"chair",zh:"椅子",emoji:"🪑"},
     {en:"ruler",zh:"尺子",emoji:"📏"},
-    {en:"eraser",zh:"橡皮",emoji:"🧹"},
+    {en:"eraser",zh:"橡皮",emoji:"📎"},
     {en:"crayon",zh:"蜡笔",emoji:"🖍️"},
     {en:"paper",zh:"纸",emoji:"📄"},
     {en:"notebook",zh:"笔记本",emoji:"📒"},
     {en:"school",zh:"学校",emoji:"🏫"},
     {en:"blackboard",zh:"黑板",emoji:"⬛"},
     {en:"classroom",zh:"教室",emoji:"🏫"},
-    {en:"window",zh:"窗户",emoji:"🪟"},
+    {en:"window",zh:"窗户",emoji:"🏠"},
     {en:"wall",zh:"墙",emoji:"🧱"},
     {en:"door",zh:"门",emoji:"🚪"},
     {en:"light",zh:"灯",emoji:"💡"},
@@ -611,15 +756,15 @@ const wordDatabase = {
     {en:"telephone",zh:"电话",emoji:"☎️"},
     {en:"computer",zh:"计算机",emoji:"💻"},
     {en:"TV",zh:"电视",emoji:"📺"},
-    {en:"table",zh:"桌子",emoji:"🪑"},
-    {en:"lamp",zh:"台灯",emoji:"🛋️"},
-    {en:"picture",zh:"画",emoji:"🖼️"},
+    {en:"table",zh:"桌子",emoji:"🍽️"},
+    {en:"lamp",zh:"台灯",emoji:"🕯️"},
+    {en:"picture",zh:"画",emoji:"🎨"},
     {en:"room",zh:"房间",emoji:"🚪"},
     {en:"pencil case",zh:"铅笔盒",emoji:"✏️"},
     {en:"backpack",zh:"书包",emoji:"🎒"}
   ]},
   body:{ name:{en:"Body",zh:"身体部位"}, icon:"👦", words:[
-    {en:"head",zh:"头",emoji:"🫠"},
+    {en:"head",zh:"头",emoji:"😊"},
     {en:"face",zh:"脸",emoji:"😊"},
     {en:"eye",zh:"眼睛",emoji:"👁️"},
     {en:"nose",zh:"鼻子",emoji:"👃"},
@@ -630,7 +775,7 @@ const wordDatabase = {
     {en:"arm",zh:"胳膊",emoji:"💪"},
     {en:"leg",zh:"腿",emoji:"🦵"},
     {en:"foot",zh:"脚",emoji:"👣"},
-    {en:"finger",zh:"手指",emoji:"🤌"},
+    {en:"finger",zh:"手指",emoji:"👆"},
     {en:"tongue",zh:"舌头",emoji:"👅"}
   ]},
   family:{ name:{en:"Family",zh:"家庭成员"}, icon:"👨👩👧", words:[
@@ -719,7 +864,7 @@ const wordDatabase = {
   actions:{ name:{en:"Actions",zh:"日常动作"}, icon:"🏃", words:[
     {en:"run",zh:"跑",emoji:"🏃"},
     {en:"walk",zh:"走",emoji:"🚶"},
-    {en:"jump",zh:"跳",emoji:"🩰"},
+    {en:"jump",zh:"跳",emoji:"⭐"},
     {en:"swim",zh:"游泳",emoji:"🏊"},
     {en:"sing",zh:"唱歌",emoji:"🎤"},
     {en:"dance",zh:"跳舞",emoji:"💃"},
@@ -729,7 +874,7 @@ const wordDatabase = {
     {en:"play",zh:"玩",emoji:"🎮"},
     {en:"eat",zh:"吃",emoji:"🍽️"},
     {en:"drink",zh:"喝",emoji:"🥤"},
-    {en:"fly a kite",zh:"放风筝",emoji:"🪁"},
+    {en:"fly a kite",zh:"放风筝",emoji:"🎏"},
     {en:"play football",zh:"踢足球",emoji:"⚽"},
     {en:"ride a bike",zh:"骑自行车",emoji:"🚲"},
     {en:"make a snowman",zh:"堆雪人",emoji:"⛄"},
@@ -737,7 +882,7 @@ const wordDatabase = {
     {en:"eat breakfast",zh:"吃早饭",emoji:"🍳"},
     {en:"eat lunch",zh:"吃午饭",emoji:"🍱"},
     {en:"eat dinner",zh:"吃晚饭",emoji:"🍽️"},
-    {en:"go to bed",zh:"上床睡觉",emoji:"🛌"},
+    {en:"go to bed",zh:"上床睡觉",emoji:"🛏️"},
     {en:"go to school",zh:"上学",emoji:"🏫"},
     {en:"go home",zh:"回家",emoji:"🏠"},
     {en:"look",zh:"看",emoji:"👀"},
@@ -752,11 +897,11 @@ const wordDatabase = {
     {en:"student",zh:"学生",emoji:"👨‍🎓"},
     {en:"class",zh:"班级",emoji:"🏫"},
     {en:"hello",zh:"你好",emoji:"👋"},
-    {en:"stand up",zh:"起立",emoji:"🫡"},
+    {en:"stand up",zh:"起立",emoji:"🙋"},
     {en:"sit down",zh:"坐下",emoji:"🪑"},
     {en:"look",zh:"看",emoji:"👀"},
     {en:"listen",zh:"听",emoji:"👂"},
-    {en:"speak",zh:"说",emoji:"🗣️"},
+    {en:"speak",zh:"说",emoji:"📢"},
     {en:"read",zh:"读",emoji:"📖"},
     {en:"write",zh:"写",emoji:"✍️"},
     {en:"thank you",zh:"谢谢",emoji:"🙏"},
@@ -764,7 +909,7 @@ const wordDatabase = {
     {en:"park",zh:"公园",emoji:"🌳"},
     {en:"zoo",zh:"动物园",emoji:"🦁"},
     {en:"hospital",zh:"医院",emoji:"🏥"},
-    {en:"supermarket",zh:"超市",emoji:"🏪"},
+    {en:"supermarket",zh:"超市",emoji:"🏬"},
     {en:"Christmas",zh:"圣诞节",emoji:"🎄"},
     {en:"card",zh:"贺卡",emoji:"💌"},
     {en:"present",zh:"礼物",emoji:"🎁"},
@@ -812,62 +957,160 @@ const wordDatabase = {
 /* ====================== 对话场景数据库 ====================== */
 const dialogDatabase = {
   greetings:{ name:{en:"Greetings",zh:"打招呼"}, icon:"👋", dialogs:[
-    {q:"Hello!", a:"Hi!"},
-    {q:"Good morning!", a:"Good morning!"},
-    {q:"How are you?", a:"Fine, thank you."},
-    {q:"What's your name?", a:"My name is Lily."},
-    {q:"Goodbye!", a:"Bye!"},
-    {q:"See you!", a:"See you later!"}
+    {q:"Hello!", qzh:"你好！", a:"Hi!", azh:"嗨！"},
+    {q:"Good morning!", qzh:"早上好！", a:"Good morning!", azh:"早上好！"},
+    {q:"Good afternoon!", qzh:"下午好！", a:"Good afternoon!", azh:"下午好！"},
+    {q:"Good evening!", qzh:"晚上好！", a:"Good evening!", azh:"晚上好！"},
+    {q:"How are you?", qzh:"你好吗？", a:"Fine, thank you.", azh:"我很好，谢谢。"},
+    {q:"How are you?", qzh:"你好吗？", a:"I'm OK.", azh:"我挺好的。"},
+    {q:"What's your name?", qzh:"你叫什么名字？", a:"My name is Lily.", azh:"我叫 Lily。"},
+    {q:"How old are you?", qzh:"你几岁了？", a:"I'm seven.", azh:"我七岁了。"},
+    {q:"Nice to meet you.", qzh:"很高兴认识你。", a:"Nice to meet you too.", azh:"我也很高兴认识你。"},
+    {q:"Goodbye!", qzh:"再见！", a:"Bye!", azh:"拜拜！"},
+    {q:"See you!", qzh:"回头见！", a:"See you later!", azh:"回头见！"},
+    {q:"Good night!", qzh:"晚安！", a:"Good night!", azh:"晚安！"}
   ]},
   introduction:{ name:{en:"Introduction",zh:"自我介绍"}, icon:"👤", dialogs:[
-    {q:"Hello! I'm Tom.", a:"Hi! I'm Amy."},
-    {q:"I'm from China.", a:"Me too!"},
-    {q:"Nice to meet you.", a:"Nice to meet you too."},
-    {q:"I'm seven years old.", a:"I'm eight."},
-    {q:"This is my friend.", a:"Hello!"}
+    {q:"Hello! I'm Tom.", qzh:"你好！我是 Tom。", a:"Hi! I'm Amy.", azh:"嗨！我是 Amy。"},
+    {q:"What's your name?", qzh:"你叫什么名字？", a:"I'm Lucy.", azh:"我叫 Lucy。"},
+    {q:"Where are you from?", qzh:"你来自哪里？", a:"I'm from China.", azh:"我来自中国。"},
+    {q:"I'm from China.", qzh:"我来自中国。", a:"Me too!", azh:"我也是！"},
+    {q:"How old are you?", qzh:"你几岁了？", a:"I'm seven years old.", azh:"我七岁了。"},
+    {q:"I'm eight years old.", qzh:"我八岁了。", a:"I'm seven.", azh:"我七岁。"},
+    {q:"Nice to meet you.", qzh:"很高兴见到你。", a:"Nice to meet you too.", azh:"我也很高兴见到你。"},
+    {q:"This is my friend.", qzh:"这是我的朋友。", a:"Hello, nice to meet you.", azh:"你好，很高兴见到你。"},
+    {q:"Are you a student?", qzh:"你是学生吗？", a:"Yes, I am.", azh:"是的，我是。"},
+    {q:"What class are you in?", qzh:"你在几班？", a:"I'm in Class One.", azh:"我在一班。"}
   ]},
   classroom:{ name:{en:"Classroom",zh:"课堂对话"}, icon:"🏫", dialogs:[
-    {q:"Good morning, class!", a:"Good morning, teacher!"},
-    {q:"Stand up!", a:"Yes!"},
-    {q:"Sit down, please.", a:"Thank you!"},
-    {q:"Open your book, please.", a:"Yes!"},
-    {q:"Read after me.", a:"Okay!"},
-    {q:"What's this?", a:"It's a book."}
+    {q:"Good morning, class!", qzh:"同学们早上好！", a:"Good morning, teacher!", azh:"老师早上好！"},
+    {q:"Stand up, please.", qzh:"请起立。", a:"Yes, Miss Li.", azh:"好的，李老师。"},
+    {q:"Sit down, please.", qzh:"请坐。", a:"Thank you!", azh:"谢谢！"},
+    {q:"Open your book, please.", qzh:"请打开书。", a:"Okay!", azh:"好的！"},
+    {q:"Close your book.", qzh:"合上书。", a:"All right.", azh:"好的。"},
+    {q:"Read after me, please.", qzh:"请跟我读。", a:"Okay!", azh:"好的！"},
+    {q:"What's this?", qzh:"这是什么？", a:"It's a book.", azh:"这是一本书。"},
+    {q:"What's that?", qzh:"那是什么？", a:"It's a pen.", azh:"那是一支钢笔。"},
+    {q:"How do you spell it?", qzh:"怎么拼写？", a:"C-A-T, cat.", azh:"C-A-T，cat。"},
+    {q:"Can you say it again?", qzh:"你能再说一遍吗？", a:"Sure! Cat.", azh:"当然！Cat。"},
+    {q:"Who can answer this question?", qzh:"谁能回答这个问题？", a:"I can!", azh:"我能！"},
+    {q:"Great job!", qzh:"真棒！", a:"Thank you!", azh:"谢谢！"},
+    {q:"Let's start the class.", qzh:"我们开始上课。", a:"Okay!", azh:"好的！"},
+    {q:"Class is over.", qzh:"下课了。", a:"Thank you, teacher!", azh:"谢谢老师！"}
   ]},
   daily:{ name:{en:"Daily",zh:"日常交流"}, icon:"🌞", dialogs:[
-    {q:"Good morning, Mom!", a:"Good morning!"},
-    {q:"What's for breakfast?", a:"Milk and bread."},
-    {q:"I'm going to school.", a:"Have a good day!"},
-    {q:"I'm home!", a:"Welcome back!"},
-    {q:"Good night, Dad!", a:"Good night!"},
-    {q:"I love you!", a:"I love you too!"}
+    {q:"Good morning, Mom!", qzh:"妈妈早上好！", a:"Good morning, dear.", azh:"早上好，宝贝。"},
+    {q:"Good morning, Dad!", qzh:"爸爸早上好！", a:"Good morning, son.", azh:"早上好，儿子。"},
+    {q:"What's for breakfast?", qzh:"早餐吃什么？", a:"Milk and bread.", azh:"牛奶和面包。"},
+    {q:"I'm hungry.", qzh:"我饿了。", a:"Here's some bread.", azh:"这儿有面包。"},
+    {q:"I'm thirsty.", qzh:"我渴了。", a:"Have some water.", azh:"喝点水吧。"},
+    {q:"I'm going to school.", qzh:"我去上学了。", a:"Have a good day!", azh:"祝你今天过得愉快！"},
+    {q:"What time is it?", qzh:"几点了？", a:"It's seven o'clock.", azh:"七点钟。"},
+    {q:"Hurry up!", qzh:"快点！", a:"I'm coming.", azh:"我来了。"},
+    {q:"I'm home!", qzh:"我回来了！", a:"Welcome back!", azh:"欢迎回来！"},
+    {q:"How was your day?", qzh:"今天怎么样？", a:"It was great!", azh:"很棒！"},
+    {q:"Let's have dinner.", qzh:"我们吃晚饭吧。", a:"Okay!", azh:"好的！"},
+    {q:"I'm tired.", qzh:"我累了。", a:"Let's go to bed.", azh:"我们去睡觉吧。"},
+    {q:"Good night, Mom!", qzh:"妈妈晚安！", a:"Good night, sweetheart.", azh:"晚安，宝贝。"},
+    {q:"I love you!", qzh:"我爱你！", a:"I love you too!", azh:"我也爱你！"}
+  ]},
+  food:{ name:{en:"Food",zh:"食物餐桌"}, icon:"🍎", dialogs:[
+    {q:"Are you hungry?", qzh:"你饿了吗？", a:"Yes, I am.", azh:"是的，我饿了。"},
+    {q:"Do you want some rice?", qzh:"你想吃点米饭吗？", a:"Yes, please.", azh:"好的，谢谢。"},
+    {q:"What do you want to eat?", qzh:"你想吃什么？", a:"I'd like noodles.", azh:"我想吃面条。"},
+    {q:"Do you like apples?", qzh:"你喜欢苹果吗？", a:"Yes, I do.", azh:"是的，我喜欢。"},
+    {q:"Do you like milk?", qzh:"你喜欢牛奶吗？", a:"Yes, very much.", azh:"是的，非常喜欢。"},
+    {q:"Is it delicious?", qzh:"好吃吗？", a:"Yes, it's yummy!", azh:"是的，很好吃！"},
+    {q:"It's yummy!", qzh:"真好吃！", a:"I'm glad you like it.", azh:"我很高兴你喜欢。"},
+    {q:"Can I have some more?", qzh:"我能再要一点吗？", a:"Sure, here you are.", azh:"当然，给你。"},
+    {q:"I don't like vegetables.", qzh:"我不喜欢蔬菜。", a:"They're good for you.", azh:"它们对你有好处。"},
+    {q:"What fruit do you like?", qzh:"你喜欢什么水果？", a:"I like bananas.", azh:"我喜欢香蕉。"}
   ]},
   shopping:{ name:{en:"Shopping",zh:"购物"}, icon:"🛒", dialogs:[
-    {q:"Can I help you?", a:"Yes, please."},
-    {q:"How much is it?", a:"Five yuan."},
-    {q:"I want an apple.", a:"Here you are."},
-    {q:"Thank you!", a:"You're welcome."}
+    {q:"Can I help you?", qzh:"需要帮忙吗？", a:"Yes, please.", azh:"是的，需要。"},
+    {q:"What can I do for you?", qzh:"我能为你做什么？", a:"I want an apple.", azh:"我想要一个苹果。"},
+    {q:"How much is it?", qzh:"多少钱？", a:"Five yuan.", azh:"五块钱。"},
+    {q:"How much is this book?", qzh:"这本书多少钱？", a:"It's ten yuan.", azh:"十块钱。"},
+    {q:"It's too expensive.", qzh:"太贵了。", a:"How about this one?", azh:"这个怎么样？"},
+    {q:"Can I have a look?", qzh:"我能看一下吗？", a:"Sure, here you are.", azh:"当然，给你。"},
+    {q:"Do you have milk?", qzh:"有牛奶吗？", a:"Yes, we do.", azh:"是的，我们有。"},
+    {q:"I'll take it.", qzh:"我买了。", a:"Thank you!", azh:"谢谢！"},
+    {q:"Thank you!", qzh:"谢谢！", a:"You're welcome.", azh:"不客气。"},
+    {q:"Have a nice day!", qzh:"祝你愉快！", a:"You too!", azh:"你也一样！"}
   ]},
   friends:{ name:{en:"Friends",zh:"朋友聊天"}, icon:"👭", dialogs:[
-    {q:"Let's play!", a:"Great!"},
-    {q:"What's your favorite color?", a:"I like blue."},
-    {q:"Do you like cats?", a:"Yes, I do!"},
-    {q:"Let's sing!", a:"Okay!"},
-    {q:"Happy birthday!", a:"Thank you!"}
+    {q:"Let's play!", qzh:"我们一起玩吧！", a:"Great!", azh:"太好了！"},
+    {q:"What's your favorite color?", qzh:"你最喜欢什么颜色？", a:"I like blue.", azh:"我喜欢蓝色。"},
+    {q:"What's your favorite food?", qzh:"你最喜欢什么食物？", a:"I like ice cream.", azh:"我喜欢冰淇淋。"},
+    {q:"Do you like cats?", qzh:"你喜欢猫吗？", a:"Yes, I do!", azh:"是的，我喜欢！"},
+    {q:"Do you like dogs?", qzh:"你喜欢狗吗？", a:"No, I don't.", azh:"不，我不喜欢。"},
+    {q:"Let's sing a song!", qzh:"我们唱首歌吧！", a:"Okay!", azh:"好的！"},
+    {q:"Let's draw a picture.", qzh:"我们画幅画吧。", a:"Good idea!", azh:"好主意！"},
+    {q:"Happy birthday!", qzh:"生日快乐！", a:"Thank you!", azh:"谢谢你！"},
+    {q:"Here's a present for you.", qzh:"这是给你的礼物。", a:"Oh, thank you!", azh:"哦，谢谢！"},
+    {q:"Can I play with you?", qzh:"我能和你一起玩吗？", a:"Of course!", azh:"当然可以！"}
   ]},
   asking:{ name:{en:"Asking",zh:"问路求助"}, icon:"🗺️", dialogs:[
-    {q:"Excuse me.", a:"Yes?"},
-    {q:"Where is the book?", a:"It's on the desk."},
-    {q:"What's this?", a:"It's a pencil."},
-    {q:"Is this your bag?", a:"Yes, it is."},
-    {q:"Can I borrow your pen?", a:"Sure!"}
+    {q:"Excuse me.", qzh:"打扰一下。", a:"Yes?", azh:"什么事？"},
+    {q:"Where is the book?", qzh:"书在哪里？", a:"It's on the desk.", azh:"在桌子上。"},
+    {q:"Where is my bag?", qzh:"我的书包在哪里？", a:"It's under the chair.", azh:"在椅子下面。"},
+    {q:"Where is the cat?", qzh:"猫在哪里？", a:"It's behind the door.", azh:"在门后面。"},
+    {q:"What's this?", qzh:"这是什么？", a:"It's a pencil.", azh:"这是一支铅笔。"},
+    {q:"What's that in English?", qzh:"那个用英语怎么说？", a:"It's a ruler.", azh:"是一把尺子。"},
+    {q:"Is this your pen?", qzh:"这是你的钢笔吗？", a:"Yes, it is. Thank you!", azh:"是的，谢谢你！"},
+    {q:"Is that your book?", qzh:"那是你的书吗？", a:"No, it isn't.", azh:"不，不是的。"},
+    {q:"Can I borrow your eraser?", qzh:"我能借你的橡皮吗？", a:"Sure, here you are.", azh:"当然，给你。"},
+    {q:"Can you help me?", qzh:"你能帮我吗？", a:"Of course!", azh:"当然可以！"},
+    {q:"Thank you for helping me.", qzh:"谢谢你帮我。", a:"You're welcome.", azh:"不客气。"},
+    {q:"I'm sorry.", qzh:"对不起。", a:"That's okay.", azh:"没关系。"}
   ]},
   time:{ name:{en:"Time",zh:"时间日期"}, icon:"⏰", dialogs:[
-    {q:"What time is it?", a:"It's nine o'clock."},
-    {q:"What day is today?", a:"It's Monday."},
-    {q:"When is your birthday?", a:"My birthday is in June."},
-    {q:"Good morning!", a:"Good morning!"},
-    {q:"Good afternoon!", a:"Good afternoon!"}
+    {q:"What time is it?", qzh:"几点了？", a:"It's nine o'clock.", azh:"九点钟。"},
+    {q:"What time do you get up?", qzh:"你几点起床？", a:"I get up at seven.", azh:"我七点起床。"},
+    {q:"What day is today?", qzh:"今天星期几？", a:"It's Monday.", azh:"今天星期一。"},
+    {q:"What day was yesterday?", qzh:"昨天星期几？", a:"It was Sunday.", azh:"昨天星期天。"},
+    {q:"What day is tomorrow?", qzh:"明天星期几？", a:"It's Tuesday.", azh:"明天星期二。"},
+    {q:"When is your birthday?", qzh:"你的生日是什么时候？", a:"My birthday is in June.", azh:"我的生日在六月。"},
+    {q:"When do you go to school?", qzh:"你什么时候上学？", a:"I go to school at eight.", azh:"我八点去上学。"},
+    {q:"When do you go to bed?", qzh:"你什么时候睡觉？", a:"At nine o'clock.", azh:"九点钟。"},
+    {q:"What month is it?", qzh:"现在几月？", a:"It's October.", azh:"现在是十月。"},
+    {q:"What year is it?", qzh:"今年是哪一年？", a:"It's 2026.", azh:"2026年。"}
+  ]},
+  weather:{ name:{en:"Weather",zh:"天气季节"}, icon:"⛅", dialogs:[
+    {q:"How is the weather?", qzh:"天气怎么样？", a:"It's sunny.", azh:"天气晴朗。"},
+    {q:"How is the weather today?", qzh:"今天天气怎么样？", a:"It's cloudy.", azh:"今天多云。"},
+    {q:"It's raining.", qzh:"下雨了。", a:"Take your umbrella.", azh:"带上雨伞。"},
+    {q:"It's snowing!", qzh:"下雪了！", a:"Let's make a snowman!", azh:"我们堆雪人吧！"},
+    {q:"It's hot today.", qzh:"今天很热。", a:"Have some water.", azh:"喝点水吧。"},
+    {q:"It's cold today.", qzh:"今天很冷。", a:"Wear your coat.", azh:"穿上外套。"},
+    {q:"Do you like spring?", qzh:"你喜欢春天吗？", a:"Yes, it's warm.", azh:"是的，春天很温暖。"},
+    {q:"Do you like summer?", qzh:"你喜欢夏天吗？", a:"No, it's too hot.", azh:"不，夏天太热了。"},
+    {q:"What season is it?", qzh:"现在是什么季节？", a:"It's autumn.", azh:"现在是秋天。"},
+    {q:"It's windy today.", qzh:"今天刮风。", a:"Let's fly a kite!", azh:"我们去放风筝吧！"}
+  ]},
+  feelings:{ name:{en:"Feelings",zh:"情感表达"}, icon:"😊", dialogs:[
+    {q:"How do you feel?", qzh:"你感觉怎么样？", a:"I'm happy!", azh:"我很开心！"},
+    {q:"Are you happy?", qzh:"你开心吗？", a:"Yes, I am.", azh:"是的，我开心。"},
+    {q:"Are you sad?", qzh:"你难过吗？", a:"No, I'm fine.", azh:"不，我很好。"},
+    {q:"I'm so tired.", qzh:"我好累啊。", a:"Have a rest.", azh:"休息一下吧。"},
+    {q:"I'm hungry.", qzh:"我饿了。", a:"Let's eat something.", azh:"我们吃点东西吧。"},
+    {q:"I'm thirsty.", qzh:"我渴了。", a:"Have some juice.", azh:"喝点果汁吧。"},
+    {q:"Are you OK?", qzh:"你还好吗？", a:"I'm OK, thank you.", azh:"我没事，谢谢。"},
+    {q:"I don't feel well.", qzh:"我感觉不舒服。", a:"I'm sorry to hear that.", azh:"听到这个消息我很难过。"},
+    {q:"Don't worry.", qzh:"别担心。", a:"Thank you!", azh:"谢谢你！"},
+    {q:"I'm so excited!", qzh:"我好兴奋啊！", a:"Me too!", azh:"我也是！"}
+  ]},
+  hobbies:{ name:{en:"Hobbies",zh:"兴趣爱好"}, icon:"🎨", dialogs:[
+    {q:"What's your hobby?", qzh:"你的爱好是什么？", a:"I like reading.", azh:"我喜欢看书。"},
+    {q:"What do you like to do?", qzh:"你喜欢做什么？", a:"I like to sing.", azh:"我喜欢唱歌。"},
+    {q:"Do you like to dance?", qzh:"你喜欢跳舞吗？", a:"Yes, I do!", azh:"是的，我喜欢！"},
+    {q:"Can you swim?", qzh:"你会游泳吗？", a:"Yes, I can.", azh:"是的，我会。"},
+    {q:"Can you ride a bike?", qzh:"你会骑自行车吗？", a:"No, I can't.", azh:"不，我不会。"},
+    {q:"I like to draw pictures.", qzh:"我喜欢画画。", a:"That's great!", azh:"真棒！"},
+    {q:"Let's play football.", qzh:"我们踢足球吧。", a:"Sounds good!", azh:"听起来不错！"},
+    {q:"Do you like music?", qzh:"你喜欢音乐吗？", a:"Yes, I love it.", azh:"是的，我爱音乐。"},
+    {q:"What sport do you like?", qzh:"你喜欢什么运动？", a:"I like running.", azh:"我喜欢跑步。"},
+    {q:"Let's read this book.", qzh:"我们读这本书吧。", a:"Okay!", azh:"好的！"}
   ]}
 };
 
@@ -890,7 +1133,13 @@ const state = {
   rate:0.9,
   voice:"zh-CN-YunxiNeural",   // 默认云希；可选 zh-CN-XiaoxiaoNeural / zh-CN-YunyangNeural / browser
   // 已学单词
-  learned:{}
+  learned:{},
+  // 积分与宠物
+  stars:0,
+  petLevel:1,
+  petHappy:50,
+  petType:"cat",
+  badges:{}
 };
 
 /* ====================== 持久化 ====================== */
@@ -898,7 +1147,13 @@ function saveState(){
   try{
     localStorage.setItem("engGameState", JSON.stringify({
       learned:state.learned,
-      settings:{sound:state.sound,autospeak:state.autospeak,rate:state.rate,voice:state.voice}
+      settings:{sound:state.sound,autospeak:state.autospeak,rate:state.rate,voice:state.voice},
+      stars:state.stars,
+      petLevel:state.petLevel,
+      petHappy:state.petHappy,
+      petType:state.petType,
+      badges:state.badges,
+      gLevel:state.gLevel
     }));
   }catch(e){}
 }
@@ -914,6 +1169,12 @@ function loadState(){
       state.rate = obj.settings.rate || 0.9;
       state.voice = obj.settings.voice || "zh-CN-YunxiNeural";
     }
+    if(obj.stars) state.stars = obj.stars;
+    if(obj.petLevel) state.petLevel = obj.petLevel;
+    if(obj.petHappy) state.petHappy = obj.petHappy;
+    if(obj.petType) state.petType = obj.petType;
+    if(obj.badges) state.badges = obj.badges;
+    if(obj.gLevel) state.gLevel = obj.gLevel;
   }catch(e){}
 }
 
@@ -927,6 +1188,99 @@ function go(viewId){
   if(viewId==="dialog-view") initDialog();
   if(viewId==="notebook-view") renderNotebook();
   if(viewId==="settings-view") initSettings();
+  if(viewId==="home-view") renderHomeStats();
+}
+
+/* ====================== 积分与宠物系统 ====================== */
+const pets = [
+  {type:"cat",emoji:"🐱",name:"小猫咪"},
+  {type:"dog",emoji:"🐶",name:"小狗狗"},
+  {type:"rabbit",emoji:"🐰",name:"小兔子"},
+  {type:"panda",emoji:"🐼",name:"小熊猫"},
+  {type:"unicorn",emoji:"🦄",name:"小独角兽"},
+  {type:"dragon",emoji:"🐲",name:"小龙龙"}
+];
+
+function addStars(amount){
+  state.stars += amount;
+  saveState();
+  renderHomeStats();
+  checkBadges();
+}
+function renderHomeStats(){
+  document.getElementById("home-stars").textContent = state.stars;
+  document.getElementById("home-level").textContent = state.gLevel;
+  document.getElementById("home-words").textContent = Object.keys(state.learned).length;
+  renderPet();
+  renderBadges();
+}
+function renderPet(){
+  const petIdx = Math.min(state.petLevel-1, pets.length-1);
+  const pet = pets[petIdx];
+  document.getElementById("pet-emoji").textContent = pet.emoji;
+  document.getElementById("pet-name").textContent = pet.name + " · 等级 " + state.petLevel;
+  document.getElementById("pet-happy-bar").style.width = state.petHappy + "%";
+}
+function feedPet(){
+  if(state.stars < 10){
+    toast("星星不够哦，先去学习赚星星吧！");
+    return;
+  }
+  state.stars -= 10;
+  state.petHappy = Math.min(100, state.petHappy + 20);
+  // 开心值满了升级
+  if(state.petHappy >= 100 && state.petLevel < pets.length){
+    state.petLevel++;
+    state.petHappy = 50;
+    toast("🎉 宠物升级啦！现在是 " + pets[Math.min(state.petLevel-1, pets.length-1)].name);
+    beep("win");
+  }
+  saveState();
+  renderHomeStats();
+  toast("宠物很开心！😊");
+}
+function decayPetHappy(){
+  // 每次打开页面宠物开心值减少5
+  state.petHappy = Math.max(0, state.petHappy - 5);
+  saveState();
+  renderHomeStats();
+}
+
+/* ====================== 成就徽章系统 ====================== */
+const badgeDefs = [
+  {id:"first10",name:"初学者",icon:"🌱",desc:"学会10个单词",cond:()=>Object.keys(state.learned).length>=10},
+  {id:"first30",name:"小达人",icon:"⭐",desc:"学会30个单词",cond:()=>Object.keys(state.learned).length>=30},
+  {id:"first50",name:"单词王",icon:"👑",desc:"学会50个单词",cond:()=>Object.keys(state.learned).length>=50},
+  {id:"first100",name:"学霸",icon:"🏆",desc:"学会100个单词",cond:()=>Object.keys(state.learned).length>=100},
+  {id:"level3",name:"闯关者",icon:"🎮",desc:"通关第3关",cond:()=>state.gLevel>=3},
+  {id:"level5",name:"挑战王",icon:"🎯",desc:"通关第5关",cond:()=>state.gLevel>=5},
+  {id:"level10",name:"大师",icon:"🏅",desc:"通关第10关",cond:()=>state.gLevel>=10},
+  {id:"pet2",name:"爱心主人",icon:"💖",desc:"宠物升到2级",cond:()=>state.petLevel>=2},
+  {id:"pet5",name:"超级主人",icon:"💝",desc:"宠物升到5级",cond:()=>state.petLevel>=5}
+];
+function checkBadges(){
+  badgeDefs.forEach(b=>{
+    if(!state.badges[b.id] && b.cond()){
+      state.badges[b.id] = true;
+      saveState();
+      toast("🎉 解锁成就：" + b.name + " " + b.icon);
+      beep("win");
+    }
+  });
+  renderBadges();
+}
+function renderBadges(){
+  const wrap = document.getElementById("badge-grid");
+  wrap.innerHTML = "";
+  badgeDefs.forEach(b=>{
+    const unlocked = state.badges[b.id];
+    const el = document.createElement("div");
+    el.className = "badge " + (unlocked?"unlocked":"locked");
+    el.innerHTML = unlocked?b.icon:"🔒";
+    el.title = b.name + " - " + b.desc;
+    el.onclick = ()=>toast(b.name + ": " + b.desc);
+    wrap.appendChild(el);
+  });
 }
 
 /* ====================== 发音 (Edge-TTS Worker) ====================== */
@@ -939,14 +1293,13 @@ function speak(text){
   // 取消上一次播放
   stopSpeak();
   if(state.voice === "browser"){
-    // 回退：浏览器原生朗读
     if(!("speechSynthesis" in window)){ toast("当前浏览器不支持朗读"); return; }
     try{
       const u = new SpeechSynthesisUtterance(text);
       u.lang = "en-US"; u.rate = state.rate;
       window.speechSynthesis.cancel();
       window.speechSynthesis.speak(u);
-    }catch(e){}
+    }catch(e){ toast("朗读失败："+e.message); }
     return;
   }
   // Edge-TTS 调用
@@ -965,8 +1318,17 @@ function speak(text){
       audio.playbackRate = state.rate;
       _ttsAudio = audio;
       audio.onended = ()=>{ URL.revokeObjectURL(objUrl); _ttsAudio = null; };
-      audio.onerror = ()=>{ URL.revokeObjectURL(objUrl); _ttsAudio = null; };
-      audio.play().catch(()=>{/* 浏览器拦截自动播放，忽略 */});
+      audio.onerror = ()=>{
+        URL.revokeObjectURL(objUrl); _ttsAudio = null;
+        console.warn("音频播放失败");
+      };
+      const playPromise = audio.play();
+      if(playPromise && playPromise.catch){
+        playPromise.catch(err=>{
+          // 自动播放被拦截，提示用户点击
+          console.warn("播放被拦截:", err.message);
+        });
+      }
     })
     .catch(err=>{
       _ttsLoading = false;
@@ -1001,21 +1363,31 @@ const dState = {
   theme:"greetings",
   index:0
 };
+function toggleDialogThemeDropdown(){
+  document.getElementById("dialog-theme-dropdown").classList.toggle("open");
+}
 function initDialogThemeTabs(){
-  const wrap = document.getElementById("dialog-theme-tabs");
+  const wrap = document.getElementById("dialog-theme-options");
   wrap.innerHTML = "";
+  const label = document.getElementById("dialog-theme-select-label");
   Object.keys(dialogDatabase).forEach(key=>{
     const t = dialogDatabase[key];
-    const btn = document.createElement("button");
-    btn.className = "theme-tab" + (key===dState.theme?" active":"");
-    btn.innerHTML = t.icon + " " + t.name.zh;
-    btn.onclick = ()=>{
+    const opt = document.createElement("div");
+    opt.className = "theme-option" + (key===dState.theme?" active":"");
+    opt.innerHTML = t.icon + " " + t.name.zh;
+    opt.onclick = (e)=>{
+      e.stopPropagation();
       dState.theme = key;
       dState.index = 0;
+      label.textContent = t.icon + " " + t.name.zh;
+      document.getElementById("dialog-theme-dropdown").classList.remove("open");
       initDialogThemeTabs();
       renderDialog();
     };
-    wrap.appendChild(btn);
+    wrap.appendChild(opt);
+    if(key===dState.theme){
+      label.textContent = t.icon + " " + t.name.zh;
+    }
   });
 }
 function renderDialogDots(){
@@ -1041,12 +1413,89 @@ function renderDialog(){
   const d = t.dialogs[idx];
   document.getElementById("dialog-q").textContent = d.q;
   document.getElementById("dialog-a").textContent = d.a;
+  document.getElementById("dialog-qzh").textContent = d.qzh || "";
+  document.getElementById("dialog-azh").textContent = d.azh || "";
   document.getElementById("dialog-progress").textContent = t.name.zh + " · " + (idx+1) + "/" + t.dialogs.length;
   renderDialogDots();
   if(state.autospeak){
-    setTimeout(()=>speak(d.q), 300);
-    setTimeout(()=>speak(d.a), 1500);
+    // 串行播放：等"问"播完再播"答"
+    speakSequential([d.q, d.a]);
   }
+}
+
+// 串行播放队列：等前一个 onended 再播放下一个
+let _speakQueue = [];
+let _speakQueueRunning = false;
+function speakSequential(texts){
+  // 取消旧队列
+  _speakQueue = texts.slice();
+  if(_speakQueueRunning) return;
+  _speakQueueRunning = true;
+  playNextInQueue();
+}
+function playNextInQueue(){
+  if(_speakQueue.length === 0){
+    _speakQueueRunning = false;
+    return;
+  }
+  const text = _speakQueue.shift();
+  speakWithEnd(text, ()=>{
+    playNextInQueue();
+  });
+}
+
+// speakWithEnd: 与 speak 相同功能，但支持 onEnd 回调（音频真正播放完后触发）
+function speakWithEnd(text, onEnd){
+  if(!text){ onEnd && onEnd(); return; }
+  stopSpeak();
+  if(state.voice === "browser"){
+    if("speechSynthesis" in window){
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = "en-US"; u.rate = state.rate;
+      u.onend = ()=> onEnd && onEnd();
+      u.onerror = ()=> onEnd && onEnd();
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(u);
+    }else{
+      onEnd && onEnd();
+    }
+    return;
+  }
+  const url = `${TTS_ENDPOINT}?text=${encodeURIComponent(text)}&voice=${encodeURIComponent(state.voice)}`;
+  fetch(url)
+    .then(r=>{ if(!r.ok) throw new Error("TTS HTTP "+r.status); return r.blob(); })
+    .then(blob=>{
+      if(blob.size < 200) throw new Error("音频为空");
+      const objUrl = URL.createObjectURL(blob);
+      const audio = new Audio(objUrl);
+      audio.playbackRate = state.rate;
+      _ttsAudio = audio;
+      audio.onended = ()=>{
+        URL.revokeObjectURL(objUrl);
+        _ttsAudio = null;
+        onEnd && onEnd();
+      };
+      audio.onerror = ()=>{
+        URL.revokeObjectURL(objUrl);
+        _ttsAudio = null;
+        onEnd && onEnd();
+      };
+      const p = audio.play();
+      if(p && p.catch) p.catch(()=>{ onEnd && onEnd(); });
+    })
+    .catch(err=>{
+      _ttsLoading = false;
+      // 回退浏览器
+      if("speechSynthesis" in window){
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = "en-US"; u.rate = state.rate;
+        u.onend = ()=> onEnd && onEnd();
+        u.onerror = ()=> onEnd && onEnd();
+        window.speechSynthesis.speak(u);
+      }else{
+        onEnd && onEnd();
+      }
+    });
 }
 function nextDialog(known){
   if(known){
@@ -1064,21 +1513,31 @@ function initDialog(){
 }
 
 /* ====================== 学习模块 ====================== */
+function toggleThemeDropdown(){
+  document.getElementById("theme-dropdown").classList.toggle("open");
+}
 function initThemeTabs(){
-  const wrap = document.getElementById("theme-tabs");
+  const wrap = document.getElementById("theme-options");
   wrap.innerHTML = "";
+  const label = document.getElementById("theme-select-label");
   Object.keys(wordDatabase).forEach(key=>{
     const t = wordDatabase[key];
-    const btn = document.createElement("button");
-    btn.className = "theme-tab" + (key===state.learnTheme?" active":"");
-    btn.innerHTML = t.icon + " " + t.name.zh;
-    btn.onclick = ()=>{
+    const opt = document.createElement("div");
+    opt.className = "theme-option" + (key===state.learnTheme?" active":"");
+    opt.innerHTML = t.icon + " " + t.name.zh;
+    opt.onclick = (e)=>{
+      e.stopPropagation();
       state.learnTheme = key;
       state.learnIndex = 0;
+      label.textContent = t.icon + " " + t.name.zh;
+      document.getElementById("theme-dropdown").classList.remove("open");
       initThemeTabs();
       renderLearnCard();
     };
-    wrap.appendChild(btn);
+    wrap.appendChild(opt);
+    if(key===state.learnTheme){
+      label.textContent = t.icon + " " + t.name.zh;
+    }
   });
 }
 function renderLearnDots(){
@@ -1126,6 +1585,7 @@ function nextWord(known){
     state.learned[w.en] = {zh:w.zh,emoji:w.emoji};
     saveState();
     beep("ok");
+    addStars(1);  // 学习一个单词获得1颗星星
     state.learnIndex++;
   }else{
     beep("click");
@@ -1188,8 +1648,6 @@ function startGame(){
       </div>`;
     el.addEventListener("click",()=>flipCard(el));
     grid.appendChild(el);
-    // 记忆阶段朗读每个单词
-    setTimeout(()=>speak(c.en), 300 + idx*200);
   });
   updateGameStats();
   // 显示记忆倒计时条
@@ -1229,6 +1687,8 @@ function flipCard(el){
   state.gLock = true;
   const first = state.gFirstCard;
   state.gFirstCard = null;
+  // 朗读第二张卡片
+  speak(el.dataset.en);
   if(first.dataset.pairId === el.dataset.pairId){
     // 配对成功
     state.gCombo++;
@@ -1237,6 +1697,7 @@ function flipCard(el){
     state.gLeft--;
     showFloatScore(el, "+"+gain);
     beep("ok");
+    addStars(2);  // 配对成功获得2颗星星
     // 标记已学单词
     state.learned[el.dataset.en] = {zh:el.dataset.zh,emoji:""};
     saveState();
@@ -1282,6 +1743,10 @@ function levelClear(){
   document.getElementById("modal-desc").textContent = `本关得分：${state.gScore} · 错误 ${state.gErrors} 次`;
   document.getElementById("modal-mask").classList.add("show");
   beep("win");
+  // 通关奖励星星（根据星级）
+  const bonus = stars * 5;
+  addStars(bonus);
+  checkBadges();
 }
 function nextLevel(){
   closeModal();
@@ -1293,26 +1758,109 @@ function closeModal(){
 }
 
 /* ====================== 单词本 ====================== */
+const nbState = {
+  mode:"learned",   // "learned" 或 "all"
+  theme:"all"       // 主题筛选，all=全部主题
+};
 function renderNotebook(){
+  // 统计总数
+  let totalAll = 0;
+  Object.keys(wordDatabase).forEach(k=>{ totalAll += wordDatabase[k].words.length; });
+  document.getElementById("nb-learned-count").textContent = "("+Object.keys(state.learned).length+")";
+  document.getElementById("nb-all-count").textContent = "("+totalAll+")";
+
+  // 绑定模式切换
+  document.querySelectorAll(".nb-mode").forEach(btn=>{
+    btn.classList.toggle("active", btn.dataset.mode===nbState.mode);
+    btn.onclick = ()=>{
+      nbState.mode = btn.dataset.mode;
+      document.getElementById("nb-filter-wrap").style.display = nbState.mode==="all"?"block":"none";
+      renderNotebook();
+    };
+  });
+
+  // 渲染主题筛选（仅全部模式）
+  if(nbState.mode === "all"){
+    renderNbThemeOptions();
+  }
+
+  // 收集单词
+  let words = [];
+  if(nbState.mode === "learned"){
+    Object.keys(state.learned).forEach(k=>{
+      const w = state.learned[k];
+      words.push({en:k, zh:w.zh, emoji:w.emoji || emojiFallback(k), learned:true});
+    });
+  }else{
+    Object.keys(wordDatabase).forEach(themeKey=>{
+      if(nbState.theme !== "all" && nbState.theme !== themeKey) return;
+      wordDatabase[themeKey].words.forEach(w=>{
+        const learned = !!state.learned[w.en];
+        words.push({...w, learned, theme:themeKey});
+      });
+    });
+  }
+
   const wrap = document.getElementById("notebook-content");
-  const keys = Object.keys(state.learned);
-  if(keys.length===0){
-    wrap.innerHTML = `<div class="empty-tip">还没有学过的单词哦～<br>去『开始学习』或『单词配对』里学几个吧！📚</div>`;
+  if(words.length===0){
+    wrap.innerHTML = nbState.mode==="learned"
+      ? `<div class="empty-tip">还没有学过的单词哦～<br>去『开始学习』或『单词配对』里学几个吧！📚</div>`
+      : `<div class="empty-tip">这个主题暂无单词</div>`;
     return;
   }
+
   let html = `<div class="notebook-grid">`;
-  keys.forEach(k=>{
-    const w = state.learned[k];
-    const em = w.emoji || emojiFallback(k);
+  words.forEach(w=>{
+    const check = w.learned ? "✅" : "";
     html += `
-      <div class="nb-card" onclick="speak('${k}')">
-        <span class="em">${em}</span>
-        <div class="en">${k}</div>
-        <div class="zh">${w.zh}</div>
+      <div class="nb-card ${w.learned?'nb-card-known':''}" onclick="speak('${w.en}')" title="${w.zh}">
+        <span class="em">${w.emoji || '🔤'}</span>
+        <div class="en">${w.en}</div>
+        <div class="zh">${w.zh} ${check}</div>
       </div>`;
   });
   html += `</div>`;
   wrap.innerHTML = html;
+}
+function toggleNbThemeDropdown(){
+  document.getElementById("nb-theme-dropdown").classList.toggle("open");
+}
+function renderNbThemeOptions(){
+  const wrap = document.getElementById("nb-theme-options");
+  const label = document.getElementById("nb-theme-label");
+  wrap.innerHTML = "";
+  // 全部主题选项
+  const allOpt = document.createElement("div");
+  allOpt.className = "theme-option" + (nbState.theme==="all"?" active":"");
+  allOpt.innerHTML = "📚 全部主题";
+  allOpt.onclick = (e)=>{
+    e.stopPropagation();
+    nbState.theme = "all";
+    label.textContent = "📚 全部主题";
+    document.getElementById("nb-theme-dropdown").classList.remove("open");
+    renderNotebook();
+  };
+  wrap.appendChild(allOpt);
+  // 各主题
+  Object.keys(wordDatabase).forEach(key=>{
+    const t = wordDatabase[key];
+    const opt = document.createElement("div");
+    opt.className = "theme-option" + (nbState.theme===key?" active":"");
+    opt.innerHTML = t.icon + " " + t.name.zh + ` <span style="margin-left:auto;color:#9C8A78;font-size:14px">${t.words.length}词</span>`;
+    opt.onclick = (e)=>{
+      e.stopPropagation();
+      nbState.theme = key;
+      label.textContent = t.icon + " " + t.name.zh;
+      document.getElementById("nb-theme-dropdown").classList.remove("open");
+      renderNotebook();
+    };
+    wrap.appendChild(opt);
+  });
+  if(nbState.theme === "all"){
+    label.textContent = "📚 全部主题";
+  }else{
+    label.textContent = wordDatabase[nbState.theme].icon + " " + wordDatabase[nbState.theme].name.zh;
+  }
 }
 function emojiFallback(en){
   // 从词库中找回 emoji
@@ -1422,6 +1970,7 @@ function beep(type){
       return;
     }
     else if(type==="click"){ o.type="sine"; freq=380; dur=0.06; }
+    else if(type==="start"){ o.type="triangle"; freq=880; dur=0.12; }
     o.frequency.value = freq;
     g.gain.setValueAtTime(0.0001, now);
     g.gain.exponentialRampToValueAtTime(0.15, now+0.01);
@@ -1448,6 +1997,18 @@ function buildBgDeco(){
 /* ====================== 启动 ====================== */
 loadState();
 buildBgDeco();
+renderHomeStats();
+decayPetHappy();
+
+// 点击页面其他地方关闭下拉菜单
+document.addEventListener("click", (e)=>{
+  const themeDd = document.getElementById("theme-dropdown");
+  const dialogDd = document.getElementById("dialog-theme-dropdown");
+  const nbDd = document.getElementById("nb-theme-dropdown");
+  if(themeDd && !themeDd.contains(e.target)) themeDd.classList.remove("open");
+  if(dialogDd && !dialogDd.contains(e.target)) dialogDd.classList.remove("open");
+  if(nbDd && !nbDd.contains(e.target)) nbDd.classList.remove("open");
+});
 </script>
 </body>
 </html>
