@@ -68,6 +68,8 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
 }
 .btn.ghost:active{box-shadow:0 2px 0 #e6d8c6}
 .btn.small{padding:10px 20px;font-size:16px}
+/* 发音播放中禁用态：变灰、不可点击 */
+.btn.is-busy{opacity:.5;cursor:not-allowed;filter:grayscale(.3);pointer-events:none}
 
 /* ====================== 视图容器 ====================== */
 .app{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:24px 16px 48px}
@@ -532,7 +534,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       <div class="learn-actions">
         <button class="btn ghost small" onclick="prevWord()">← 上一词</button>
         <button class="btn sky small" onclick="speakCurrent()">🔊 听发音</button>
-        <button class="btn success small" onclick="nextWord()">认识啦 ✅</button>
+        <button class="btn success small" id="next-word-btn" onclick="nextWord()">认识啦 ✅</button>
       </div>
       <div class="progress-dots" id="learn-dots"></div>
     </div>
@@ -1600,20 +1602,42 @@ function renderBadges(){
 const TTS_ENDPOINT = "https://tts.chatlz.dpdns.org/tts";
 let _ttsAudio = null;       // 当前播放的 Audio 对象
 let _ttsLoading = false;     // 正在请求中
+let _speakingActive = false; // 是否正在播放发音（用于禁用"认识啦"按钮，避免连点导致发音重叠）
+let _speakGen = 0;           // 发音代际：每次 speak/stopSpeak 自增，使旧的结束回调失效，防止误清禁用态
+
+// 是否正在播放发音
+function isSpeaking(){ return _speakingActive; }
+// 同步"认识啦"按钮的禁用态
+function updateNextWordBtn(){
+  const btn = document.getElementById("next-word-btn");
+  if(!btn) return;
+  btn.classList.toggle("is-busy", _speakingActive);
+}
+function _setSpeaking(active){
+  _speakingActive = active;
+  updateNextWordBtn();
+}
 
 function speak(text, onEnd){
   if(!text){ onEnd && onEnd(); return; }
   stopSpeak();
+  const gen = ++_speakGen;
+  _setSpeaking(true);
+  // 包装结束回调：仅当代际匹配时才解除禁用态，避免旧音频的结束回调把新音频的禁用态误清除
+  const endCb = ()=>{
+    if(gen === _speakGen) _setSpeaking(false);
+    onEnd && onEnd();
+  };
   if(state.voice === "browser"){
-    if(!("speechSynthesis" in window)){ onEnd && onEnd(); return; }
+    if(!("speechSynthesis" in window)){ endCb(); return; }
     try{
       const u = new SpeechSynthesisUtterance(text);
       u.lang = "en-US"; u.rate = state.rate;
-      u.onend = ()=> onEnd && onEnd();
-      u.onerror = ()=> onEnd && onEnd();
+      u.onend = endCb;
+      u.onerror = endCb;
       window.speechSynthesis.cancel();
       window.speechSynthesis.speak(u);
-    }catch(e){ onEnd && onEnd(); }
+    }catch(e){ endCb(); }
     return;
   }
   // Edge-TTS 调用（带超时）
@@ -1637,19 +1661,19 @@ function speak(text, onEnd){
       audio.onended = ()=>{
         URL.revokeObjectURL(objUrl);
         _ttsAudio = null;
-        onEnd && onEnd();
+        endCb();
       };
       audio.onerror = ()=>{
         URL.revokeObjectURL(objUrl);
         _ttsAudio = null;
         console.warn("音频播放失败");
-        onEnd && onEnd();
+        endCb();
       };
       const playPromise = audio.play();
       if(playPromise && playPromise.catch){
         playPromise.catch(err=>{
           console.warn("播放被拦截:", err.message);
-          onEnd && onEnd();
+          endCb();
         });
       }
     })
@@ -1662,16 +1686,17 @@ function speak(text, onEnd){
         try{
           const u = new SpeechSynthesisUtterance(text);
           u.lang = "en-US"; u.rate = state.rate;
-          u.onend = ()=> onEnd && onEnd();
-          u.onerror = ()=> onEnd && onEnd();
+          u.onend = endCb;
+          u.onerror = endCb;
           window.speechSynthesis.speak(u);
-        }catch(e){ onEnd && onEnd(); }
+        }catch(e){ endCb(); }
       }else{
-        onEnd && onEnd();
+        endCb();
       }
     });
 }
 function stopSpeak(){
+  _speakGen++;  // 使任何旧的结束回调失效，避免它们误清新的禁用态
   if(_ttsAudio){
     try{ _ttsAudio.pause(); _ttsAudio.src=""; }catch(e){}
     _ttsAudio = null;
@@ -1679,6 +1704,7 @@ function stopSpeak(){
   if("speechSynthesis" in window){
     try{ window.speechSynthesis.cancel(); }catch(e){}
   }
+  _setSpeaking(false);
 }
 function speakCurrent(){
   const words = getLearnThemeWords(state.learnTheme);
@@ -1865,11 +1891,23 @@ function renderLearnCard(){
   void em.offsetWidth;
   em.style.animation = "";
   renderLearnDots();
+  // 清理上一次尚未触发的自动朗读定时器，避免快速翻页时累积多个发音
+  if(_autospeakTimer){ clearTimeout(_autospeakTimer); _autospeakTimer = null; }
   if(state.autospeak){
-    setTimeout(()=>speak(w.en), 300);
+    _autospeakTimer = setTimeout(()=>{
+      _autospeakTimer = null;
+      speak(w.en);
+    }, 300);
   }
 }
+// 自动朗读定时器句柄（renderLearnCard 用）
+let _autospeakTimer = null;
 function nextWord(){
+  // 发音播放中禁止点击，避免连点导致两个单词发音重叠
+  if(isSpeaking()){
+    toast("🔊 正在播放发音，请稍等～");
+    return;
+  }
   const words = getLearnThemeWords(state.learnTheme);
   const curIdx = getLearnIndex(state.learnTheme);
   const w = words[curIdx];
