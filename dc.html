@@ -129,6 +129,13 @@ body{
   animation:popIn .5s ease;
 }
 @keyframes popIn{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes shakeWord{
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-10px) rotate(-4deg)}
+  40%{transform:translateX(10px) rotate(4deg)}
+  60%{transform:translateX(-8px) rotate(-3deg)}
+  80%{transform:translateX(8px) rotate(3deg)}
+}
 .learn-word{font-size:56px;font-weight:700;font-family:"Baloo 2";color:var(--text)}
 .learn-zh{font-size:28px;color:var(--text-soft);margin-top:4px}
 .learn-actions{margin-top:24px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
@@ -461,6 +468,7 @@ body{
       <div class="learn-word" id="learn-word">cat</div>
       <div class="learn-zh" id="learn-zh">猫</div>
       <div class="learn-actions">
+        <button class="btn ghost small" onclick="prevWord()">← 上一词</button>
         <button class="btn sky small" onclick="speakCurrent()">🔊 听发音</button>
         <button class="btn success small" onclick="nextWord(true)">认识啦 ✅</button>
         <button class="btn ghost small" onclick="nextWord(false)">再学一次 🔁</button>
@@ -1279,9 +1287,11 @@ const state = {
   sound:true,
   autospeak:true,
   rate:0.9,
-  voice:"zh-CN-YunxiNeural",   // 默认云希；可选 zh-CN-XiaoxiaoNeural / zh-CN-YunyangNeural / browser
+  voice:"zh-CN-YunxiNeural",
   // 已学单词
   learned:{},
+  // 学习进度(按主题)
+  learnIndexes:{},
   // 积分与宠物
   stars:0,
   petLevel:1,
@@ -1304,6 +1314,13 @@ function learnedCount(){
   });
   return set.size;
 }
+// 某主题学习进度读取
+function getLearnIndex(theme){ return state.learnIndexes[theme] || 0; }
+// 某主题学习进度写入并持久化
+function setLearnIndex(theme, idx){
+  state.learnIndexes[theme] = idx;
+  saveState();
+}
 
 /* ====================== 持久化 ====================== */
 function saveState(){
@@ -1316,7 +1333,8 @@ function saveState(){
       petHappy:state.petHappy,
       petType:state.petType,
       badges:state.badges,
-      gLevel:state.gLevel
+      gLevel:state.gLevel,
+      learnIndexes:state.learnIndexes
     }));
   }catch(e){}
 }
@@ -1357,6 +1375,7 @@ function loadState(){
     if(obj.petType) state.petType = obj.petType;
     if(obj.badges) state.badges = obj.badges;
     if(obj.gLevel) state.gLevel = obj.gLevel;
+    if(obj.learnIndexes) state.learnIndexes = obj.learnIndexes;
   }catch(e){}
 }
 
@@ -1536,7 +1555,7 @@ function stopSpeak(){
 }
 function speakCurrent(){
   const t = wordDatabase[state.learnTheme];
-  const w = t.words[state.learnIndex];
+  const w = t.words[getLearnIndex(state.learnTheme)];
   speak(w.en);
 }
 
@@ -1710,7 +1729,7 @@ function initThemeTabs(){
     opt.onclick = (e)=>{
       e.stopPropagation();
       state.learnTheme = key;
-      state.learnIndex = 0;
+      setLearnIndex(key, 0);
       label.textContent = t.icon + " " + t.name.zh;
       document.getElementById("theme-dropdown").classList.remove("open");
       initThemeTabs();
@@ -1724,25 +1743,21 @@ function initThemeTabs(){
 }
 function renderLearnDots(){
   const t = wordDatabase[state.learnTheme];
+  const idx = getLearnIndex(state.learnTheme);
   const wrap = document.getElementById("learn-dots");
   wrap.innerHTML = "";
   t.words.forEach((_,i)=>{
     const d = document.createElement("div");
-    d.className = "dot" + (i<state.learnIndex?" done":"") + (i===state.learnIndex?" cur":"");
+    d.className = "dot" + (i<idx?" done":"") + (i===idx?" cur":"");
     wrap.appendChild(d);
   });
 }
 function renderLearnCard(){
   const t = wordDatabase[state.learnTheme];
-  const idx = state.learnIndex;
+  const idx = getLearnIndex(state.learnTheme);
   if(idx >= t.words.length){
     toast("🎉 这个主题学完啦！");
-    // 标记主题已学
-    t.words.forEach(w=>{
-      state.learned[learnedKey(state.learnTheme, w.en)] = {zh:w.zh,emoji:w.emoji};
-    });
-    saveState();
-    state.learnIndex = 0;
+    setLearnIndex(state.learnTheme, 0);
     renderLearnCard();
     renderLearnDots();
     return;
@@ -1763,20 +1778,33 @@ function renderLearnCard(){
 function nextWord(known){
   if(known){
     const t = wordDatabase[state.learnTheme];
-    const w = t.words[state.learnIndex];
+    const curIdx = getLearnIndex(state.learnTheme);
+    const w = t.words[curIdx];
     state.learned[learnedKey(state.learnTheme, w.en)] = {zh:w.zh,emoji:w.emoji};
     saveState();
     beep("ok");
     addStars(1);  // 学习一个单词获得1颗星星
-    state.learnIndex++;
+    setLearnIndex(state.learnTheme, curIdx + 1);
   }else{
     beep("click");
+    // "再学一次":重播发音 + 卡片抖动提示
+    const em = document.getElementById("learn-emoji");
+    em.style.animation = "none";
+    void em.offsetWidth;
+    em.style.animation = "popIn .5s ease, shakeWord .6s ease";
+    speak(wordDatabase[state.learnTheme].words[getLearnIndex(state.learnTheme)].en);
   }
+  renderLearnCard();
+}
+function prevWord(){
+  const curIdx = getLearnIndex(state.learnTheme);
+  if(curIdx <= 0){ toast("已经是第一个啦～"); beep("click"); return; }
+  setLearnIndex(state.learnTheme, curIdx - 1);
+  beep("click");
   renderLearnCard();
 }
 function initLearn(){
   initThemeTabs();
-  state.learnIndex = state.learnIndex || 0;
   renderLearnCard();
 }
 
@@ -2094,12 +2122,19 @@ function initSettings(){
   });
 }
 function resetProgress(){
-  if(!confirm("确定要重置所有学习进度和游戏得分吗？")) return;
+  if(!confirm("确定要重置所有学习进度和游戏得分吗？\n(已学单词、星星、宠物等级、成就徽章都会清空)")) return;
   state.learned = {};
+  state.learnIndexes = {};
   state.gLevel = 1;
   state.gScore = 0;
+  state.stars = 0;
+  state.petLevel = 1;
+  state.petHappy = 50;
+  state.petType = "cat";
+  state.badges = {};
   saveState();
   toast("已重置 ✅");
+  renderHomeStats();
   renderNotebook();
 }
 
