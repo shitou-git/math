@@ -3,9 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <title>数学游戏集合</title>
     <style>
         * {
@@ -1374,16 +1371,16 @@
                     <h2>奥数</h2>
                     <p>拓展思维，挑战奥数难题</p>
                 </div>
-                <div class="game-card" onclick="window.open('https://shitou-git.github.io/aoshu/silu', '_blank')">
-                    <div class="game-icon">📐</div>
-                    <h2>AI公式大全</h2>
-                    <p>常用公式速查手册</p>
+                <div class="game-card" onclick="window.open('https://shitou-git.github.io/math/dc', '_blank')">
+                    <div class="game-icon">📚</div>
+                    <h2>快乐学英语</h2>
+                    <p>趣味英语学习乐园</p>
                 </div>
             </div>
             <div style="text-align: center; margin-top: 30px;">
                 <div style="display: inline-flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;" onclick="window.open('https://shitou-git.github.io/chat/index', '_blank')"><img src="Z.webp" style="width: 64px; height: 64px; border-radius: 10px;"><span style="font-size: 14px; font-weight: 600;">灵知</span></div>
             </div>
-            <div style="text-align: center; margin-top: 20px; color: rgba(255,255,255,0.6); font-size: 12px;">v1.0.3</div>
+            <div style="text-align: center; margin-top: 20px; color: rgba(255,255,255,0.6); font-size: 12px;">v1.0.4</div>
         </div>
 
         <!-- 幻方游戏页面 -->
@@ -1957,8 +1954,8 @@
                     const minNum2 = Math.min(10, maxNum2);
                     num2 = Math.floor(Math.random() * (maxNum2 - minNum2 + 1)) + minNum2;
                 } else {
-                    num1 = Math.floor(Math.random() * 91) + 10;
-                    num2 = Math.floor(Math.random() * 91) + 10;
+                    num1 = Math.floor(Math.random() * 90) + 10;
+                    num2 = Math.floor(Math.random() * 90) + 10;
                     if (num1 < num2) {
                         [num1, num2] = [num2, num1];
                     }
