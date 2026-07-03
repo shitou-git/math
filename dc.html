@@ -686,7 +686,7 @@ const wordDatabase = {
     {en:"black",zh:"黑色",emoji:"⚫"},
     {en:"purple",zh:"紫色",emoji:"🟣"},
     {en:"brown",zh:"棕色",emoji:"🟤"},
-    {en:"grey",zh:"灰色",emoji:"⚫"},
+    {en:"grey",zh:"灰色",emoji:"🌫️"},
     {en:"gold",zh:"金色",emoji:"🟡"}
   ]},
   numbers:{ name:{en:"Numbers",zh:"数字"}, icon:"🔢", words:[
@@ -734,20 +734,20 @@ const wordDatabase = {
   ]},
   school:{ name:{en:"School",zh:"学习用品"}, icon:"📚", words:[
     {en:"book",zh:"书",emoji:"📕"},
-    {en:"pen",zh:"钢笔",emoji:"✏️"},
+    {en:"pen",zh:"钢笔",emoji:"🖊️"},
     {en:"pencil",zh:"铅笔",emoji:"✏️"},
     {en:"bag",zh:"书包",emoji:"🎒"},
-    {en:"desk",zh:"书桌",emoji:"💻"},
+    {en:"desk",zh:"书桌",emoji:"📋"},
     {en:"chair",zh:"椅子",emoji:"🪑"},
     {en:"ruler",zh:"尺子",emoji:"📏"},
-    {en:"eraser",zh:"橡皮",emoji:"📎"},
+    {en:"eraser",zh:"橡皮",emoji:"🧽"},
     {en:"crayon",zh:"蜡笔",emoji:"🖍️"},
     {en:"paper",zh:"纸",emoji:"📄"},
     {en:"notebook",zh:"笔记本",emoji:"📒"},
     {en:"school",zh:"学校",emoji:"🏫"},
     {en:"blackboard",zh:"黑板",emoji:"⬛"},
     {en:"classroom",zh:"教室",emoji:"🏫"},
-    {en:"window",zh:"窗户",emoji:"🏠"},
+    {en:"window",zh:"窗户",emoji:"🪟"},
     {en:"wall",zh:"墙",emoji:"🧱"},
     {en:"door",zh:"门",emoji:"🚪"},
     {en:"light",zh:"灯",emoji:"💡"},
@@ -758,8 +758,8 @@ const wordDatabase = {
     {en:"TV",zh:"电视",emoji:"📺"},
     {en:"table",zh:"桌子",emoji:"🍽️"},
     {en:"lamp",zh:"台灯",emoji:"🕯️"},
-    {en:"picture",zh:"画",emoji:"🎨"},
-    {en:"room",zh:"房间",emoji:"🚪"},
+    {en:"picture",zh:"画",emoji:"🖼️"},
+    {en:"room",zh:"房间",emoji:"🛋️"},
     {en:"pencil case",zh:"铅笔盒",emoji:"✏️"},
     {en:"backpack",zh:"书包",emoji:"🎒"}
   ]},
@@ -1004,7 +1004,7 @@ const wordDatabase = {
     {en:"museum",zh:"博物馆",emoji:"🏛️"},
     {en:"post office",zh:"邮局",emoji:"📮"},
     {en:"playground",zh:"操场",emoji:"🏃"},
-    {en:"room",zh:"房间",emoji:"🚪"},
+    {en:"room",zh:"房间",emoji:"🛋️"},
     {en:"bedroom",zh:"卧室",emoji:"🛏️"},
     {en:"kitchen",zh:"厨房",emoji:"🍳"},
     {en:"farm",zh:"农场",emoji:"🚜"},
@@ -1290,6 +1290,21 @@ const state = {
   badges:{}
 };
 
+/* ====================== 学习记录 helper ====================== */
+// learned 的 key 用 `${theme}:${en}`,避免同英文单词跨主题(如 chicken 鸡/鸡肉、orange 橙色/橙子)相互覆盖
+function learnedKey(theme, en){ return theme + ":" + en; }
+// 判断某个主题下的某单词是否已学
+function isLearned(theme, en){ return !!state.learned[learnedKey(theme, en)]; }
+// 已学单词数(按英文去重,同一单词在多主题学过只算 1 个)
+function learnedCount(){
+  const set = new Set();
+  Object.keys(state.learned).forEach(k=>{
+    const i = k.indexOf(":");
+    if(i > 0) set.add(k.slice(i+1));
+  });
+  return set.size;
+}
+
 /* ====================== 持久化 ====================== */
 function saveState(){
   try{
@@ -1310,7 +1325,26 @@ function loadState(){
     const raw = localStorage.getItem("engGameState");
     if(!raw) return;
     const obj = JSON.parse(raw);
-    if(obj.learned) state.learned = obj.learned;
+    if(obj.learned){
+      state.learned = obj.learned;
+      // 数据迁移:旧版 key 为纯 en(如 "chicken"),新版为 "theme:en"。把无冒号的旧 key 迁移到新格式
+      let migrated = false;
+      Object.keys(state.learned).forEach(k=>{
+        if(k.indexOf(":") > 0) return;  // 已是新格式
+        const rec = state.learned[k];
+        // 在词库中查找该 en 对应的首个主题
+        let theme = null;
+        for(const tk of Object.keys(wordDatabase)){
+          if(wordDatabase[tk].words.some(w=>w.en===k)){ theme = tk; break; }
+        }
+        if(theme){
+          state.learned[learnedKey(theme, k)] = {zh:rec.zh, emoji:rec.emoji || emojiFallback(k)};
+        }
+        delete state.learned[k];
+        migrated = true;
+      });
+      if(migrated) saveState();  // 持久化迁移结果
+    }
     if(obj.settings){
       state.sound = obj.settings.sound !== false;
       state.autospeak = obj.settings.autospeak !== false;
@@ -1358,7 +1392,7 @@ function addStars(amount){
 function renderHomeStats(){
   document.getElementById("home-stars").textContent = state.stars;
   document.getElementById("home-level").textContent = state.gLevel;
-  document.getElementById("home-words").textContent = Object.keys(state.learned).length;
+  document.getElementById("home-words").textContent = learnedCount();
   renderPet();
   renderBadges();
 }
@@ -1396,10 +1430,10 @@ function decayPetHappy(){
 
 /* ====================== 成就徽章系统 ====================== */
 const badgeDefs = [
-  {id:"first10",name:"初学者",icon:"🌱",desc:"学会10个单词",cond:()=>Object.keys(state.learned).length>=10},
-  {id:"first30",name:"小达人",icon:"⭐",desc:"学会30个单词",cond:()=>Object.keys(state.learned).length>=30},
-  {id:"first50",name:"单词王",icon:"👑",desc:"学会50个单词",cond:()=>Object.keys(state.learned).length>=50},
-  {id:"first100",name:"学霸",icon:"🏆",desc:"学会100个单词",cond:()=>Object.keys(state.learned).length>=100},
+  {id:"first10",name:"初学者",icon:"🌱",desc:"学会10个单词",cond:()=>learnedCount()>=10},
+  {id:"first30",name:"小达人",icon:"⭐",desc:"学会30个单词",cond:()=>learnedCount()>=30},
+  {id:"first50",name:"单词王",icon:"👑",desc:"学会50个单词",cond:()=>learnedCount()>=50},
+  {id:"first100",name:"学霸",icon:"🏆",desc:"学会100个单词",cond:()=>learnedCount()>=100},
   {id:"level3",name:"闯关者",icon:"🎮",desc:"通关第3关",cond:()=>state.gLevel>=3},
   {id:"level5",name:"挑战王",icon:"🎯",desc:"通关第5关",cond:()=>state.gLevel>=5},
   {id:"level10",name:"大师",icon:"🏅",desc:"通关第10关",cond:()=>state.gLevel>=10},
@@ -1705,7 +1739,7 @@ function renderLearnCard(){
     toast("🎉 这个主题学完啦！");
     // 标记主题已学
     t.words.forEach(w=>{
-      state.learned[w.en] = {zh:w.zh,emoji:w.emoji};
+      state.learned[learnedKey(state.learnTheme, w.en)] = {zh:w.zh,emoji:w.emoji};
     });
     saveState();
     state.learnIndex = 0;
@@ -1730,7 +1764,7 @@ function nextWord(known){
   if(known){
     const t = wordDatabase[state.learnTheme];
     const w = t.words[state.learnIndex];
-    state.learned[w.en] = {zh:w.zh,emoji:w.emoji};
+    state.learned[learnedKey(state.learnTheme, w.en)] = {zh:w.zh,emoji:w.emoji};
     saveState();
     beep("ok");
     addStars(1);  // 学习一个单词获得1颗星星
@@ -1846,8 +1880,8 @@ function flipCard(el){
     showFloatScore(el, "+"+gain);
     beep("ok");
     addStars(2);  // 配对成功获得2颗星星
-    // 标记已学单词
-    state.learned[el.dataset.en] = {zh:el.dataset.zh,emoji:""};
+    // 标记已学单词(按主题独立记录,并写入真实 emoji)
+    state.learned[learnedKey(el.dataset.theme, el.dataset.en)] = {zh:el.dataset.zh, emoji:el.dataset.emoji};
     saveState();
     setTimeout(()=>{
       first.classList.add("matched");
@@ -1914,7 +1948,7 @@ function renderNotebook(){
   // 统计总数
   let totalAll = 0;
   Object.keys(wordDatabase).forEach(k=>{ totalAll += wordDatabase[k].words.length; });
-  document.getElementById("nb-learned-count").textContent = "("+Object.keys(state.learned).length+")";
+  document.getElementById("nb-learned-count").textContent = "("+learnedCount()+")";
   document.getElementById("nb-all-count").textContent = "("+totalAll+")";
 
   // 绑定模式切换
@@ -1935,15 +1969,20 @@ function renderNotebook(){
   // 收集单词
   let words = [];
   if(nbState.mode === "learned"){
+    // learned 的 key 形如 "theme:en",拆分后从词库取原始数据,保证 emoji/zh 一致
     Object.keys(state.learned).forEach(k=>{
-      const w = state.learned[k];
-      words.push({en:k, zh:w.zh, emoji:w.emoji || emojiFallback(k), learned:true});
+      const i = k.indexOf(":");
+      if(i <= 0) return;
+      const theme = k.slice(0, i);
+      const en = k.slice(i+1);
+      const rec = state.learned[k];
+      words.push({en, zh:rec.zh, emoji:rec.emoji || emojiFallback(en), learned:true, theme});
     });
   }else{
     Object.keys(wordDatabase).forEach(themeKey=>{
       if(nbState.theme !== "all" && nbState.theme !== themeKey) return;
       wordDatabase[themeKey].words.forEach(w=>{
-        const learned = !!state.learned[w.en];
+        const learned = isLearned(themeKey, w.en);
         words.push({...w, learned, theme:themeKey});
       });
     });
