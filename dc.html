@@ -17,7 +17,7 @@
   --sky:#7BC8FF;
   --error:#FF6B6B;
   --text:#4A3A2A;
-  --text-soft:#9C8A78;
+  --text-soft:#7A6652;
   --shadow:0 8px 24px rgba(240,122,62,.18);
   --radius:28px;
 }
@@ -43,6 +43,8 @@ body{
   90%{opacity:.4}
   100%{transform:translateY(-20vh) rotate(360deg);opacity:0}
 }
+body.reduce-motion .bg-deco{display:none}
+body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
 
 /* ====================== 通用按钮 ====================== */
 .btn{
@@ -223,6 +225,8 @@ body{
   padding:10px 16px;border-radius:16px;cursor:pointer;font-size:18px;
   display:flex;align-items:center;gap:10px;
 }
+.theme-option .theme-count{margin-left:auto;font-size:14px;color:var(--text-soft)}
+.theme-option.active .theme-count{color:rgba(255,255,255,.8)}
 .theme-option:hover{background:#FFF8F0}
 .theme-option.active{background:var(--primary);color:#fff}
 
@@ -295,6 +299,11 @@ body{
 .modal-box h2{font-size:36px;color:var(--primary);margin-bottom:10px}
 .stars{font-size:42px;margin:16px 0;letter-spacing:6px}
 .modal-box p{font-size:18px;color:var(--text-soft);margin-bottom:20px}
+.modal-icon{font-size:64px;margin-bottom:12px}
+.modal-title{font-size:24px;font-weight:700;color:var(--text);margin-bottom:8px}
+.modal-desc{font-size:16px;color:var(--text-soft);margin-bottom:20px;line-height:1.6}
+.modal-actions{display:flex;gap:12px;justify-content:center}
+.modal-actions .btn{min-width:120px}
 
 /* 飘字效果 */
 .float-score{
@@ -422,27 +431,27 @@ body{
       <div class="badge-grid" id="badge-grid"></div>
     </div>
     <div class="menu-grid">
-      <div class="menu-card" onclick="go('learn-view')">
+      <div class="menu-card" role="button" tabindex="0" onclick="go('learn-view')" onkeydown="if(event.key==='Enter')go('learn-view')">
         <span class="ico">📚</span>
         <h3>开始学习</h3>
         <p>按主题学单词</p>
       </div>
-      <div class="menu-card" onclick="go('game-view')">
+      <div class="menu-card" role="button" tabindex="0" onclick="go('game-view')" onkeydown="if(event.key==='Enter')go('game-view')">
         <span class="ico">🎮</span>
         <h3>单词配对</h3>
         <p>翻牌闯关游戏</p>
       </div>
-      <div class="menu-card" onclick="go('dialog-view')">
+      <div class="menu-card" role="button" tabindex="0" onclick="go('dialog-view')" onkeydown="if(event.key==='Enter')go('dialog-view')">
         <span class="ico">💬</span>
         <h3>对话学习</h3>
         <p>日常情景对话</p>
       </div>
-      <div class="menu-card" onclick="go('notebook-view')">
+      <div class="menu-card" role="button" tabindex="0" onclick="go('notebook-view')" onkeydown="if(event.key==='Enter')go('notebook-view')">
         <span class="ico">📒</span>
         <h3>我的单词本</h3>
         <p>复习已学单词</p>
       </div>
-      <div class="menu-card" onclick="go('settings-view')">
+      <div class="menu-card" role="button" tabindex="0" onclick="go('settings-view')" onkeydown="if(event.key==='Enter')go('settings-view')">
         <span class="ico">⚙️</span>
         <h3>设置</h3>
         <p>音效与朗读</p>
@@ -457,7 +466,7 @@ body{
       <h2 class="page-title">📖 单词学习</h2>
     </div>
     <div class="theme-dropdown" id="theme-dropdown">
-      <button class="theme-select" onclick="toggleThemeDropdown()">
+      <button class="theme-select" onclick="toggleThemeDropdown()" aria-label="选择学习主题">
         <span id="theme-select-label">🐱 动物</span>
         <span class="arrow">▼</span>
       </button>
@@ -480,9 +489,9 @@ body{
   <!-- ============ 游戏视图 ============ -->
   <section class="view" id="game-view">
     <div class="topbar">
-      <button class="back-btn" onclick="go('home-view')">← 返回</button>
+      <button class="back-btn" onclick="exitGame()">← 返回</button>
       <h2 class="page-title">🎮 单词配对</h2>
-      <button class="back-btn" onclick="startGame()">🔄 重新开始</button>
+      <button class="back-btn" onclick="restartGame()">🔄 重新开始</button>
     </div>
     <div class="game-stats">
       <div class="stat-pill">🏷️ <span class="lbl">关卡</span><b id="g-level">1</b></div>
@@ -507,7 +516,7 @@ body{
     <!-- 主题筛选（仅全部模式显示） -->
     <div id="nb-filter-wrap" style="display:none;margin-bottom:16px">
       <div class="theme-dropdown" id="nb-theme-dropdown">
-        <button class="theme-select" onclick="toggleNbThemeDropdown()">
+        <button class="theme-select" onclick="toggleNbThemeDropdown()" aria-label="选择单词主题">
           <span id="nb-theme-label">📚 全部主题</span>
           <span class="arrow">▼</span>
         </button>
@@ -539,6 +548,15 @@ body{
         </div>
         <label class="switch">
           <input type="checkbox" id="set-autospeak" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="set-row">
+        <div class="name">减少动画
+          <small>关闭装饰动画与特效，更流畅省电</small>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="set-reduce-motion">
           <span class="slider"></span>
         </label>
       </div>
@@ -580,7 +598,7 @@ body{
       <h2 class="page-title">💬 对话学习</h2>
     </div>
     <div class="theme-dropdown" id="dialog-theme-dropdown">
-      <button class="theme-select" onclick="toggleDialogThemeDropdown()">
+      <button class="theme-select" onclick="toggleDialogThemeDropdown()" aria-label="选择对话主题">
         <span id="dialog-theme-select-label">👋 打招呼</span>
         <span class="arrow">▼</span>
       </button>
@@ -619,6 +637,19 @@ body{
     <div style="display:flex;gap:10px;justify-content:center">
       <button class="btn success small" onclick="nextLevel()">下一关 ➜</button>
       <button class="btn ghost small" onclick="closeModal()">回首页</button>
+    </div>
+  </div>
+</div>
+
+<!-- 通用确认弹窗 -->
+<div class="modal-mask" id="confirm-mask" onclick="if(event.target===this) closeConfirm(false)">
+  <div class="modal-box">
+    <div class="modal-icon" id="confirm-icon">🤔</div>
+    <div class="modal-title" id="confirm-title">确定吗？</div>
+    <div class="modal-desc" id="confirm-desc">此操作无法撤销。</div>
+    <div class="modal-actions">
+      <button class="btn ghost" onclick="closeConfirm(false)">再想想</button>
+      <button class="btn danger" id="confirm-ok-btn" onclick="closeConfirm(true)">确定</button>
     </div>
   </div>
 </div>
@@ -745,31 +776,45 @@ const wordDatabase = {
     {en:"pen",zh:"钢笔",emoji:"🖊️"},
     {en:"pencil",zh:"铅笔",emoji:"✏️"},
     {en:"bag",zh:"书包",emoji:"🎒"},
-    {en:"desk",zh:"书桌",emoji:"📋"},
-    {en:"chair",zh:"椅子",emoji:"🪑"},
     {en:"ruler",zh:"尺子",emoji:"📏"},
     {en:"eraser",zh:"橡皮",emoji:"🧽"},
     {en:"crayon",zh:"蜡笔",emoji:"🖍️"},
     {en:"paper",zh:"纸",emoji:"📄"},
     {en:"notebook",zh:"笔记本",emoji:"📒"},
+    {en:"pencil case",zh:"铅笔盒",emoji:"✏️"},
+    {en:"backpack",zh:"书包",emoji:"🎒"},
     {en:"school",zh:"学校",emoji:"🏫"},
-    {en:"blackboard",zh:"黑板",emoji:"⬛"},
     {en:"classroom",zh:"教室",emoji:"🏫"},
+    {en:"blackboard",zh:"黑板",emoji:"⬛"},
+    {en:"desk",zh:"书桌",emoji:"📋"},
+    {en:"chair",zh:"椅子",emoji:"🪑"},
+    {en:"teacher",zh:"老师",emoji:"👩‍🏫"},
+    {en:"student",zh:"学生",emoji:"👨‍🎓"},
+    {en:"class",zh:"班级",emoji:"🏫"},
+    {en:"lesson",zh:"课",emoji:"📖"}
+  ]},
+  home:{ name:{en:"Home",zh:"家居房间"}, icon:"🏠", words:[
+    {en:"home",zh:"家",emoji:"🏠"},
+    {en:"room",zh:"房间",emoji:"🛋️"},
+    {en:"bedroom",zh:"卧室",emoji:"🛏️"},
+    {en:"kitchen",zh:"厨房",emoji:"🍳"},
+    {en:"bed",zh:"床",emoji:"🛏️"},
+    {en:"table",zh:"桌子",emoji:"🪑"},
+    {en:"chair",zh:"椅子",emoji:"🪑"},
+    {en:"sofa",zh:"沙发",emoji:"🛋️"},
+    {en:"door",zh:"门",emoji:"🚪"},
     {en:"window",zh:"窗户",emoji:"🪟"},
     {en:"wall",zh:"墙",emoji:"🧱"},
-    {en:"door",zh:"门",emoji:"🚪"},
     {en:"light",zh:"灯",emoji:"💡"},
-    {en:"bed",zh:"床",emoji:"🛏️"},
-    {en:"box",zh:"盒子",emoji:"📦"},
-    {en:"telephone",zh:"电话",emoji:"☎️"},
-    {en:"computer",zh:"计算机",emoji:"💻"},
-    {en:"TV",zh:"电视",emoji:"📺"},
-    {en:"table",zh:"桌子",emoji:"🍽️"},
     {en:"lamp",zh:"台灯",emoji:"🕯️"},
+    {en:"TV",zh:"电视",emoji:"📺"},
+    {en:"computer",zh:"电脑",emoji:"💻"},
+    {en:"telephone",zh:"电话",emoji:"☎️"},
+    {en:"phone",zh:"手机",emoji:"📱"},
+    {en:"box",zh:"盒子",emoji:"📦"},
     {en:"picture",zh:"画",emoji:"🖼️"},
-    {en:"room",zh:"房间",emoji:"🛋️"},
-    {en:"pencil case",zh:"铅笔盒",emoji:"✏️"},
-    {en:"backpack",zh:"书包",emoji:"🎒"}
+    {en:"clock",zh:"时钟",emoji:"🕐"},
+    {en:"plant",zh:"植物",emoji:"🪴"}
   ]},
   body:{ name:{en:"Body",zh:"身体部位"}, icon:"👦", words:[
     {en:"head",zh:"头",emoji:"😊"},
@@ -1286,6 +1331,7 @@ const state = {
   // 设置
   sound:true,
   autospeak:true,
+  reduceMotion:false,
   rate:0.9,
   voice:"zh-CN-YunxiNeural",
   // 已学单词
@@ -1725,7 +1771,7 @@ function initThemeTabs(){
     const t = wordDatabase[key];
     const opt = document.createElement("div");
     opt.className = "theme-option" + (key===state.learnTheme?" active":"");
-    opt.innerHTML = t.icon + " " + t.name.zh;
+    opt.innerHTML = t.icon + " " + t.name.zh + ' <span class="theme-count">(' + t.words.length + ")</span>";
     opt.onclick = (e)=>{
       e.stopPropagation();
       state.learnTheme = key;
@@ -1809,6 +1855,32 @@ function initLearn(){
 }
 
 /* ====================== 配对游戏（改进版：记忆阶段） ====================== */
+function exitGame(){
+  const left = document.getElementById("g-left");
+  const remaining = left ? parseInt(left.textContent) : 0;
+  if(remaining === 0){ go("home-view"); return; }
+  showConfirm({
+    icon:"🚪",
+    title:"要退出游戏吗？",
+    desc:"当前关卡的进度不会保存哦～",
+    okText:"退出",
+    okClass:"ghost",
+    onOk:()=> go("home-view")
+  });
+}
+function restartGame(){
+  const left = document.getElementById("g-left");
+  const remaining = left ? parseInt(left.textContent) : 0;
+  if(remaining === 0){ startGame(); return; }
+  showConfirm({
+    icon:"🔄",
+    title:"重新开始本关？",
+    desc:"当前得分和连击会清零。",
+    okText:"重新开始",
+    okClass:"sky",
+    onOk:()=> startGame()
+  });
+}
 function startGame(){
   state.gScore = 0;
   state.gCombo = 0;
@@ -1985,6 +2057,8 @@ function renderNotebook(){
     btn.onclick = ()=>{
       nbState.mode = btn.dataset.mode;
       document.getElementById("nb-filter-wrap").style.display = nbState.mode==="all"?"block":"none";
+      // 切回全部模式时重置主题筛选为 all,避免上次选择的主题失效
+      if(nbState.mode === "all") nbState.theme = "all";
       renderNotebook();
     };
   });
@@ -2061,7 +2135,7 @@ function renderNbThemeOptions(){
     const t = wordDatabase[key];
     const opt = document.createElement("div");
     opt.className = "theme-option" + (nbState.theme===key?" active":"");
-    opt.innerHTML = t.icon + " " + t.name.zh + ` <span style="margin-left:auto;color:#9C8A78;font-size:14px">${t.words.length}词</span>`;
+    opt.innerHTML = t.icon + " " + t.name.zh + ' <span class="theme-count">(' + t.words.length + ')</span>';
     opt.onclick = (e)=>{
       e.stopPropagation();
       nbState.theme = key;
@@ -2088,10 +2162,18 @@ function emojiFallback(en){
   return r;
 }
 
+/* ====================== 减少动画 ====================== */
+function applyReduceMotion(){
+  const systemReduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reduce = state.reduceMotion || systemReduce;
+  document.body.classList.toggle("reduce-motion", reduce);
+}
+
 /* ====================== 设置 ====================== */
 function initSettings(){
   document.getElementById("set-sound").checked = state.sound;
   document.getElementById("set-autospeak").checked = state.autospeak;
+  document.getElementById("set-reduce-motion").checked = state.reduceMotion;
   document.getElementById("set-sound").onchange = e=>{
     state.sound = e.target.checked;
     saveState();
@@ -2099,6 +2181,11 @@ function initSettings(){
   document.getElementById("set-autospeak").onchange = e=>{
     state.autospeak = e.target.checked;
     saveState();
+  };
+  document.getElementById("set-reduce-motion").onchange = e=>{
+    state.reduceMotion = e.target.checked;
+    saveState();
+    applyReduceMotion();
   };
   document.querySelectorAll(".speed-btn[data-rate]").forEach(b=>{
     b.classList.toggle("active", parseFloat(b.dataset.rate)===state.rate);
@@ -2122,20 +2209,28 @@ function initSettings(){
   });
 }
 function resetProgress(){
-  if(!confirm("确定要重置所有学习进度和游戏得分吗？\n(已学单词、星星、宠物等级、成就徽章都会清空)")) return;
-  state.learned = {};
-  state.learnIndexes = {};
-  state.gLevel = 1;
-  state.gScore = 0;
-  state.stars = 0;
-  state.petLevel = 1;
-  state.petHappy = 50;
-  state.petType = "cat";
-  state.badges = {};
-  saveState();
-  toast("已重置 ✅");
-  renderHomeStats();
-  renderNotebook();
+  showConfirm({
+    icon:"⚠️",
+    title:"重置所有进度？",
+    desc:"已学单词、星星、宠物等级、成就徽章、游戏记录都会清空，无法恢复。",
+    okText:"重置",
+    okClass:"danger",
+    onOk:()=>{
+      state.learned = {};
+      state.learnIndexes = {};
+      state.gLevel = 1;
+      state.gScore = 0;
+      state.stars = 0;
+      state.petLevel = 1;
+      state.petHappy = 50;
+      state.petType = "cat";
+      state.badges = {};
+      saveState();
+      toast("已重置 ✅");
+      renderHomeStats();
+      renderNotebook();
+    }
+  });
 }
 
 /* ====================== 工具 ====================== */
@@ -2145,6 +2240,30 @@ function shuffle(arr){
     [arr[i],arr[j]]=[arr[j],arr[i]];
   }
 }
+/* ====================== 通用确认弹窗 ====================== */
+let _confirmCallback = null;
+function showConfirm({icon="🤔", title="确定吗？", desc="此操作无法撤销。", okText="确定", okClass="danger", onOk}){
+  document.getElementById("confirm-icon").textContent = icon;
+  document.getElementById("confirm-title").textContent = title;
+  document.getElementById("confirm-desc").textContent = desc;
+  const okBtn = document.getElementById("confirm-ok-btn");
+  okBtn.textContent = okText;
+  okBtn.className = "btn " + okClass;
+  _confirmCallback = onOk || null;
+  document.getElementById("confirm-mask").classList.add("show");
+  beep("click");
+}
+function closeConfirm(confirmed){
+  document.getElementById("confirm-mask").classList.remove("show");
+  if(confirmed && _confirmCallback){
+    const cb = _confirmCallback;
+    _confirmCallback = null;
+    cb();
+  }else{
+    _confirmCallback = null;
+  }
+}
+
 function toast(msg){
   const t = document.getElementById("toast");
   t.textContent = msg;
@@ -2218,6 +2337,7 @@ function buildBgDeco(){
 
 /* ====================== 启动 ====================== */
 loadState();
+applyReduceMotion();
 buildBgDeco();
 renderHomeStats();
 decayPetHappy();
