@@ -140,7 +140,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
 }
 .learn-word{font-size:56px;font-weight:700;font-family:"Baloo 2";color:var(--text)}
 .learn-zh{font-size:28px;color:var(--text-soft);margin-top:4px}
-.learn-actions{margin-top:24px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.learn-actions{margin-top:24px;display:flex;gap:10px;justify-content:center;flex-wrap:nowrap}
 .progress-dots{display:flex;gap:8px;justify-content:center;margin-top:18px}
 .dot{width:12px;height:12px;border-radius:50%;background:#e6d8c6}
 .dot.done{background:var(--success)}
@@ -471,8 +471,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       <div class="learn-actions">
         <button class="btn ghost small" onclick="prevWord()">← 上一词</button>
         <button class="btn sky small" onclick="speakCurrent()">🔊 听发音</button>
-        <button class="btn success small" onclick="nextWord(true)">认识啦 ✅</button>
-        <button class="btn ghost small" onclick="nextWord(false)">再学一次 🔁</button>
+        <button class="btn success small" onclick="nextWord()">认识啦 ✅</button>
       </div>
       <div class="progress-dots" id="learn-dots"></div>
     </div>
@@ -582,7 +581,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       </div>
     </div>
     <!-- 版本号：每次修改代码发布新版本时请更新此处 -->
-    <div class="version-tag">@Stong v1.1.3</div>
+    <div class="version-tag">@Stong v1.1.4</div>
   </section>
 
   <!-- ============ 对话学习视图 ============ -->
@@ -613,8 +612,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
         <button class="btn success small" onclick="speak(document.getElementById('dialog-a').textContent)" style="margin-top:8px">🔊 听发音</button>
       </div>
       <div class="learn-actions">
-        <button class="btn success small" onclick="nextDialog(true)">学会啦 ✅</button>
-        <button class="btn ghost small" onclick="nextDialog(false)">再学一次 🔁</button>
+        <button class="btn success small" onclick="nextDialog()">学会啦 ✅</button>
       </div>
       <div class="progress-dots" id="dialog-dots"></div>
     </div>
@@ -1685,13 +1683,9 @@ function playNextInQueue(){
   });
 }
 
-function nextDialog(known){
-  if(known){
-    beep("ok");
-    dState.index++;
-  }else{
-    beep("click");
-  }
+function nextDialog(){
+  beep("ok");
+  dState.index++;
   renderDialog();
 }
 function initDialog(){
@@ -1758,7 +1752,6 @@ function renderLearnDots(){
     wrap.appendChild(d);
   });
 }
-let _skipAutospeak = false;
 function renderLearnCard(){
   const words = getLearnThemeWords(state.learnTheme);
   const idx = getLearnIndex(state.learnTheme);
@@ -1780,34 +1773,19 @@ function renderLearnCard(){
   void em.offsetWidth;
   em.style.animation = "";
   renderLearnDots();
-  // 自动朗读(手动发音时跳过,避免重复)
-  if(_skipAutospeak){
-    _skipAutospeak = false;
-  }else if(state.autospeak){
+  if(state.autospeak){
     setTimeout(()=>speak(w.en), 300);
   }
 }
-function nextWord(known){
-  if(known){
-    const words = getLearnThemeWords(state.learnTheme);
-    const curIdx = getLearnIndex(state.learnTheme);
-    const w = words[curIdx];
-    state.learned[learnedKey(w.theme, w.en)] = {zh:w.zh,emoji:w.emoji};
-    saveState();
-    beep("ok");
-    addStars(1);
-    setLearnIndex(state.learnTheme, curIdx + 1);
-  }else{
-    beep("click");
-    const em = document.getElementById("learn-emoji");
-    em.style.animation = "none";
-    void em.offsetWidth;
-    em.style.animation = "popIn .5s ease, shakeWord .6s ease";
-    const words = getLearnThemeWords(state.learnTheme);
-    const idx = getLearnIndex(state.learnTheme);
-    speak(words[idx].en);
-    _skipAutospeak = true;
-  }
+function nextWord(){
+  const words = getLearnThemeWords(state.learnTheme);
+  const curIdx = getLearnIndex(state.learnTheme);
+  const w = words[curIdx];
+  state.learned[learnedKey(w.theme, w.en)] = {zh:w.zh,emoji:w.emoji};
+  saveState();
+  beep("ok");
+  addStars(1);
+  setLearnIndex(state.learnTheme, curIdx + 1);
   renderLearnCard();
 }
 function prevWord(){
