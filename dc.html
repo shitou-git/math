@@ -354,6 +354,41 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
 }
 .test-wrong-item .em{font-size:26px}
 .test-wrong-item b{font-family:"Baloo 2";color:var(--primary)}
+/* ====================== 音标学习 ====================== */
+.ipa-section{margin-bottom:22px}
+.ipa-section-title{
+  font-size:20px;color:var(--primary);font-weight:700;margin-bottom:10px;
+  display:flex;align-items:center;gap:8px;
+}
+.ipa-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.ipa-card{
+  background:var(--card);border-radius:14px;padding:10px 4px;text-align:center;
+  cursor:pointer;border:2.5px solid #f0e2d0;box-shadow:0 3px 0 #e6d8c6;
+  transition:transform .12s, box-shadow .12s, border-color .15s;user-select:none;
+}
+.ipa-card:hover{transform:translateY(-2px);border-color:var(--primary)}
+.ipa-card:active{transform:translateY(2px);box-shadow:0 1px 0 #e6d8c6}
+.ipa-sym{
+  font-size:22px;font-weight:700;color:var(--text);
+  font-family:"Lucida Sans Unicode","Arial Unicode MS",serif;
+}
+.ipa-name{font-size:12px;color:var(--text-soft);margin-top:2px}
+.ipa-example{font-size:12px;color:var(--primary);margin-top:2px;font-family:"Baloo 2"}
+.learn-ipa{
+  font-size:18px;color:var(--primary);font-style:italic;
+  margin-top:2px;letter-spacing:1px;
+  font-family:"Lucida Sans Unicode","Arial Unicode MS",serif;
+  user-select:none;cursor:pointer;display:inline-block;
+  transition:transform .12s;
+}
+.learn-ipa:hover{transform:scale(1.05)}
+@media (max-width:600px){
+  .ipa-grid{grid-template-columns:repeat(4,1fr);gap:8px}
+  .ipa-sym{font-size:18px}
+  .ipa-name{font-size:11px}
+  .ipa-example{font-size:11px}
+  .learn-ipa{font-size:16px}
+}
 @media (max-width:480px){
   .test-options{grid-template-columns:1fr;gap:10px}
   .test-prompt{font-size:80px}
@@ -505,6 +540,11 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
         <h3>我的单词本</h3>
         <p>复习已学单词</p>
       </div>
+      <div class="menu-card" role="button" tabindex="0" onclick="go('ipa-view')" onkeydown="if(event.key==='Enter')go('ipa-view')">
+        <span class="ico">🔤</span>
+        <h3>国际音标</h3>
+        <p>48个音标发音学习</p>
+      </div>
       <div class="menu-card" role="button" tabindex="0" onclick="go('settings-view')" onkeydown="if(event.key==='Enter')go('settings-view')">
         <span class="ico">⚙️</span>
         <h3>设置</h3>
@@ -529,6 +569,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
     <div class="learn-card">
       <span class="learn-emoji" id="learn-emoji">🐱</span>
       <div class="learn-word" id="learn-word">cat</div>
+      <div class="learn-ipa" id="learn-ipa" onclick="speakCurrent()" title="点击听发音">/kæt/</div>
       <div class="learn-zh" id="learn-zh">猫</div>
       <div class="learn-actions">
         <button class="btn ghost small" onclick="prevWord()">← 上一词</button>
@@ -643,7 +684,41 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       </div>
     </div>
     <!-- 版本号：每次修改代码发布新版本时请更新此处 -->
-    <div class="version-tag">@Stong v1.1.5</div>
+    <div class="version-tag">@Stong v1.1.6</div>
+  </section>
+
+  <!-- ============ 国际音标视图 ============ -->
+  <section class="view" id="ipa-view">
+    <div class="topbar">
+      <button class="back-btn" onclick="go('home-view')">← 返回</button>
+      <h2 class="page-title">🔤 国际音标</h2>
+      <button class="back-btn" style="visibility:hidden">占位</button>
+    </div>
+    <div style="max-width:680px;margin:0 auto">
+      <div class="ipa-section">
+        <div class="ipa-section-title">🔊 元音（20个）</div>
+        <div style="font-size:14px;color:var(--text-soft);margin-bottom:8px">长元音</div>
+        <div class="ipa-grid" id="ipa-long-vowels"></div>
+        <div style="font-size:14px;color:var(--text-soft);margin:12px 0 8px">短元音</div>
+        <div class="ipa-grid" id="ipa-short-vowels"></div>
+        <div style="font-size:14px;color:var(--text-soft);margin:12px 0 8px">双元音</div>
+        <div class="ipa-grid" id="ipa-diphthongs"></div>
+      </div>
+      <div class="ipa-section">
+        <div class="ipa-section-title">💥 辅音（28个）</div>
+        <div style="font-size:14px;color:var(--text-soft);margin-bottom:8px">爆破音</div>
+        <div class="ipa-grid" id="ipa-plosives"></div>
+        <div style="font-size:14px;color:var(--text-soft);margin:12px 0 8px">摩擦音</div>
+        <div class="ipa-grid" id="ipa-fricatives"></div>
+        <div style="font-size:14px;color:var(--text-soft);margin:12px 0 8px">破擦音</div>
+        <div class="ipa-grid" id="ipa-affricates"></div>
+        <div style="font-size:14px;color:var(--text-soft);margin:12px 0 8px">鼻音 / 舌侧音 / 半元音</div>
+        <div class="ipa-grid" id="ipa-others"></div>
+      </div>
+      <div style="text-align:center;color:var(--text-soft);font-size:14px;padding:10px 0 20px">
+        💡 点击音标卡片听发音
+      </div>
+    </div>
   </section>
 
   <!-- ============ 对话学习视图 ============ -->
@@ -1396,6 +1471,117 @@ const dialogDatabase = {
   ]}
 };
 
+/* ====================== 国际音标表 ====================== */
+const ipaData = {
+  longVowels:[
+    {sym:"iː", name:"长元音衣", example:"see"},
+    {sym:"ɜː", name:"长元音额", example:"bird"},
+    {sym:"ɑː", name:"长元音啊", example:"car"},
+    {sym:"ɔː", name:"长元音奥", example:"door"},
+    {sym:"uː", name:"长元音乌", example:"food"}
+  ],
+  shortVowels:[
+    {sym:"ɪ", name:"短元音衣", example:"big"},
+    {sym:"e", name:"短元音哎", example:"pen"},
+    {sym:"æ", name:"短元音哎", example:"cat"},
+    {sym:"ʌ", name:"短元音啊", example:"cup"},
+    {sym:"ɒ", name:"短元音奥", example:"hot"},
+    {sym:"ʊ", name:"短元音乌", example:"book"},
+    {sym:"ə", name:"轻元音额", example:"about"}
+  ],
+  diphthongs:[
+    {sym:"eɪ", name:"双元音诶", example:"day"},
+    {sym:"aɪ", name:"双元音爱", example:"my"},
+    {sym:"ɔɪ", name:"双元音奥衣", example:"boy"},
+    {sym:"aʊ", name:"双元音傲", example:"cow"},
+    {sym:"əʊ", name:"双元音欧", example:"go"},
+    {sym:"ɪə", name:"双元音衣额", example:"ear"},
+    {sym:"eə", name:"双元音哎额", example:"air"},
+    {sym:"ʊə", name:"双元音乌额", example:"tour"}
+  ],
+  plosives:[
+    {sym:"p", name:"清辅音坡", example:"pen"},
+    {sym:"b", name:"浊辅音波", example:"bag"},
+    {sym:"t", name:"清辅音特", example:"tea"},
+    {sym:"d", name:"浊辅音的", example:"dog"},
+    {sym:"k", name:"清辅音克", example:"cat"},
+    {sym:"ɡ", name:"浊辅音哥", example:"go"}
+  ],
+  fricatives:[
+    {sym:"f", name:"清辅音付", example:"fish"},
+    {sym:"v", name:"浊辅音呜", example:"very"},
+    {sym:"θ", name:"清辅音咬舌思", example:"think"},
+    {sym:"ð", name:"浊辅音咬舌日", example:"this"},
+    {sym:"s", name:"清辅音斯", example:"sun"},
+    {sym:"z", name:"浊辅音日", example:"zoo"},
+    {sym:"ʃ", name:"清辅音师", example:"she"},
+    {sym:"ʒ", name:"浊辅音日", example:"measure"},
+    {sym:"h", name:"清辅音喝", example:"hat"},
+    {sym:"r", name:"浊辅音日", example:"red"}
+  ],
+  affricates:[
+    {sym:"tʃ", name:"清辅音吃", example:"chair"},
+    {sym:"dʒ", name:"浊辅音知", example:"juice"},
+    {sym:"tr", name:"清辅音戳", example:"tree"},
+    {sym:"dr", name:"浊辅音捉", example:"drink"},
+    {sym:"ts", name:"清辅音次", example:"cats"},
+    {sym:"dz", name:"浊辅音子", example:"beds"}
+  ],
+  others:[
+    {sym:"m", name:"鼻音嗯", example:"mom"},
+    {sym:"n", name:"鼻音嗯", example:"nose"},
+    {sym:"ŋ", name:"后鼻音嗯", example:"sing"},
+    {sym:"l", name:"舌侧音了", example:"like"},
+    {sym:"w", name:"半元音我", example:"we"},
+    {sym:"j", name:"半元音耶", example:"yes"}
+  ]
+};
+
+// 常用单词音标字典（供学习卡片显示用，按英文单词小写索引）
+const wordIpaDict = {
+  cat:"kæt", dog:"dɔːɡ", pig:"pɪɡ", duck:"dʌk", rabbit:"ˈræbɪt",
+  bird:"bɜːd", fish:"fɪʃ", cow:"kaʊ", sheep:"ʃiːp", horse:"hɔːs",
+  hen:"hen", mouse:"maʊs", panda:"ˈpændə", tiger:"ˈtaɪɡə", lion:"ˈlaɪən",
+  monkey:"ˈmʌŋki", elephant:"ˈelɪfənt", bear:"beə", snake:"sneɪk",
+  apple:"ˈæpl", banana:"bəˈnɑːnə", orange:"ˈɒrɪndʒ", pear:"peə",
+  grape:"ɡreɪp", strawberry:"ˈstrɔːbri", watermelon:"ˈwɔːtəmelən",
+  peach:"piːtʃ", mango:"ˈmæŋɡəʊ", pineapple:"ˈpaɪnæpl", lemon:"ˈlemən",
+  cherry:"ˈtʃeri", fruit:"fruːt",
+  cake:"keɪk", egg:"eɡ", rice:"raɪs", noodles:"ˈnuːdlz", bread:"bred",
+  milk:"mɪlk", water:"ˈwɔːtə", juice:"dʒuːs", tea:"tiː",
+  hamburger:"ˈhæmbɜːɡə", ice:"aɪs", cream:"kriːm", cookie:"ˈkʊki",
+  vegetable:"ˈvedʒtəbl", meat:"miːt", chicken:"ˈtʃɪkɪn", salad:"ˈsæləd",
+  tofu:"ˈtəʊfuː", tomato:"təˈmɑːtəʊ", potato:"pəˈteɪtəʊ",
+  red:"red", blue:"bluː", green:"ɡriːn", yellow:"ˈjeləʊ", pink:"pɪŋk",
+  white:"waɪt", black:"blæk", purple:"ˈpɜːpl", brown:"braʊn", grey:"ɡreɪ",
+  gold:"ɡəʊld",
+  one:"wʌn", two:"tuː", three:"θriː", four:"fɔː", five:"faɪv",
+  six:"sɪks", seven:"ˈsevn", eight:"eɪt", nine:"naɪn", ten:"ten",
+  eleven:"ɪˈlevn", twelve:"twelv", hundred:"ˈhʌndrəd",
+  book:"bʊk", pen:"pen", pencil:"ˈpensl", ruler:"ˈruːlə", eraser:"ɪˈreɪzə",
+  bag:"bæɡ", desk:"desk", chair:"tʃeə", crayon:"ˈkreɪən",
+  school:"skuːl", teacher:"ˈtiːtʃə", student:"ˈstjuːdnt",
+  father:"ˈfɑːðə", mother:"ˈmʌðə", brother:"ˈbrʌðə", sister:"ˈsɪstə",
+  grandpa:"ˈɡrænpɑː", grandma:"ˈɡrænmɑː", family:"ˈfæməli", friend:"frend",
+  head:"hed", face:"feɪs", eye:"aɪ", ear:"ɪə", nose:"nəʊz",
+  mouth:"maʊθ", hand:"hænd", arm:"ɑːm", foot:"fʊt", leg:"leɡ",
+  run:"rʌn", jump:"dʒʌmp", swim:"swɪm", sing:"sɪŋ", dance:"dɑːns",
+  read:"riːd", write:"raɪt", draw:"drɔː", play:"pleɪ", sleep:"sliːp",
+  eat:"iːt", drink:"drɪŋk", walk:"wɔːk", talk:"tɔːk",
+  big:"bɪɡ", small:"smɔːl", long:"lɒŋ", short:"ʃɔːt", tall:"tɔːl",
+  old:"əʊld", new:"njuː", happy:"ˈhæpi", sad:"sæd", hot:"hɒt",
+  cold:"kəʊld", warm:"wɔːm", cool:"kuːl", fast:"fɑːst", slow:"sləʊ",
+  easy:"ˈiːzi", hard:"hɑːd", clean:"kliːn", dirty:"ˈdɜːti",
+  bad:"bæd", beautiful:"ˈbjuːtɪfl", pretty:"ˈprɪti", cute:"kjuːt", young:"jʌŋ"
+};
+
+// 根据单词查音标，找不到返回空串
+function getWordIpa(word){
+  if(!word) return "";
+  const key = word.toLowerCase().trim();
+  return wordIpaDict[key] || "";
+}
+
 /* ====================== 全局状态 ====================== */
 const state = {
   learnTheme:"animals",
@@ -1543,6 +1729,7 @@ function go(viewId){
   if(viewId==="game-view") startGame();
   if(viewId==="dialog-view") initDialog();
   if(viewId==="notebook-view") renderNotebook();
+  if(viewId==="ipa-view") initIpaView();
   if(viewId==="settings-view") initSettings();
   if(viewId==="home-view") renderHomeStats();
 }
@@ -1879,6 +2066,15 @@ function renderLearnCard(){
   document.getElementById("learn-emoji").textContent = w.emoji;
   document.getElementById("learn-word").textContent = w.en;
   document.getElementById("learn-zh").textContent = w.zh;
+  // 音标显示
+  const ipa = getWordIpa(w.en);
+  const ipaEl = document.getElementById("learn-ipa");
+  if(ipa){
+    ipaEl.textContent = "/" + ipa + "/";
+    ipaEl.style.display = "inline-block";
+  }else{
+    ipaEl.style.display = "none";
+  }
   // 触发重新动画
   const em = document.getElementById("learn-emoji");
   em.style.animation = "none";
@@ -1928,6 +2124,36 @@ function prevWord(){
 function initLearn(){
   initThemeTabs();
   renderLearnCard();
+}
+
+/* ====================== 国际音标 ====================== */
+// 渲染一组音标卡片到指定容器
+function renderIpaGroup(containerId, group){
+  const wrap = document.getElementById(containerId);
+  if(!wrap) return;
+  wrap.innerHTML = "";
+  group.forEach(item=>{
+    const card = document.createElement("div");
+    card.className = "ipa-card";
+    card.innerHTML =
+      '<div class="ipa-sym">/' + item.sym + '/</div>' +
+      '<div class="ipa-name">' + item.name + '</div>' +
+      '<div class="ipa-example">' + item.example + '</div>';
+    card.onclick = ()=>{
+      // 点击发音：读示例单词
+      speak(item.example);
+    };
+    wrap.appendChild(card);
+  });
+}
+function initIpaView(){
+  renderIpaGroup("ipa-long-vowels", ipaData.longVowels);
+  renderIpaGroup("ipa-short-vowels", ipaData.shortVowels);
+  renderIpaGroup("ipa-diphthongs", ipaData.diphthongs);
+  renderIpaGroup("ipa-plosives", ipaData.plosives);
+  renderIpaGroup("ipa-fricatives", ipaData.fricatives);
+  renderIpaGroup("ipa-affricates", ipaData.affricates);
+  renderIpaGroup("ipa-others", ipaData.others);
 }
 
 /* ====================== 学习小测验 ====================== */
