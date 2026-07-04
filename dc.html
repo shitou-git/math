@@ -763,10 +763,12 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
           <small>Edge-TTS 云端发音人</small>
         </div>
         <div class="speed-group" id="voice-group">
-          <button class="speed-btn" data-voice="zh-CN-YunxiNeural">云希</button>
-          <button class="speed-btn" data-voice="zh-CN-XiaoxiaoNeural">晓晓</button>
-          <button class="speed-btn" data-voice="zh-CN-YunyangNeural">云扬</button>
+          <button class="speed-btn" data-voice="en-US-JennyNeural">Jenny 推荐</button>
           <button class="speed-btn" data-voice="en-US-AriaNeural">Aria</button>
+          <button class="speed-btn" data-voice="en-US-GuyNeural">Guy 男声</button>
+          <button class="speed-btn" data-voice="en-US-AmberNeural">Amber 活泼</button>
+          <button class="speed-btn" data-voice="zh-CN-YunxiNeural">云希 中文</button>
+          <button class="speed-btn" data-voice="zh-CN-XiaoxiaoNeural">晓晓 中文</button>
           <button class="speed-btn" data-voice="browser">浏览器</button>
         </div>
       </div>
@@ -778,7 +780,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       </div>
     </div>
     <!-- 版本号：每次修改代码发布新版本时请更新此处 -->
-    <div class="version-tag">@Stong v1.2.2</div>
+    <div class="version-tag">@Stong v1.2.3</div>
   </section>
 
   <!-- ============ 国际音标视图 ============ -->
@@ -1711,7 +1713,7 @@ const state = {
   autospeak:true,
   reduceMotion:false,
   rate:0.9,
-  voice:"zh-CN-YunxiNeural",
+  voice:"en-US-JennyNeural",
   // 已学单词
   learned:{},
   // 学习进度(按主题)
@@ -1821,7 +1823,7 @@ function loadState(){
       state.sound = obj.settings.sound !== false;
       state.autospeak = obj.settings.autospeak !== false;
       state.rate = obj.settings.rate || 0.9;
-      state.voice = obj.settings.voice || "zh-CN-YunxiNeural";
+      state.voice = obj.settings.voice || "en-US-JennyNeural";
     }
     if(obj.stars) state.stars = obj.stars;
     if(obj.badges) state.badges = obj.badges;
