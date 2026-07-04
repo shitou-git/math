@@ -787,7 +787,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       </div>
     </div>
     <!-- 版本号：每次修改代码发布新版本时请更新此处 -->
-    <div class="version-tag">@Stong v1.3.4</div>
+    <div class="version-tag">@Stong v1.3.5</div>
   </section>
 
   <!-- ============ 国际音标视图 ============ -->
@@ -2420,6 +2420,44 @@ function playIpaSound(sym){
   _ipaAudio.play().catch(()=>{});
   return true;
 }
+// 用中文近示文字朗读音标名称
+function speakIpaName(name){
+  stopSpeak();
+  const zhVoice = "zh-CN-YunxiNeural";
+  const text = name;
+  const cachedUrl = _ttsUrlCache.get(text + "|" + zhVoice);
+  if(cachedUrl){
+    const audio = getTtsAudio();
+    audio.src = cachedUrl;
+    audio.play().catch(()=>{});
+    return;
+  }
+  const url = `${TTS_ENDPOINT}?text=${encodeURIComponent(text)}&voice=${encodeURIComponent(zhVoice)}`;
+  fetch(url)
+    .then(r=>{
+      if(!r.ok) throw new Error("TTS HTTP "+r.status);
+      return r.blob();
+    })
+    .then(blob=>{
+      if(blob.size < 200) throw new Error("音频为空");
+      const objUrl = URL.createObjectURL(blob);
+      cacheTtsUrl(text + "|" + zhVoice, objUrl);
+      const audio = getTtsAudio();
+      audio.src = objUrl;
+      audio.play().catch(()=>{});
+    })
+    .catch(()=>{
+      if("speechSynthesis" in window){
+        try{
+          const u = new SpeechSynthesisUtterance(text);
+          u.lang = "zh-CN";
+          u.rate = state.rate;
+          window.speechSynthesis.cancel();
+          window.speechSynthesis.speak(u);
+        }catch(e){}
+      }
+    });
+}
 // 渲染一组音标卡片到指定容器
 function renderIpaGroup(containerId, group){
   const wrap = document.getElementById(containerId);
@@ -2433,10 +2471,7 @@ function renderIpaGroup(containerId, group){
       '<div class="ipa-name">' + item.name + '</div>' +
       '<div class="ipa-example">' + item.example + '</div>';
     card.onclick = ()=>{
-      // 点击发音：优先播放音标音频，无音频时回退读示例单词
-      if(!playIpaSound(item.sym)){
-        speak(item.example);
-      }
+      speakIpaName(item.name);
     };
     wrap.appendChild(card);
   });
