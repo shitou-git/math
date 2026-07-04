@@ -1913,6 +1913,24 @@ function _setSpeaking(active){
   updateNextWordBtn();
 }
 
+// 解锁音频自动播放（微信内置浏览器等 WebView 需要在用户手势中首次触发 play()）
+let _audioUnlocked = false;
+function unlockAudioPlayback(){
+  if(_audioUnlocked) return;
+  try{
+    const a = new Audio();
+    // 一段极短的静音 wav，用于建立"用户激活"状态
+    a.src = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
+    a.volume = 0;
+    const p = a.play();
+    if(p && p.then){
+      p.then(()=>{ _audioUnlocked = true; }).catch(()=>{});
+    }else{
+      _audioUnlocked = true;
+    }
+  }catch(e){}
+}
+
 function speak(text, onEnd){
   if(!text){ onEnd && onEnd(); return; }
   stopSpeak();
@@ -1952,24 +1970,51 @@ function speak(text, onEnd){
       const audio = new Audio(objUrl);
       audio.playbackRate = state.rate;
       _ttsAudio = audio;
+      // 超时兜底：某些 WebView 下 onended/onerror 都不触发，避免队列卡死
+      let finished = false;
+      const finishOnce = ()=>{
+        if(finished) return;
+        finished = true;
+        clearTimeout(_ttsTimeoutId);
+        endCb();
+      };
       audio.onended = ()=>{
         URL.revokeObjectURL(objUrl);
         _ttsAudio = null;
-        endCb();
+        finishOnce();
       };
       audio.onerror = ()=>{
         URL.revokeObjectURL(objUrl);
         _ttsAudio = null;
         console.warn("音频播放失败");
-        endCb();
+        finishOnce();
       };
-      const playPromise = audio.play();
-      if(playPromise && playPromise.catch){
-        playPromise.catch(err=>{
-          console.warn("播放被拦截:", err.message);
-          endCb();
-        });
-      }
+      const _ttsTimeoutId = setTimeout(()=>{
+        console.warn("音频播放超时，强制结束");
+        try{ audio.pause(); }catch(e){}
+        URL.revokeObjectURL(objUrl);
+        _ttsAudio = null;
+        finishOnce();
+      }, 15000);
+      // play() 在微信内置浏览器等环境下可能被拦截（异步回调中手势上下文已丢失）
+      // 重试几次，往往第二次就能成功；全部失败再回调，避免静音快切
+      let _playRetries = 0;
+      const _tryPlay = ()=>{
+        const p = audio.play();
+        if(p && p.then){
+          p.then(()=>{ /* 已开始播放 */ }).catch(err=>{
+            console.warn("播放被拦截(" + (_playRetries+1) + "):", err.message);
+            if(_playRetries < 4){
+              _playRetries++;
+              setTimeout(_tryPlay, 300 * _playRetries);
+            }else{
+              console.warn("重试仍失败，跳过本条");
+              finishOnce();
+            }
+          });
+        }
+      };
+      _tryPlay();
     })
     .catch(err=>{
       _ttsLoading = false;
@@ -2801,6 +2846,8 @@ function startNbPlay(){
     toast("没有可播放的单词");
     return;
   }
+  // 微信内置浏览器等环境需要在用户手势中"解锁"音频，否则后续异步 play() 会被拦截导致静音快切
+  unlockAudioPlayback();
   // 生成随机播放队列
   const indices = nbState.words.map((_, i) => i);
   shuffle(indices);
