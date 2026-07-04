@@ -780,7 +780,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       </div>
     </div>
     <!-- 版本号：每次修改代码发布新版本时请更新此处 -->
-    <div class="version-tag">@Stong v1.2.3</div>
+    <div class="version-tag">@Stong v1.2.4</div>
   </section>
 
   <!-- ============ 国际音标视图 ============ -->
@@ -3030,6 +3030,8 @@ function initSettings(){
       b.classList.add("active");
       state.voice = b.dataset.voice;
       saveState();
+      // 切换发音人后清空 TTS 缓存，否则会播放旧发音人的缓存音频
+      _ttsUrlCache.clear();
       speak("hello");
     };
   });
