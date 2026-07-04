@@ -523,13 +523,31 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
 /* 单词本播放按钮 */
 .nb-play-btn{background:linear-gradient(135deg,#43E97B,#38F9D7);color:#fff;font-weight:700}
 .nb-play-btn.playing{background:linear-gradient(135deg,#FF6B6B,#FF8E53)}
-/* 播放高亮卡片 */
-.nb-card.nb-card-playing{
-  background:#D4F5D4 !important;
-  border-color:#43E97B;
-  box-shadow:0 4px 0 #38F9D7, 0 0 0 3px rgba(67,233,123,.3);
-  transform:scale(1.05);
+/* 单词本播放弹窗 */
+.nb-play-box{max-width:420px;width:92%;padding:28px 24px}
+.nb-play-card{
+  background:linear-gradient(135deg,#D4F5D4,#E8FFE8);
+  border-radius:24px;padding:24px 16px;text-align:center;
+  margin:16px 0;border:3px solid #43E97B;
+  box-shadow:0 6px 0 #38F9D7;
+  animation:popIn .4s ease;
 }
+.nb-play-card .em{font-size:72px;display:block;margin-bottom:8px}
+.nb-play-card .em.num-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:80px;height:80px;border-radius:50%;
+  background:linear-gradient(135deg,#FF6B6B,#FF8E53);
+  color:#fff;font-weight:900;font-size:40px;font-family:"Baloo 2";
+  box-shadow:0 4px 0 rgba(0,0,0,.15);
+}
+.nb-play-card .em.num-badge.blue{background:linear-gradient(135deg,#4FACFE,#00F2FE)}
+.nb-play-card .em.num-badge.green{background:linear-gradient(135deg,#43E97B,#38F9D7)}
+.nb-play-card .em.num-badge.purple{background:linear-gradient(135deg,#A18CD1,#FBC2EB)}
+.nb-play-card .em.num-badge.yellow{background:linear-gradient(135deg,#F6D365,#FDA085)}
+.nb-play-card .em.num-badge.pink{background:linear-gradient(135deg,#FF9A9E,#FECFEF)}
+.nb-play-card .en{font-size:32px;font-weight:700;font-family:"Baloo 2";color:var(--text)}
+.nb-play-card .ipa{font-size:16px;color:var(--primary);font-style:italic;margin-top:4px;font-family:"Lucida Sans Unicode","Arial Unicode MS",serif}
+.nb-play-card .zh{font-size:20px;color:var(--text-soft);margin-top:4px}
 /* 版本号 */
 .version-tag{
   text-align:center;color:var(--text-soft);font-size:13px;
@@ -760,7 +778,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       </div>
     </div>
     <!-- 版本号：每次修改代码发布新版本时请更新此处 -->
-    <div class="version-tag">@Stong v1.1.9</div>
+    <div class="version-tag">@Stong v1.2.0</div>
   </section>
 
   <!-- ============ 国际音标视图 ============ -->
@@ -869,6 +887,18 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       <div style="text-align:center">
         <button class="btn success" onclick="continueAfterQuiz()">继续学习 ➜</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- 单词本随机播放弹窗 -->
+<div class="modal-mask" id="nb-play-mask" onclick="if(event.target===this) stopNbPlay()">
+  <div class="modal-box nb-play-box">
+    <div class="test-title">🔊 随机播放</div>
+    <div class="test-progress-text" id="nb-play-count">第 1 个</div>
+    <div id="nb-play-card-wrap"></div>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:8px">
+      <button class="btn ghost small" onclick="stopNbPlay()">⏹ 停止</button>
     </div>
   </div>
 </div>
@@ -2698,7 +2728,7 @@ function renderNotebook(){
       ? `<span class="em num-badge nb ${numColor}">${w.emoji}</span>`
       : `<span class="em">${w.emoji || '🔤'}</span>`;
     html += `
-      <div class="nb-card ${w.learned?'nb-card-known':''}" id="nb-card-${i}" onclick="nbCardClick('${w.en}')" title="${w.zh}">
+      <div class="nb-card ${w.learned?'nb-card-known':''}" onclick="nbCardClick('${w.en}')" title="${w.zh}">
         ${emHtml}
         <div class="en">${w.en}</div>
         ${ipaHtml}
@@ -2779,6 +2809,7 @@ function startNbPlay(){
   const btn = document.getElementById("nb-play-btn");
   btn.textContent = "⏹ 停止";
   btn.classList.add("playing");
+  document.getElementById("nb-play-mask").classList.add("show");
   playNbNext();
 }
 function stopNbPlay(){
@@ -2788,8 +2819,7 @@ function stopNbPlay(){
   const btn = document.getElementById("nb-play-btn");
   btn.textContent = "▶ 播放";
   btn.classList.remove("playing");
-  // 移除高亮
-  document.querySelectorAll(".nb-card-playing").forEach(el => el.classList.remove("nb-card-playing"));
+  document.getElementById("nb-play-mask").classList.remove("show");
 }
 function playNbNext(){
   if(!nbState.playing) return;
@@ -2801,22 +2831,25 @@ function playNbNext(){
   const cardIdx = nbState.playQueue[nbState.playPos];
   const w = nbState.words[cardIdx];
   if(!w){ nbState.playPos++; playNbNext(); return; }
-  // 移除上一个高亮
-  document.querySelectorAll(".nb-card-playing").forEach(el => el.classList.remove("nb-card-playing"));
-  // 高亮当前卡片
-  const cardEl = document.getElementById("nb-card-" + cardIdx);
-  if(cardEl){
-    cardEl.classList.add("nb-card-playing");
-    // 平滑滚动到卡片
-    cardEl.scrollIntoView({behavior:"smooth", block:"center"});
-  }
+  // 更新计数
+  document.getElementById("nb-play-count").textContent = "第 " + (nbState.playPos + 1) + " / " + nbState.playQueue.length + " 个";
+  // 渲染弹窗内的单词卡片
+  const isNum = /^\d+$/.test(w.emoji);
+  const numColors = ["","blue","green","purple","yellow","pink"];
+  const numColor = isNum ? (numColors[parseInt(w.emoji) % numColors.length] || "") : "";
+  const emHtml = isNum
+    ? `<span class="em num-badge ${numColor}">${w.emoji}</span>`
+    : `<span class="em">${w.emoji || '🔤'}</span>`;
+  const ipaHtml = w.ipa ? `<div class="ipa">/${w.ipa}/</div>` : "";
+  document.getElementById("nb-play-card-wrap").innerHTML =
+    `<div class="nb-play-card">${emHtml}<div class="en">${w.en}</div>${ipaHtml}<div class="zh">${w.zh}</div></div>`;
   // 播放发音，用 token 确保只有最新回调才能触发下一个
   const token = ++nbState.playToken;
   speak(w.en, ()=>{
     if(!nbState.playing || token !== nbState.playToken) return;
     nbState.playPos++;
-    // 间隔 600ms 后播放下一个
-    setTimeout(playNbNext, 600);
+    // 间隔 800ms 后播放下一个
+    setTimeout(playNbNext, 800);
   });
 }
 function emojiFallback(en){
