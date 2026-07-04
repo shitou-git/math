@@ -2629,7 +2629,8 @@ const nbState = {
   words:[],         // 当前渲染的单词列表
   playing:false,    // 是否正在播放
   playQueue:[],     // 播放队列（索引数组）
-  playPos:0         // 当前播放位置
+  playPos:0,        // 当前播放位置
+  playToken:0       // 播放令牌，防止旧回调干扰
 };
 function renderNotebook(){
   // 统计总数
@@ -2697,7 +2698,7 @@ function renderNotebook(){
       ? `<span class="em num-badge nb ${numColor}">${w.emoji}</span>`
       : `<span class="em">${w.emoji || '🔤'}</span>`;
     html += `
-      <div class="nb-card ${w.learned?'nb-card-known':''}" id="nb-card-${i}" onclick="speak('${w.en}')" title="${w.zh}">
+      <div class="nb-card ${w.learned?'nb-card-known':''}" id="nb-card-${i}" onclick="nbCardClick('${w.en}')" title="${w.zh}">
         ${emHtml}
         <div class="en">${w.en}</div>
         ${ipaHtml}
@@ -2752,6 +2753,11 @@ function renderNbThemeOptions(){
   }
 }
 /* ----- 单词本随机播放 ----- */
+function nbCardClick(en){
+  // 播放期间点击卡片不触发单独发音，避免冲突
+  if(nbState.playing) return;
+  speak(en);
+}
 function toggleNbPlay(){
   if(nbState.playing){
     stopNbPlay();
@@ -2777,6 +2783,7 @@ function startNbPlay(){
 }
 function stopNbPlay(){
   nbState.playing = false;
+  nbState.playToken++;  // 使所有旧回调失效
   stopSpeak();
   const btn = document.getElementById("nb-play-btn");
   btn.textContent = "▶ 播放";
@@ -2803,9 +2810,10 @@ function playNbNext(){
     // 平滑滚动到卡片
     cardEl.scrollIntoView({behavior:"smooth", block:"center"});
   }
-  // 播放发音
+  // 播放发音，用 token 确保只有最新回调才能触发下一个
+  const token = ++nbState.playToken;
   speak(w.en, ()=>{
-    if(!nbState.playing) return;
+    if(!nbState.playing || token !== nbState.playToken) return;
     nbState.playPos++;
     // 间隔 600ms 后播放下一个
     setTimeout(playNbNext, 600);
