@@ -520,6 +520,16 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
   padding:6px 14px;border-radius:999px;font-size:15px;
 }
 .speed-btn.active{background:var(--primary);color:#fff}
+/* 单词本播放按钮 */
+.nb-play-btn{background:linear-gradient(135deg,#43E97B,#38F9D7);color:#fff;font-weight:700}
+.nb-play-btn.playing{background:linear-gradient(135deg,#FF6B6B,#FF8E53)}
+/* 播放高亮卡片 */
+.nb-card.nb-card-playing{
+  background:#D4F5D4 !important;
+  border-color:#43E97B;
+  box-shadow:0 4px 0 #38F9D7, 0 0 0 3px rgba(67,233,123,.3);
+  transform:scale(1.05);
+}
 /* 版本号 */
 .version-tag{
   text-align:center;color:var(--text-soft);font-size:13px;
@@ -671,6 +681,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
     <div style="display:flex;justify-content:center;gap:8px;margin-bottom:14px;flex-wrap:wrap">
       <button class="speed-btn nb-mode active" data-mode="learned">已学单词 <span id="nb-learned-count">0</span></button>
       <button class="speed-btn nb-mode" data-mode="all">全部单词 <span id="nb-all-count">0</span></button>
+      <button class="speed-btn nb-play-btn" id="nb-play-btn" onclick="toggleNbPlay()">▶ 播放</button>
     </div>
     <!-- 主题筛选（仅全部模式显示） -->
     <div id="nb-filter-wrap" style="display:none;margin-bottom:16px">
@@ -749,7 +760,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       </div>
     </div>
     <!-- 版本号：每次修改代码发布新版本时请更新此处 -->
-    <div class="version-tag">@Stong v1.1.8</div>
+    <div class="version-tag">@Stong v1.1.9</div>
   </section>
 
   <!-- ============ 国际音标视图 ============ -->
@@ -2614,7 +2625,11 @@ function closeModal(){
 /* ====================== 单词本 ====================== */
 const nbState = {
   mode:"learned",   // "learned" 或 "all"
-  theme:"all"       // 主题筛选，all=全部主题
+  theme:"all",      // 主题筛选，all=全部主题
+  words:[],         // 当前渲染的单词列表
+  playing:false,    // 是否正在播放
+  playQueue:[],     // 播放队列（索引数组）
+  playPos:0         // 当前播放位置
 };
 function renderNotebook(){
   // 统计总数
@@ -2627,6 +2642,7 @@ function renderNotebook(){
   document.querySelectorAll(".nb-mode").forEach(btn=>{
     btn.classList.toggle("active", btn.dataset.mode===nbState.mode);
     btn.onclick = ()=>{
+      if(nbState.playing) stopNbPlay();
       nbState.mode = btn.dataset.mode;
       document.getElementById("nb-filter-wrap").style.display = nbState.mode==="all"?"block":"none";
       // 切回全部模式时重置主题筛选为 all,避免上次选择的主题失效
@@ -2671,7 +2687,7 @@ function renderNotebook(){
   }
 
   let html = `<div class="notebook-grid">`;
-  words.forEach(w=>{
+  words.forEach((w, i)=>{
     const check = w.learned ? "✅" : "";
     const ipaHtml = w.ipa ? `<div class="ipa">/${w.ipa}/</div>` : "";
     const isNum = /^\d+$/.test(w.emoji);
@@ -2681,7 +2697,7 @@ function renderNotebook(){
       ? `<span class="em num-badge nb ${numColor}">${w.emoji}</span>`
       : `<span class="em">${w.emoji || '🔤'}</span>`;
     html += `
-      <div class="nb-card ${w.learned?'nb-card-known':''}" onclick="speak('${w.en}')" title="${w.zh}">
+      <div class="nb-card ${w.learned?'nb-card-known':''}" id="nb-card-${i}" onclick="speak('${w.en}')" title="${w.zh}">
         ${emHtml}
         <div class="en">${w.en}</div>
         ${ipaHtml}
@@ -2690,6 +2706,8 @@ function renderNotebook(){
   });
   html += `</div>`;
   wrap.innerHTML = html;
+  // 保存当前单词列表供播放使用
+  nbState.words = words;
 }
 function toggleNbThemeDropdown(){
   document.getElementById("nb-theme-dropdown").classList.toggle("open");
@@ -2704,6 +2722,7 @@ function renderNbThemeOptions(){
   allOpt.innerHTML = "📚 全部主题";
   allOpt.onclick = (e)=>{
     e.stopPropagation();
+    if(nbState.playing) stopNbPlay();
     nbState.theme = "all";
     label.textContent = "📚 全部主题";
     document.getElementById("nb-theme-dropdown").classList.remove("open");
@@ -2718,6 +2737,7 @@ function renderNbThemeOptions(){
     opt.innerHTML = t.icon + " " + t.name.zh + ' <span class="theme-count">(' + t.words.length + ')</span>';
     opt.onclick = (e)=>{
       e.stopPropagation();
+      if(nbState.playing) stopNbPlay();
       nbState.theme = key;
       label.textContent = t.icon + " " + t.name.zh;
       document.getElementById("nb-theme-dropdown").classList.remove("open");
@@ -2730,6 +2750,66 @@ function renderNbThemeOptions(){
   }else{
     label.textContent = wordDatabase[nbState.theme].icon + " " + wordDatabase[nbState.theme].name.zh;
   }
+}
+/* ----- 单词本随机播放 ----- */
+function toggleNbPlay(){
+  if(nbState.playing){
+    stopNbPlay();
+  }else{
+    startNbPlay();
+  }
+}
+function startNbPlay(){
+  if(!nbState.words || nbState.words.length === 0){
+    toast("没有可播放的单词");
+    return;
+  }
+  // 生成随机播放队列
+  const indices = nbState.words.map((_, i) => i);
+  shuffle(indices);
+  nbState.playQueue = indices;
+  nbState.playPos = 0;
+  nbState.playing = true;
+  const btn = document.getElementById("nb-play-btn");
+  btn.textContent = "⏹ 停止";
+  btn.classList.add("playing");
+  playNbNext();
+}
+function stopNbPlay(){
+  nbState.playing = false;
+  stopSpeak();
+  const btn = document.getElementById("nb-play-btn");
+  btn.textContent = "▶ 播放";
+  btn.classList.remove("playing");
+  // 移除高亮
+  document.querySelectorAll(".nb-card-playing").forEach(el => el.classList.remove("nb-card-playing"));
+}
+function playNbNext(){
+  if(!nbState.playing) return;
+  if(nbState.playPos >= nbState.playQueue.length){
+    // 播放完毕，重新随机继续
+    shuffle(nbState.playQueue);
+    nbState.playPos = 0;
+  }
+  const cardIdx = nbState.playQueue[nbState.playPos];
+  const w = nbState.words[cardIdx];
+  if(!w){ nbState.playPos++; playNbNext(); return; }
+  // 移除上一个高亮
+  document.querySelectorAll(".nb-card-playing").forEach(el => el.classList.remove("nb-card-playing"));
+  // 高亮当前卡片
+  const cardEl = document.getElementById("nb-card-" + cardIdx);
+  if(cardEl){
+    cardEl.classList.add("nb-card-playing");
+    // 平滑滚动到卡片
+    cardEl.scrollIntoView({behavior:"smooth", block:"center"});
+  }
+  // 播放发音
+  speak(w.en, ()=>{
+    if(!nbState.playing) return;
+    nbState.playPos++;
+    // 间隔 600ms 后播放下一个
+    setTimeout(playNbNext, 600);
+  });
 }
 function emojiFallback(en){
   // 从词库中找回 emoji
