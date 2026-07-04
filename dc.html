@@ -787,7 +787,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       </div>
     </div>
     <!-- 版本号：每次修改代码发布新版本时请更新此处 -->
-    <div class="version-tag">@Stong v1.3.3</div>
+    <div class="version-tag">@Stong v1.3.4</div>
   </section>
 
   <!-- ============ 国际音标视图 ============ -->
@@ -815,6 +815,8 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
         <div class="ipa-grid" id="ipa-fricatives"></div>
         <div style="font-size:14px;color:var(--text-soft);margin:12px 0 8px">破擦音</div>
         <div class="ipa-grid" id="ipa-affricates"></div>
+        <div style="font-size:14px;color:var(--text-soft);margin:12px 0 8px">辅音连缀 <span style="font-size:12px;color:var(--text-muted)">（tr/dr/ts/dz 为两个辅音快速连读，国际音标中不作为独立音素）</span></div>
+        <div class="ipa-grid" id="ipa-clusters"></div>
         <div style="font-size:14px;color:var(--text-soft);margin:12px 0 8px">鼻音 / 舌侧音 / 半元音</div>
         <div class="ipa-grid" id="ipa-others"></div>
       </div>
@@ -1641,7 +1643,9 @@ const ipaData = {
   ],
   affricates:[
     {sym:"tʃ", name:"清辅音吃", example:"chair"},
-    {sym:"dʒ", name:"浊辅音知", example:"juice"},
+    {sym:"dʒ", name:"浊辅音知", example:"juice"}
+  ],
+  clusters:[
     {sym:"tr", name:"清辅音戳", example:"tree"},
     {sym:"dr", name:"浊辅音捉", example:"drink"},
     {sym:"ts", name:"清辅音次", example:"cats"},
@@ -2402,6 +2406,7 @@ const ipaAudioMap = {
   "ð":"ipa-audio/dh.mp3", "s":"ipa-audio/s.mp3", "z":"ipa-audio/z.mp3",
   "ʃ":"ipa-audio/sh.mp3", "ʒ":"ipa-audio/zh.mp3", "h":"ipa-audio/h.mp3",
   "r":"ipa-audio/r.mp3", "tʃ":"ipa-audio/tsh.mp3", "dʒ":"ipa-audio/dzh.mp3",
+  "tr":"ipa-audio/tr.mp3", "dr":"ipa-audio/dr.mp3", "ts":"ipa-audio/ts.mp3", "dz":"ipa-audio/dz.mp3",
   "m":"ipa-audio/m.mp3", "n":"ipa-audio/n.mp3", "ŋ":"ipa-audio/ng.mp3",
   "l":"ipa-audio/l.mp3", "w":"ipa-audio/w.mp3", "j":"ipa-audio/j.mp3"
 };
@@ -2443,6 +2448,7 @@ function initIpaView(){
   renderIpaGroup("ipa-plosives", ipaData.plosives);
   renderIpaGroup("ipa-fricatives", ipaData.fricatives);
   renderIpaGroup("ipa-affricates", ipaData.affricates);
+  renderIpaGroup("ipa-clusters", ipaData.clusters);
   renderIpaGroup("ipa-others", ipaData.others);
 }
 
