@@ -753,9 +753,10 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
           <small>调整英文发音速度</small>
         </div>
         <div class="speed-group">
-          <button class="speed-btn" data-rate="0.8">慢</button>
-          <button class="speed-btn active" data-rate="1">正常</button>
-          <button class="speed-btn" data-rate="1.2">快</button>
+          <button class="speed-btn" data-rate="0.6">很慢</button>
+          <button class="speed-btn active" data-rate="0.8">正常</button>
+          <button class="speed-btn" data-rate="1">快</button>
+          <button class="speed-btn" data-rate="1.2">很快</button>
         </div>
       </div>
       <div class="set-row">
@@ -780,7 +781,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       </div>
     </div>
     <!-- 版本号：每次修改代码发布新版本时请更新此处 -->
-    <div class="version-tag">@Stong v1.2.4</div>
+    <div class="version-tag">@Stong v1.2.5</div>
   </section>
 
   <!-- ============ 国际音标视图 ============ -->
@@ -1712,7 +1713,7 @@ const state = {
   sound:true,
   autospeak:true,
   reduceMotion:false,
-  rate:0.9,
+  rate:0.8,
   voice:"en-US-JennyNeural",
   // 已学单词
   learned:{},
@@ -1822,7 +1823,7 @@ function loadState(){
     if(obj.settings){
       state.sound = obj.settings.sound !== false;
       state.autospeak = obj.settings.autospeak !== false;
-      state.rate = obj.settings.rate || 0.9;
+      state.rate = obj.settings.rate || 0.8;
       state.voice = obj.settings.voice || "en-US-JennyNeural";
     }
     if(obj.stars) state.stars = obj.stars;
@@ -2037,12 +2038,12 @@ function playTtsUrl(objUrl, endCb, gen){
   let finished = false;
   let _ttsTimeoutId = null;
   let _durChecked = false;
-  // 清理旧事件绑定，重置状态
   const resetAudio = ()=>{
     audio.onended = null;
     audio.onerror = null;
     audio.onloadedmetadata = null;
     audio.oncanplay = null;
+    audio.ontimeupdate = null;
   };
   const finishOnce = ()=>{
     if(finished) return;
@@ -2052,26 +2053,41 @@ function playTtsUrl(objUrl, endCb, gen){
     try{ audio.pause(); }catch(e){}
     endCb();
   };
-  // 元数据加载后检查时长，若为 0/NaN 说明音频损坏，立即结束避免静音快切
   audio.onloadedmetadata = ()=>{
     if(_durChecked) return;
     _durChecked = true;
     if(isNaN(audio.duration) || audio.duration === 0){
       console.warn("TTS 音频时长异常，可能损坏，跳过");
       finishOnce();
+      return;
     }
+    const rate = state.rate || 1;
+    const adjustedDur = audio.duration / rate;
+    const timeoutDur = Math.max(5000, adjustedDur * 2 + 2000);
+    clearTimeout(_ttsTimeoutId);
+    _ttsTimeoutId = setTimeout(()=>{
+      console.warn("音频播放超时，强制结束");
+      finishOnce();
+    }, timeoutDur);
   };
   audio.onended = finishOnce;
   audio.onerror = ()=>{
     console.warn("音频播放失败");
     finishOnce();
   };
-  // 超时兜底：某些 WebView 下 onended/onerror 都不触发，避免队列卡死
+  audio.ontimeupdate = ()=>{
+    if(isNaN(audio.duration) || audio.duration === 0) return;
+    const rate = state.rate || 1;
+    const adjustedDur = audio.duration / rate;
+    const adjustedCurrent = audio.currentTime / rate;
+    if(adjustedCurrent >= adjustedDur * 0.95){
+      finishOnce();
+    }
+  };
   _ttsTimeoutId = setTimeout(()=>{
-    console.warn("音频播放超时，强制结束");
+    console.warn("音频播放超时（元数据未加载），强制结束");
     finishOnce();
-  }, 15000);
-  // 设置 src 并播放（复用同一 Audio 元素，避免微信 X5 资源耗尽）
+  }, 10000);
   audio.src = objUrl;
   audio.playbackRate = state.rate;
   // play() 在微信内置浏览器等环境下可能被拦截（异步回调中手势上下文已丢失）
