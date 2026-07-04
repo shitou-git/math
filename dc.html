@@ -787,7 +787,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       </div>
     </div>
     <!-- 版本号：每次修改代码发布新版本时请更新此处 -->
-    <div class="version-tag">@Stong v1.3.2</div>
+    <div class="version-tag">@Stong v1.3.3</div>
   </section>
 
   <!-- ============ 国际音标视图 ============ -->
@@ -2387,6 +2387,34 @@ function initLearn(){
 }
 
 /* ====================== 国际音标 ====================== */
+// 音标符号到音频文件的映射
+const ipaAudioMap = {
+  "iː":"ipa-audio/i-long.mp3", "ɪ":"ipa-audio/i-short.mp3", "e":"ipa-audio/e.mp3",
+  "æ":"ipa-audio/ae.mp3", "ɑː":"ipa-audio/a-long.mp3", "ɒ":"ipa-audio/o-short.mp3",
+  "ɔː":"ipa-audio/o-long.mp3", "ʊ":"ipa-audio/u-short.mp3", "uː":"ipa-audio/u-long.mp3",
+  "ʌ":"ipa-audio/vw.mp3", "ɜː":"ipa-audio/e-long.mp3", "ə":"ipa-audio/schwa.mp3",
+  "eɪ":"ipa-audio/ei.mp3", "aɪ":"ipa-audio/ai.mp3", "ɔɪ":"ipa-audio/oi.mp3",
+  "aʊ":"ipa-audio/au.mp3", "əʊ":"ipa-audio/ou.mp3", "ɪə":"ipa-audio/ie.mp3",
+  "eə":"ipa-audio/ea.mp3", "ʊə":"ipa-audio/ue.mp3",
+  "p":"ipa-audio/p.mp3", "b":"ipa-audio/b.mp3", "t":"ipa-audio/t.mp3",
+  "d":"ipa-audio/d.mp3", "k":"ipa-audio/k.mp3", "ɡ":"ipa-audio/g.mp3",
+  "f":"ipa-audio/f.mp3", "v":"ipa-audio/v.mp3", "θ":"ipa-audio/th.mp3",
+  "ð":"ipa-audio/dh.mp3", "s":"ipa-audio/s.mp3", "z":"ipa-audio/z.mp3",
+  "ʃ":"ipa-audio/sh.mp3", "ʒ":"ipa-audio/zh.mp3", "h":"ipa-audio/h.mp3",
+  "r":"ipa-audio/r.mp3", "tʃ":"ipa-audio/tsh.mp3", "dʒ":"ipa-audio/dzh.mp3",
+  "m":"ipa-audio/m.mp3", "n":"ipa-audio/n.mp3", "ŋ":"ipa-audio/ng.mp3",
+  "l":"ipa-audio/l.mp3", "w":"ipa-audio/w.mp3", "j":"ipa-audio/j.mp3"
+};
+// 复用单个 Audio 元素播放音标
+let _ipaAudio = null;
+function playIpaSound(sym){
+  const src = ipaAudioMap[sym];
+  if(!src){ return false; }
+  if(!_ipaAudio){ _ipaAudio = new Audio(); }
+  _ipaAudio.src = src;
+  _ipaAudio.play().catch(()=>{});
+  return true;
+}
 // 渲染一组音标卡片到指定容器
 function renderIpaGroup(containerId, group){
   const wrap = document.getElementById(containerId);
@@ -2400,8 +2428,10 @@ function renderIpaGroup(containerId, group){
       '<div class="ipa-name">' + item.name + '</div>' +
       '<div class="ipa-example">' + item.example + '</div>';
     card.onclick = ()=>{
-      // 点击发音：读示例单词
-      speak(item.example);
+      // 点击发音：优先播放音标音频，无音频时回退读示例单词
+      if(!playIpaSound(item.sym)){
+        speak(item.example);
+      }
     };
     wrap.appendChild(card);
   });
