@@ -778,7 +778,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       </div>
     </div>
     <!-- 版本号：每次修改代码发布新版本时请更新此处 -->
-    <div class="version-tag">@Stong v1.2.1</div>
+    <div class="version-tag">@Stong v1.2.2</div>
   </section>
 
   <!-- ============ 国际音标视图 ============ -->
@@ -1931,6 +1931,41 @@ function unlockAudioPlayback(){
   }catch(e){}
 }
 
+// TTS 音频缓存：text -> objectURL，避免同一单词重复请求接口（缓解限流）
+const _ttsUrlCache = new Map();
+const TTS_CACHE_MAX = 200;
+// 把一条 TTS 音频放入缓存，超出上限时淘汰最早的一项
+function cacheTtsUrl(text, objUrl){
+  if(_ttsUrlCache.size >= TTS_CACHE_MAX){
+    const firstKey = _ttsUrlCache.keys().next().value;
+    URL.revokeObjectURL(_ttsUrlCache.get(firstKey));
+    _ttsUrlCache.delete(firstKey);
+  }
+  _ttsUrlCache.set(text, objUrl);
+}
+// 预加载某个单词的 TTS 音频到缓存（不阻塞、不影响当前播放）
+function preloadTts(text){
+  if(!text || state.voice === "browser") return;
+  if(_ttsUrlCache.has(text)) return;  // 已缓存
+  const url = `${TTS_ENDPOINT}?text=${encodeURIComponent(text)}&voice=${encodeURIComponent(state.voice)}`;
+  fetch(url).then(r=>{
+    if(!r.ok) return null;
+    return r.blob();
+  }).then(blob=>{
+    if(!blob || blob.size < 200) return;
+    const objUrl = URL.createObjectURL(blob);
+    cacheTtsUrl(text, objUrl);
+  }).catch(()=>{});
+}
+
+// 复用单个 Audio 元素，避免微信 X5 因频繁 new Audio() 耗尽媒体资源导致后续静音
+function getTtsAudio(){
+  if(!_ttsAudio){
+    _ttsAudio = new Audio();
+  }
+  return _ttsAudio;
+}
+
 function speak(text, onEnd){
   if(!text){ onEnd && onEnd(); return; }
   stopSpeak();
@@ -1953,6 +1988,12 @@ function speak(text, onEnd){
     }catch(e){ endCb(); }
     return;
   }
+  // 命中缓存直接播放，无需再请求接口
+  const cachedUrl = _ttsUrlCache.get(text);
+  if(cachedUrl){
+    playTtsUrl(cachedUrl, endCb, gen);
+    return;
+  }
   _ttsLoading = true;
   const url = `${TTS_ENDPOINT}?text=${encodeURIComponent(text)}&voice=${encodeURIComponent(state.voice)}`;
   const controller = new AbortController();
@@ -1967,54 +2008,8 @@ function speak(text, onEnd){
       clearTimeout(timeoutId);
       if(blob.size < 200) throw new Error("音频为空");
       const objUrl = URL.createObjectURL(blob);
-      const audio = new Audio(objUrl);
-      audio.playbackRate = state.rate;
-      _ttsAudio = audio;
-      // 超时兜底：某些 WebView 下 onended/onerror 都不触发，避免队列卡死
-      let finished = false;
-      const finishOnce = ()=>{
-        if(finished) return;
-        finished = true;
-        clearTimeout(_ttsTimeoutId);
-        endCb();
-      };
-      audio.onended = ()=>{
-        URL.revokeObjectURL(objUrl);
-        _ttsAudio = null;
-        finishOnce();
-      };
-      audio.onerror = ()=>{
-        URL.revokeObjectURL(objUrl);
-        _ttsAudio = null;
-        console.warn("音频播放失败");
-        finishOnce();
-      };
-      const _ttsTimeoutId = setTimeout(()=>{
-        console.warn("音频播放超时，强制结束");
-        try{ audio.pause(); }catch(e){}
-        URL.revokeObjectURL(objUrl);
-        _ttsAudio = null;
-        finishOnce();
-      }, 15000);
-      // play() 在微信内置浏览器等环境下可能被拦截（异步回调中手势上下文已丢失）
-      // 重试几次，往往第二次就能成功；全部失败再回调，避免静音快切
-      let _playRetries = 0;
-      const _tryPlay = ()=>{
-        const p = audio.play();
-        if(p && p.then){
-          p.then(()=>{ /* 已开始播放 */ }).catch(err=>{
-            console.warn("播放被拦截(" + (_playRetries+1) + "):", err.message);
-            if(_playRetries < 4){
-              _playRetries++;
-              setTimeout(_tryPlay, 300 * _playRetries);
-            }else{
-              console.warn("重试仍失败，跳过本条");
-              finishOnce();
-            }
-          });
-        }
-      };
-      _tryPlay();
+      cacheTtsUrl(text, objUrl);
+      playTtsUrl(objUrl, endCb, gen);
     })
     .catch(err=>{
       _ttsLoading = false;
@@ -2033,16 +2028,90 @@ function speak(text, onEnd){
       }
     });
 }
+
+// 用复用的 Audio 元素播放一个 objectURL
+function playTtsUrl(objUrl, endCb, gen){
+  const audio = getTtsAudio();
+  let finished = false;
+  let _ttsTimeoutId = null;
+  let _durChecked = false;
+  // 清理旧事件绑定，重置状态
+  const resetAudio = ()=>{
+    audio.onended = null;
+    audio.onerror = null;
+    audio.onloadedmetadata = null;
+    audio.oncanplay = null;
+  };
+  const finishOnce = ()=>{
+    if(finished) return;
+    finished = true;
+    clearTimeout(_ttsTimeoutId);
+    resetAudio();
+    try{ audio.pause(); }catch(e){}
+    endCb();
+  };
+  // 元数据加载后检查时长，若为 0/NaN 说明音频损坏，立即结束避免静音快切
+  audio.onloadedmetadata = ()=>{
+    if(_durChecked) return;
+    _durChecked = true;
+    if(isNaN(audio.duration) || audio.duration === 0){
+      console.warn("TTS 音频时长异常，可能损坏，跳过");
+      finishOnce();
+    }
+  };
+  audio.onended = finishOnce;
+  audio.onerror = ()=>{
+    console.warn("音频播放失败");
+    finishOnce();
+  };
+  // 超时兜底：某些 WebView 下 onended/onerror 都不触发，避免队列卡死
+  _ttsTimeoutId = setTimeout(()=>{
+    console.warn("音频播放超时，强制结束");
+    finishOnce();
+  }, 15000);
+  // 设置 src 并播放（复用同一 Audio 元素，避免微信 X5 资源耗尽）
+  audio.src = objUrl;
+  audio.playbackRate = state.rate;
+  // play() 在微信内置浏览器等环境下可能被拦截（异步回调中手势上下文已丢失）
+  // 重试几次，往往第二次就能成功；全部失败再回调
+  let _playRetries = 0;
+  const _tryPlay = ()=>{
+    const p = audio.play();
+    if(p && p.then){
+      p.then(()=>{ /* 已开始播放 */ }).catch(err=>{
+        console.warn("播放被拦截(" + (_playRetries+1) + "):", err.message);
+        if(_playRetries < 4){
+          _playRetries++;
+          setTimeout(_tryPlay, 300 * _playRetries);
+        }else{
+          console.warn("重试仍失败，跳过本条");
+          finishOnce();
+        }
+      });
+    }
+  };
+  _tryPlay();
+}
 function stopSpeak(){
   _speakGen++;
   if(_ttsAudio){
-    try{ _ttsAudio.pause(); _ttsAudio.src=""; }catch(e){}
-    _ttsAudio = null;
+    try{
+      _ttsAudio.pause();
+      resetAudioElement(_ttsAudio);
+    }catch(e){}
   }
   if("speechSynthesis" in window){
     try{ window.speechSynthesis.cancel(); }catch(e){}
   }
   _setSpeaking(false);
+}
+// 清空 Audio 元素的事件与 src，比直接 src="" 更安全
+function resetAudioElement(audio){
+  audio.onended = null;
+  audio.onerror = null;
+  audio.onloadedmetadata = null;
+  audio.oncanplay = null;
+  try{ audio.removeAttribute("src"); audio.load(); }catch(e){}
 }
 function speakCurrent(){
   const words = getLearnThemeWords(state.learnTheme);
@@ -2899,6 +2968,12 @@ function playNbNext(){
     // 间隔 800ms 后播放下一个
     setTimeout(playNbNext, 800);
   });
+  // 预加载下一个单词的音频，减少等待、避免突发请求被限流
+  const nextPos = nbState.playPos + 1;
+  if(nextPos < nbState.playQueue.length){
+    const nextW = nbState.words[nbState.playQueue[nextPos]];
+    if(nextW && nextW.en) preloadTts(nextW.en);
+  }
 }
 function emojiFallback(en){
   // 从词库中找回 emoji
