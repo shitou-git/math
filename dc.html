@@ -1919,7 +1919,8 @@ function speak(text, onEnd){
   const gen = ++_speakGen;
   _setSpeaking(true);
   const endCb = ()=>{
-    if(gen === _speakGen) _setSpeaking(false);
+    if(gen !== _speakGen) return;  // 被后续 speak 覆盖，丢弃旧回调
+    _setSpeaking(false);
     onEnd && onEnd();
   };
   if(state.voice === "browser"){
