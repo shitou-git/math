@@ -477,6 +477,9 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
 .nb-card-known{
   border:3px solid var(--success);
 }
+.nb-card-active{
+  background:#d4f5dd !important;
+}
 .nb-card .em{font-size:48px;display:block}
 .nb-card .em.num-badge{
   display:inline-flex;align-items:center;justify-content:center;
@@ -787,7 +790,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       </div>
     </div>
     <!-- 版本号：每次修改代码发布新版本时请更新此处 -->
-    <div class="version-tag">@Stong v1.4.1</div>
+    <div class="version-tag">@Stong v1.4.2</div>
   </section>
 
   <!-- ============ 国际音标视图 ============ -->
@@ -2964,9 +2967,18 @@ function renderNbThemeOptions(){
   }
 }
 /* ----- 单词本随机播放 ----- */
+let _nbActiveCard = null;
 function nbCardClick(en){
   // 播放期间点击卡片不触发单独发音，避免冲突
   if(nbState.playing) return;
+  // 取消上一个卡片的高亮
+  if(_nbActiveCard){ _nbActiveCard.classList.remove("nb-card-active"); }
+  // 高亮当前点击的卡片
+  const card = event && event.currentTarget ? event.currentTarget : null;
+  if(card){
+    card.classList.add("nb-card-active");
+    _nbActiveCard = card;
+  }
   speak(en);
 }
 function toggleNbPlay(){
