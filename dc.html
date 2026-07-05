@@ -787,7 +787,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       </div>
     </div>
     <!-- 版本号：每次修改代码发布新版本时请更新此处 -->
-    <div class="version-tag">@Stong v1.4.0</div>
+    <div class="version-tag">@Stong v1.4.1</div>
   </section>
 
   <!-- ============ 国际音标视图 ============ -->
@@ -2412,12 +2412,18 @@ const ipaAudioMap = {
 };
 // 复用单个 Audio 元素播放音标
 let _ipaAudio = null;
-function playIpaSound(sym){
+function playIpaSound(sym, onEnd){
   const src = ipaAudioMap[sym];
   if(!src){ return false; }
   if(!_ipaAudio){ _ipaAudio = new Audio(); }
+  _ipaAudio.onended = null;
+  _ipaAudio.onerror = null;
   _ipaAudio.src = src;
-  _ipaAudio.play().catch(()=>{});
+  if(onEnd){
+    _ipaAudio.onended = ()=>{ try{ onEnd(); }catch(e){} };
+    _ipaAudio.onerror = ()=>{ try{ onEnd(); }catch(e){} };
+  }
+  _ipaAudio.play().catch(()=>{ onEnd && onEnd(); });
   return true;
 }
 // 渲染一组音标卡片到指定容器
@@ -2433,7 +2439,8 @@ function renderIpaGroup(containerId, group){
       '<div class="ipa-name">' + item.name + '</div>' +
       '<div class="ipa-example">' + item.example + '</div>';
     card.onclick = ()=>{
-      if(!playIpaSound(item.sym)){
+      // 先播放音标音频，播放结束后朗读卡片上的英文单词
+      if(!playIpaSound(item.sym, ()=>{ speak(item.example); })){
         speak(item.example);
       }
     };
