@@ -787,7 +787,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       </div>
     </div>
     <!-- 版本号：每次修改代码发布新版本时请更新此处 -->
-    <div class="version-tag">@Stong v1.3.2</div>
+    <div class="version-tag">@Stong v1.4.0</div>
   </section>
 
   <!-- ============ 国际音标视图 ============ -->
@@ -2391,24 +2391,24 @@ function initLearn(){
 }
 
 /* ====================== 国际音标 ====================== */
-// 音标符号到音频文件的映射
+// 音标符号到音频文件的映射（音频来源：ipa-charts.onemorejack.top，纯正音素发音）
 const ipaAudioMap = {
-  "iː":"ipa-audio/i-long.mp3", "ɪ":"ipa-audio/i-short.mp3", "e":"ipa-audio/e.mp3",
-  "æ":"ipa-audio/ae.mp3", "ɑː":"ipa-audio/a-long.mp3", "ɒ":"ipa-audio/o-short.mp3",
-  "ɔː":"ipa-audio/o-long.mp3", "ʊ":"ipa-audio/u-short.mp3", "uː":"ipa-audio/u-long.mp3",
-  "ʌ":"ipa-audio/vw.mp3", "ɜː":"ipa-audio/e-long.mp3", "ə":"ipa-audio/schwa.mp3",
-  "eɪ":"ipa-audio/ei.mp3", "aɪ":"ipa-audio/ai.mp3", "ɔɪ":"ipa-audio/oi.mp3",
-  "aʊ":"ipa-audio/au.mp3", "əʊ":"ipa-audio/ou.mp3", "ɪə":"ipa-audio/ie.mp3",
-  "eə":"ipa-audio/ea.mp3", "ʊə":"ipa-audio/ue.mp3",
-  "p":"ipa-audio/p.mp3", "b":"ipa-audio/b.mp3", "t":"ipa-audio/t.mp3",
-  "d":"ipa-audio/d.mp3", "k":"ipa-audio/k.mp3", "ɡ":"ipa-audio/g.mp3",
-  "f":"ipa-audio/f.mp3", "v":"ipa-audio/v.mp3", "θ":"ipa-audio/th.mp3",
-  "ð":"ipa-audio/dh.mp3", "s":"ipa-audio/s.mp3", "z":"ipa-audio/z.mp3",
-  "ʃ":"ipa-audio/sh.mp3", "ʒ":"ipa-audio/zh.mp3", "h":"ipa-audio/h.mp3",
-  "r":"ipa-audio/r.mp3", "tʃ":"ipa-audio/tsh.mp3", "dʒ":"ipa-audio/dzh.mp3",
-  "tr":"ipa-audio/tr.mp3", "dr":"ipa-audio/dr.mp3", "ts":"ipa-audio/ts.mp3", "dz":"ipa-audio/dz.mp3",
-  "m":"ipa-audio/m.mp3", "n":"ipa-audio/n.mp3", "ŋ":"ipa-audio/ng.mp3",
-  "l":"ipa-audio/l.mp3", "w":"ipa-audio/w.mp3", "j":"ipa-audio/j.mp3"
+  "iː":"ipa-audio/v_i_long.mp3", "ɪ":"ipa-audio/v_i_short.mp3", "e":"ipa-audio/v_e_short.mp3",
+  "æ":"ipa-audio/v_ae_short.mp3", "ɑː":"ipa-audio/v_a_long.mp3", "ɒ":"ipa-audio/v_o_short.mp3",
+  "ɔː":"ipa-audio/v_o_long.mp3", "ʊ":"ipa-audio/v_u_short.mp3", "uː":"ipa-audio/v_u_long.mp3",
+  "ʌ":"ipa-audio/v_a_short.mp3", "ɜː":"ipa-audio/v_er_long.mp3", "ə":"ipa-audio/v_schwa.mp3",
+  "eɪ":"ipa-audio/d_ei.mp3", "aɪ":"ipa-audio/d_ai.mp3", "ɔɪ":"ipa-audio/d_oi.mp3",
+  "aʊ":"ipa-audio/d_au.mp3", "əʊ":"ipa-audio/d_ou.mp3", "ɪə":"ipa-audio/d_ea.mp3",
+  "eə":"ipa-audio/d_e_a.mp3", "ʊə":"ipa-audio/d_ue.mp3",
+  "p":"ipa-audio/c_p.mp3", "b":"ipa-audio/c_b.mp3", "t":"ipa-audio/c_t.mp3",
+  "d":"ipa-audio/c_d.mp3", "k":"ipa-audio/c_k.mp3", "ɡ":"ipa-audio/c_g.mp3",
+  "f":"ipa-audio/c_f.mp3", "v":"ipa-audio/c_v.mp3", "θ":"ipa-audio/c_th_thin.mp3",
+  "ð":"ipa-audio/c_th_this.mp3", "s":"ipa-audio/c_s.mp3", "z":"ipa-audio/c_z.mp3",
+  "ʃ":"ipa-audio/c_sh.mp3", "ʒ":"ipa-audio/c_zh.mp3", "h":"ipa-audio/c_h.mp3",
+  "r":"ipa-audio/c_r.mp3", "tʃ":"ipa-audio/c_ch.mp3", "dʒ":"ipa-audio/c_j.mp3",
+  "tr":"ipa-audio/c_tr.mp3", "dr":"ipa-audio/c_dr.mp3", "ts":"ipa-audio/c_ts.mp3", "dz":"ipa-audio/c_dz.mp3",
+  "m":"ipa-audio/c_m.mp3", "n":"ipa-audio/c_n.mp3", "ŋ":"ipa-audio/c_ng.mp3",
+  "l":"ipa-audio/c_l.mp3", "w":"ipa-audio/c_w.mp3", "j":"ipa-audio/c_y.mp3"
 };
 // 复用单个 Audio 元素播放音标
 let _ipaAudio = null;
