@@ -787,7 +787,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       </div>
     </div>
     <!-- 版本号：每次修改代码发布新版本时请更新此处 -->
-    <div class="version-tag">@Stong v1.3.5</div>
+    <div class="version-tag">@Stong v1.3.6</div>
   </section>
 
   <!-- ============ 国际音标视图 ============ -->
@@ -2420,19 +2420,19 @@ function playIpaSound(sym){
   _ipaAudio.play().catch(()=>{});
   return true;
 }
-// 用中文近示文字朗读音标名称
+// 用中文近示文字朗读音标名称（有道TTS）
 function speakIpaName(name){
   stopSpeak();
-  const zhVoice = "zh-CN-YunxiNeural";
   const text = name;
-  const cachedUrl = _ttsUrlCache.get(text + "|" + zhVoice);
+  const cacheKey = "youdao|" + text;
+  const cachedUrl = _ttsUrlCache.get(cacheKey);
   if(cachedUrl){
     const audio = getTtsAudio();
     audio.src = cachedUrl;
     audio.play().catch(()=>{});
     return;
   }
-  const url = `${TTS_ENDPOINT}?text=${encodeURIComponent(text)}&voice=${encodeURIComponent(zhVoice)}`;
+  const url = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(text)}&le=zh`;
   fetch(url)
     .then(r=>{
       if(!r.ok) throw new Error("TTS HTTP "+r.status);
@@ -2441,7 +2441,7 @@ function speakIpaName(name){
     .then(blob=>{
       if(blob.size < 200) throw new Error("音频为空");
       const objUrl = URL.createObjectURL(blob);
-      cacheTtsUrl(text + "|" + zhVoice, objUrl);
+      cacheTtsUrl(cacheKey, objUrl);
       const audio = getTtsAudio();
       audio.src = objUrl;
       audio.play().catch(()=>{});
