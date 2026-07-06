@@ -865,8 +865,9 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
 
       <div style="margin-top:20px;text-align:center">
         <div style="font-size:16px;font-weight:600;color:var(--text-primary);margin-bottom:12px">🎬 视频讲解</div>
-        <video controls style="width:100%;max-width:560px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.1)" poster="xue-512.webp">
-          <source src="yin.mp4" type="video/mp4">
+        <video controls playsinline preload="auto" style="width:100%;max-width:560px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.1)" poster="xue-512.webp">
+          <source src="yin.mp4?v=1" type="video/mp4">
+          <div style="padding:20px;color:var(--text-muted);font-size:14px">您的浏览器不支持视频播放，请使用现代浏览器访问</div>
         </video>
       </div>
 
