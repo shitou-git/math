@@ -790,7 +790,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       </div>
     </div>
     <!-- 版本号：每次修改代码发布新版本时请更新此处 -->
-    <div class="version-tag">@Stong v1.5.1</div>
+    <div class="version-tag">@Stong v1.5.2</div>
   </section>
 
   <!-- ============ 国际音标视图 ============ -->
@@ -865,7 +865,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
 
       <div style="margin-top:20px;text-align:center">
         <div style="font-size:16px;font-weight:600;color:var(--text-primary);margin-bottom:12px">🎬 视频讲解</div>
-        <video controls playsinline preload="auto" style="width:100%;max-width:560px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.1)" poster="xue-512.webp">
+        <video controls playsinline preload="metadata" style="width:100%;max-width:560px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.1)" poster="xue-512.webp">
           <source src="yin.mp4" type="video/mp4">
           <div style="padding:20px;color:var(--text-muted);font-size:14px">您的浏览器不支持视频播放，请使用现代浏览器访问</div>
         </video>
@@ -2463,15 +2463,22 @@ let _ipaAudio = null;
 function playIpaSound(sym, onEnd){
   const src = ipaAudioMap[sym];
   if(!src){ return false; }
-  if(!_ipaAudio){ _ipaAudio = new Audio(); }
-  _ipaAudio.onended = null;
-  _ipaAudio.onerror = null;
-  _ipaAudio.src = src;
-  if(onEnd){
-    _ipaAudio.onended = ()=>{ try{ onEnd(); }catch(e){} };
-    _ipaAudio.onerror = ()=>{ try{ onEnd(); }catch(e){} };
+  try{
+    if(!_ipaAudio){ _ipaAudio = new Audio(); }
+    _ipaAudio.onended = null;
+    _ipaAudio.onerror = null;
+    _ipaAudio.src = src;
+    if(onEnd){
+      _ipaAudio.onended = ()=>{ try{ onEnd(); }catch(e){} };
+      _ipaAudio.onerror = ()=>{ try{ onEnd(); }catch(e){} };
+    }
+    const p = _ipaAudio.play();
+    if(p && typeof p.catch === "function"){
+      p.catch(()=>{ onEnd && onEnd(); });
+    }
+  }catch(e){
+    onEnd && onEnd();
   }
-  _ipaAudio.play().catch(()=>{ onEnd && onEnd(); });
   return true;
 }
 // 渲染一组音标卡片到指定容器
@@ -2488,7 +2495,11 @@ function renderIpaGroup(containerId, group){
       '<div class="ipa-example">' + item.example + '</div>';
     card.onclick = ()=>{
       // 先播放音标音频，播放结束后朗读卡片上的英文单词
-      if(!playIpaSound(item.sym, ()=>{ speak(item.example); })){
+      try{
+        if(!playIpaSound(item.sym, ()=>{ speak(item.example); })){
+          speak(item.example);
+        }
+      }catch(e){
         speak(item.example);
       }
     };
