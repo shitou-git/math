@@ -526,6 +526,12 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
   .school-grid{grid-template-columns:repeat(2,1fr);gap:10px}
   .school-en{font-size:18px}
 }
+.school-play-btn{
+  background:linear-gradient(135deg,#43E97B,#38F9D7);color:#fff;font-weight:700;
+}
+.school-play-btn.playing{
+  background:linear-gradient(135deg,#FF6B6B,#FF8E53);
+}
 
 /* ====================== 设置 ====================== */
 .settings-card{
@@ -680,15 +686,10 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
         <h3>查词翻译</h3>
         <p>英汉互译查询</p>
       </div>
-      <div class="menu-card" role="button" tabindex="0" onclick="go('school-view', 'primary')" onkeydown="if(event.key==='Enter')go('school-view', 'primary')">
-        <span class="ico">🎒</span>
-        <h3>小学词汇</h3>
-        <p>200个核心单词</p>
-      </div>
-      <div class="menu-card" role="button" tabindex="0" onclick="go('school-view', 'junior')" onkeydown="if(event.key==='Enter')go('school-view', 'junior')">
-        <span class="ico">📖</span>
-        <h3>初中词汇</h3>
-        <p>250个核心单词</p>
+      <div class="menu-card" role="button" tabindex="0" onclick="go('school-view')" onkeydown="if(event.key==='Enter')go('school-view')">
+        <span class="ico">📚</span>
+        <h3>词汇学习</h3>
+        <p>小学+初中核心词汇</p>
       </div>
       <div class="menu-card" role="button" tabindex="0" onclick="go('settings-view')" onkeydown="if(event.key==='Enter')go('settings-view')">
         <span class="ico">⚙️</span>
@@ -852,13 +853,14 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
   <section class="view" id="school-view">
     <div class="topbar">
       <button class="back-btn" onclick="go('home-view')">← 返回</button>
-      <h2 class="page-title" id="school-title">🎒 小学词汇</h2>
+      <h2 class="page-title" id="school-title">📚 词汇学习</h2>
       <button class="back-btn" style="visibility:hidden">占位</button>
     </div>
     <div style="max-width:680px;margin:0 auto">
       <div class="theme-tabs">
         <button class="theme-tab" id="btn-primary" onclick="switchSchoolTab('primary')">🎒 小学</button>
         <button class="theme-tab" id="btn-junior" onclick="switchSchoolTab('junior')">📖 初中</button>
+        <button class="theme-tab school-play-btn" id="school-play-btn" onclick="toggleSchoolPlay()">▶ 随机播放</button>
       </div>
       <div id="school-words-container"></div>
     </div>
@@ -1048,6 +1050,18 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
     <div id="nb-play-card-wrap"></div>
     <div style="display:flex;gap:10px;justify-content:center;margin-top:8px">
       <button class="btn ghost small" onclick="stopNbPlay()">⏹ 停止</button>
+    </div>
+  </div>
+</div>
+
+<!-- 学校词汇随机播放弹窗 -->
+<div class="modal-mask" id="school-play-mask" onclick="if(event.target===this) stopSchoolPlay()">
+  <div class="modal-box nb-play-box">
+    <div class="test-title">🔊 词汇随机播放</div>
+    <div class="test-progress-text" id="school-play-count">第 1 个</div>
+    <div id="school-play-card-wrap"></div>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:8px">
+      <button class="btn ghost small" onclick="stopSchoolPlay()">⏹ 停止</button>
     </div>
   </div>
 </div>
@@ -3324,6 +3338,7 @@ function initSchoolView(tab){
 }
 
 function switchSchoolTab(tab){
+  if(schoolPlayState.playing) stopSchoolPlay();
   currentSchoolTab = tab;
   const btnPrimary = document.getElementById("btn-primary");
   const btnJunior = document.getElementById("btn-junior");
@@ -3365,6 +3380,77 @@ function renderSchoolWords(){
   
   html += '</div>';
   container.innerHTML = html;
+}
+
+/* 学校词汇播放功能 */
+let schoolPlayState = {
+  playing: false,
+  playQueue: [],
+  playPos: 0,
+  playToken: 0
+};
+
+function toggleSchoolPlay(){
+  if(schoolPlayState.playing){
+    stopSchoolPlay();
+  }else{
+    startSchoolPlay();
+  }
+}
+
+function startSchoolPlay(){
+  const words = schoolWords[currentSchoolTab].words;
+  if(!words || words.length === 0){
+    toast("没有可播放的单词");
+    return;
+  }
+  unlockAudioPlayback();
+  const indices = words.map((_, i) => i);
+  shuffle(indices);
+  schoolPlayState.playQueue = indices;
+  schoolPlayState.playPos = 0;
+  schoolPlayState.playing = true;
+  const btn = document.getElementById("school-play-btn");
+  btn.textContent = "⏹ 停止播放";
+  btn.classList.add("playing");
+  document.getElementById("school-play-mask").classList.add("show");
+  playSchoolNext();
+}
+
+function stopSchoolPlay(){
+  schoolPlayState.playing = false;
+  schoolPlayState.playToken++;
+  stopSpeak();
+  const btn = document.getElementById("school-play-btn");
+  btn.textContent = "▶ 随机播放";
+  btn.classList.remove("playing");
+  document.getElementById("school-play-mask").classList.remove("show");
+}
+
+function playSchoolNext(){
+  if(!schoolPlayState.playing) return;
+  if(schoolPlayState.playPos >= schoolPlayState.playQueue.length){
+    shuffle(schoolPlayState.playQueue);
+    schoolPlayState.playPos = 0;
+  }
+  const cardIdx = schoolPlayState.playQueue[schoolPlayState.playPos];
+  const w = schoolWords[currentSchoolTab].words[cardIdx];
+  if(!w){ schoolPlayState.playPos++; playSchoolNext(); return; }
+  document.getElementById("school-play-count").textContent = "第 " + (schoolPlayState.playPos + 1) + " / " + schoolPlayState.playQueue.length + " 个";
+  const ipaHtml = w.ipa ? `<div class="ipa">/${w.ipa}/</div>` : "";
+  document.getElementById("school-play-card-wrap").innerHTML =
+    `<div class="nb-play-card"><div class="em">📚</div><div class="en">${w.en}</div>${ipaHtml}<div class="zh">${w.zh}</div></div>`;
+  const token = ++schoolPlayState.playToken;
+  speak(w.en, ()=>{
+    if(!schoolPlayState.playing || token !== schoolPlayState.playToken) return;
+    schoolPlayState.playPos++;
+    setTimeout(playSchoolNext, 800);
+  });
+  const nextPos = schoolPlayState.playPos + 1;
+  if(nextPos < schoolPlayState.playQueue.length){
+    const nextW = schoolWords[currentSchoolTab].words[schoolPlayState.playQueue[nextPos]];
+    if(nextW && nextW.en) preloadTts(nextW.en);
+  }
 }
 
 /* ====================== 积分系统 ====================== */
