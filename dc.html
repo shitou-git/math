@@ -808,7 +808,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       </div>
     </div>
     <!-- 版本号：每次修改代码发布新版本时请更新此处 -->
-    <div class="version-tag">@Stong v1.6.2</div>
+    <div class="version-tag">@Stong v1.6.3</div>
   </section>
 
   <!-- ============ 国际音标视图 ============ -->
@@ -2961,15 +2961,15 @@ function flipCard(el){
   if(state.gLock) return;
   if(el.classList.contains("matched") || el.classList.contains("selected")) return;
   el.classList.add("selected");
-  beep("click");
-  speak(el.dataset.en);
   if(!state.gFirstCard){
+    speak(el.dataset.en);
     state.gFirstCard = el;
     return;
   }
   const first = state.gFirstCard;
   state.gFirstCard = null;
   if(first.dataset.type === el.dataset.type){
+    stopSpeak();
     beep("err");
     toast("请选择不同类型的卡片！");
     setTimeout(()=>{
@@ -3001,6 +3001,7 @@ function flipCard(el){
   }else{
     state.gCombo = 0;
     state.gErrors++;
+    stopSpeak();
     beep("err");
     first.classList.add("shake");
     el.classList.add("shake");
