@@ -647,6 +647,11 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
         <h3>国际音标</h3>
         <p>48个音标发音学习</p>
       </div>
+      <div class="menu-card" role="button" tabindex="0" onclick="go('dict-view')" onkeydown="if(event.key==='Enter')go('dict-view')">
+        <span class="ico">🔍</span>
+        <h3>查词翻译</h3>
+        <p>英汉互译查询</p>
+      </div>
       <div class="menu-card" role="button" tabindex="0" onclick="go('settings-view')" onkeydown="if(event.key==='Enter')go('settings-view')">
         <span class="ico">⚙️</span>
         <h3>设置</h3>
@@ -790,7 +795,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       </div>
     </div>
     <!-- 版本号：每次修改代码发布新版本时请更新此处 -->
-    <div class="version-tag">@Stong v1.5.3</div>
+    <div class="version-tag">@Stong v1.5.4</div>
   </section>
 
   <!-- ============ 国际音标视图 ============ -->
@@ -871,6 +876,25 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
         </video>
       </div>
 
+    </div>
+  </section>
+
+  <!-- ============ 查词翻译视图 ============ -->
+  <section class="view" id="dict-view">
+    <div class="topbar">
+      <button class="back-btn" onclick="go('home-view')">← 返回</button>
+      <h2 class="page-title">🔍 查词翻译</h2>
+      <button class="back-btn" style="visibility:hidden">占位</button>
+    </div>
+    <div style="max-width:680px;margin:0 auto">
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <input type="text" id="dict-input" placeholder="输入英文单词或中文..." style="flex:1;padding:12px 16px;border:2px solid var(--border);border-radius:12px;font-size:16px;outline:none;background:var(--card);color:var(--text)" onkeydown="if(event.key==='Enter')doLookup()">
+        <button class="btn" onclick="doLookup()" style="padding:12px 20px">翻译</button>
+      </div>
+      <div id="dict-result" style="min-height:200px"></div>
+      <div style="text-align:center;color:var(--text-muted);font-size:13px;margin-top:24px;padding:12px;background:var(--bg-card);border-radius:10px">
+        💡 内置 488 个核心词汇可秒查，生词自动联网翻译<br>支持英文查中文、中文查英文
+      </div>
     </div>
   </section>
 
@@ -1902,6 +1926,7 @@ function go(viewId){
   if(viewId==="dialog-view") initDialog();
   if(viewId==="notebook-view") renderNotebook();
   if(viewId==="ipa-view") initIpaView();
+  if(viewId==="dict-view") initDictView();
   if(viewId==="settings-view") initSettings();
   if(viewId==="home-view") renderHomeStats();
 }
@@ -2537,6 +2562,113 @@ function initIpaView(){
   renderIpaGroup("ipa-clusters", ipaData.clusters);
   renderIpaGroup("ipa-others", ipaData.others);
   preloadIpaAudio();
+}
+
+/* ====================== 查词翻译 ====================== */
+// 构建本地词典索引（英文->中文，中文->英文），从已有单词数据中提取
+let _localDict = null;
+let _localDictReady = false;
+function buildLocalDict(){
+  if(_localDictReady) return;
+  _localDict = {};
+  for(const cat in wordDatabase){
+    wordDatabase[cat].words.forEach(w=>{
+      if(w.en && w.zh){
+        _localDict[w.en.toLowerCase()] = { zh:w.zh, ipa:w.ipa||"", emoji:w.emoji||"" };
+        // 中文也建索引，支持中文查英文
+        _localDict["zh:"+w.zh] = { en:w.en, ipa:w.ipa||"", emoji:w.emoji||"" };
+      }
+    });
+  }
+  _localDictReady = true;
+}
+function lookupLocal(query){
+  buildLocalDict();
+  const q = query.trim().toLowerCase();
+  if(!q) return null;
+  // 英文查中文
+  if(_localDict[q]){
+    return { type:"en", en:query.trim(), zh:_localDict[q].zh, ipa:_localDict[q].ipa, emoji:_localDict[q].emoji };
+  }
+  // 中文查英文
+  if(_localDict["zh:"+query.trim()]){
+    const r = _localDict["zh:"+query.trim()];
+    return { type:"zh", en:r.en, zh:query.trim(), ipa:r.ipa, emoji:r.emoji };
+  }
+  return null;
+}
+// 联网翻译兜底（Google translate 非官方接口，免费无需key）
+function lookupOnline(query, cb){
+  // 判断中英文：含中文用 zh->en，否则 en->zh
+  const isZh = /[\u4e00-\u9fa5]/.test(query);
+  const sl = isZh ? "zh-CN" : "en";
+  const tl = isZh ? "en" : "zh-CN";
+  const url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" + sl + "&tl=" + tl + "&dt=t&q=" + encodeURIComponent(query);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(()=> controller.abort(), 6000);
+  fetch(url, { signal: controller.signal })
+    .then(r=> r.json())
+    .then(data=>{
+      clearTimeout(timeoutId);
+      if(data && data[0]){
+        const parts = data[0].map(arr=> arr[0]).join("");
+        cb(null, isZh ? { type:"zh", en:parts, zh:query.trim() } : { type:"en", en:query.trim(), zh:parts });
+      }else{
+        cb("无结果", null);
+      }
+    })
+    .catch(err=>{
+      clearTimeout(timeoutId);
+      cb(err.message || "翻译失败", null);
+    });
+}
+function initDictView(){
+  const input = document.getElementById("dict-input");
+  const result = document.getElementById("dict-result");
+  if(input && !input.value){
+    result.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:60px 20px;font-size:15px">🔤 输入单词开始查询<br><span style="font-size:13px">如 apple、cat、你好</span></div>';
+    setTimeout(()=> input.focus(), 100);
+  }
+}
+function doLookup(){
+  const input = document.getElementById("dict-input");
+  const result = document.getElementById("dict-result");
+  const query = (input.value || "").trim();
+  if(!query){
+    result.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:40px;font-size:15px">请输入要查询的内容</div>';
+    return;
+  }
+  // 1. 先查本地词典（秒出）
+  const local = lookupLocal(query);
+  if(local){
+    renderDictResult(local, "local");
+    return;
+  }
+  // 2. 本地没有，显示加载中，联网查询
+  result.innerHTML = '<div style="text-align:center;color:var(--text-soft);padding:40px;font-size:15px">⏳ 正在联网翻译...</div>';
+  lookupOnline(query, (err, data)=>{
+    if(err || !data){
+      result.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:40px;font-size:15px">😅 翻译失败，请检查网络后重试<br><span style="font-size:13px">'+ (err||"") +'</span></div>';
+      return;
+    }
+    renderDictResult(data, "online");
+  });
+}
+function renderDictResult(r, source){
+  const result = document.getElementById("dict-result");
+  const badge = source === "local" ? "📚 本地词典" : "🌐 在线翻译";
+  const emojiHtml = r.emoji ? '<span style="font-size:56px;display:block;margin-bottom:8px">'+ r.emoji +'</span>' : '';
+  const ipaHtml = r.ipa ? '<div style="font-size:18px;color:var(--primary);font-style:italic;margin-top:6px;font-family:Lucida Sans Unicode,serif">/'+ r.ipa +'/</div>' : '';
+  const enHtml = r.type === "en"
+    ? '<div style="font-size:32px;font-weight:700;font-family:Baloo 2,sans-serif">'+ r.en +'</div>' + ipaHtml
+    : '<div style="font-size:32px;font-weight:700;font-family:Baloo 2,sans-serif">'+ r.en +'</div>';
+  const zhHtml = '<div style="font-size:24px;color:var(--text-secondary);margin-top:8px">'+ r.zh +'</div>';
+  const speakBtn = r.en ? '<button class="btn" style="margin-top:14px;padding:8px 18px" onclick="speak(\''+ r.en.replace(/'/g,"\\'") +'\')">🔊 朗读</button>' : '';
+  result.innerHTML =
+    '<div style="background:var(--card);border-radius:16px;padding:24px;border:2px solid var(--border);box-shadow:0 3px 0 var(--border)">'+
+      '<div style="font-size:12px;color:var(--text-muted);margin-bottom:12px">'+ badge +'</div>'+
+      emojiHtml + enHtml + zhHtml + speakBtn +
+    '</div>';
 }
 
 /* ====================== 学习小测验 ====================== */
