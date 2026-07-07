@@ -28,6 +28,7 @@
   --radius:28px;
   --font-body:"ZCOOL KuaiLe","Baloo 2","Comic Neue",system-ui,sans-serif;
   --font-display:"Baloo 2","ZCOOL KuaiLe",system-ui,sans-serif;
+  --font-ipa:"Lucida Sans Unicode","Arial Unicode MS",serif;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
@@ -163,7 +164,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
   display:inline-flex;align-items:center;justify-content:center;
   width:140px;height:140px;border-radius:50%;
   background:linear-gradient(135deg,#FF6B6B,#FF8E53);
-  color:#fff;font-weight:900;font-size:72px;font-family:"Baloo 2";
+  color:#fff;font-weight:900;font-size:72px;font-family:var(--font-display);
   box-shadow:0 8px 0 rgba(0,0,0,.15), inset 0 -6px 0 rgba(0,0,0,.1);
   filter:none;
 }
@@ -181,7 +182,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
   60%{transform:translateX(-8px) rotate(-3deg)}
   80%{transform:translateX(8px) rotate(3deg)}
 }
-.learn-word{font-size:56px;font-weight:700;font-family:"Baloo 2";color:var(--text)}
+.learn-word{font-size:56px;font-weight:700;font-family:var(--font-display);color:var(--text)}
 .learn-zh{font-size:28px;color:var(--text-soft);margin-top:4px}
 .learn-actions{margin-top:24px;display:flex;gap:10px;justify-content:center;flex-wrap:nowrap}
 .progress-dots{display:flex;gap:8px;justify-content:center;margin-top:18px}
@@ -197,7 +198,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
   background:var(--card);border-radius:999px;padding:10px 18px;font-size:18px;
   box-shadow:0 4px 0 #e6d8c6;display:flex;align-items:center;gap:8px;
 }
-.stat-pill b{color:var(--primary);font-family:"Baloo 2"}
+.stat-pill b{color:var(--primary);font-family:var(--font-display)}
 .stat-pill .lbl{color:var(--text-soft);font-size:14px}
 
 .card-grid{
@@ -237,7 +238,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
 }
 .mem-back.emoji-type{font-size:64px}
 .mem-back.emoji-type.num-badge-game{
-  font-size:48px;font-weight:900;font-family:"Baloo 2";color:#fff;
+  font-size:48px;font-weight:900;font-family:var(--font-display);color:#fff;
   width:100px;height:100px;border-radius:50%;
   display:inline-flex;align-items:center;justify-content:center;
   background:linear-gradient(135deg,#FF6B6B,#FF8E53);
@@ -249,7 +250,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
 .mem-back.emoji-type.num-badge-game.purple{background:linear-gradient(135deg,#A18CD1,#FBC2EB)}
 .mem-back.emoji-type.num-badge-game.yellow{background:linear-gradient(135deg,#F6D365,#FDA085)}
 .mem-back.emoji-type.num-badge-game.pink{background:linear-gradient(135deg,#FF9A9E,#FECFEF)}
-.mem-back.word-type{font-size:30px;font-weight:700;font-family:"Baloo 2";color:var(--text)}
+.mem-back.word-type{font-size:30px;font-weight:700;font-family:var(--font-display);color:var(--text)}
 .mem-back.word-type small{display:block;font-size:14px;color:var(--text-soft);margin-top:4px;font-family:"ZCOOL KuaiLe"}
 .mem-card.shake .mem-back{animation:shake .4s}
 @keyframes shake{
@@ -314,7 +315,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
   flex:1;max-width:200px;justify-content:center;
 }
 .stat-card .ico{font-size:28px}
-.stat-card .val{font-size:22px;font-weight:700;font-family:"Baloo 2";color:var(--primary)}
+.stat-card .val{font-size:22px;font-weight:700;font-family:var(--font-display);color:var(--primary)}
 .stat-card .lbl{font-size:14px;color:var(--text-soft)}
 @media (max-width:480px){
   .home-stats-bar{gap:8px;padding:0 8px}
@@ -375,7 +376,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
   display:inline-flex;align-items:center;justify-content:center;
   width:120px;height:120px;border-radius:50%;
   background:linear-gradient(135deg,#FF6B6B,#FF8E53);
-  color:#fff;font-weight:900;font-size:56px;font-family:"Baloo 2";
+  color:#fff;font-weight:900;font-size:56px;font-family:var(--font-display);
   box-shadow:0 6px 0 rgba(0,0,0,.15), inset 0 -5px 0 rgba(0,0,0,.1);
   margin:18px auto 6px;
 }
@@ -386,11 +387,11 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
 .test-prompt.num-badge-quiz.pink{background:linear-gradient(135deg,#FF9A9E,#FECFEF)}
 .test-prompt.listen{font-size:80px;cursor:pointer;filter:drop-shadow(0 4px 8px rgba(0,0,0,.15));transition:transform .15s}
 .test-prompt.listen:hover{transform:scale(1.1)}
-.test-prompt.word{font-size:48px;font-weight:700;font-family:"Baloo 2";color:var(--text)}
+.test-prompt.word{font-size:48px;font-weight:700;font-family:var(--font-display);color:var(--text)}
 .test-prompt-zh{text-align:center;color:var(--text-soft);font-size:17px;margin-bottom:22px}
 .test-options{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .test-option{
-  font-family:"Baloo 2",inherit;cursor:pointer;border:3px solid #f0e2d0;
+  font-family:var(--font-display),inherit;cursor:pointer;border:3px solid #f0e2d0;
   background:var(--card);color:var(--text);font-size:19px;font-weight:600;
   padding:14px 10px;border-radius:18px;box-shadow:0 4px 0 #e6d8c6;
   transition:transform .12s, box-shadow .12s, background .15s, border-color .15s;
@@ -414,7 +415,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
 /* 结果区 */
 .test-result-title{font-size:30px;color:var(--primary);text-align:center;margin-bottom:10px}
 .test-result-stars{font-size:40px;text-align:center;letter-spacing:6px;margin-bottom:6px}
-.test-result-score{font-size:22px;text-align:center;color:var(--text);font-family:"Baloo 2";margin-bottom:16px}
+.test-result-score{font-size:22px;text-align:center;color:var(--text);font-family:var(--font-display);margin-bottom:16px}
 .test-wrong-wrap{margin-bottom:18px;max-height:180px;overflow-y:auto}
 .test-wrong-item{
   display:flex;align-items:center;gap:10px;padding:8px 12px;
@@ -425,7 +426,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
   display:inline-flex;align-items:center;justify-content:center;
   width:32px;height:32px;border-radius:50%;
   background:linear-gradient(135deg,#FF6B6B,#FF8E53);
-  color:#fff;font-weight:900;font-size:18px;font-family:"Baloo 2";
+  color:#fff;font-weight:900;font-size:18px;font-family:var(--font-display);
   box-shadow:0 2px 0 rgba(0,0,0,.15);
 }
 .test-wrong-item .em.num-badge-wrong.blue{background:linear-gradient(135deg,#4FACFE,#00F2FE)}
@@ -433,7 +434,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
 .test-wrong-item .em.num-badge-wrong.purple{background:linear-gradient(135deg,#A18CD1,#FBC2EB)}
 .test-wrong-item .em.num-badge-wrong.yellow{background:linear-gradient(135deg,#F6D365,#FDA085)}
 .test-wrong-item .em.num-badge-wrong.pink{background:linear-gradient(135deg,#FF9A9E,#FECFEF)}
-.test-wrong-item b{font-family:"Baloo 2";color:var(--primary)}
+.test-wrong-item b{font-family:var(--font-display);color:var(--primary)}
 /* ====================== 音标学习 ====================== */
 .ipa-section{margin-bottom:22px}
 .ipa-section-title{
@@ -450,14 +451,14 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
 .ipa-card:active{transform:translateY(2px);box-shadow:0 1px 0 #e6d8c6}
 .ipa-sym{
   font-size:22px;font-weight:700;color:var(--text);
-  font-family:"Lucida Sans Unicode","Arial Unicode MS",serif;
+  font-family:var(--font-ipa);
 }
 .ipa-name{font-size:12px;color:var(--text-soft);margin-top:2px}
-.ipa-example{font-size:12px;color:var(--primary);margin-top:2px;font-family:"Baloo 2"}
+.ipa-example{font-size:12px;color:var(--primary);margin-top:2px;font-family:var(--font-display)}
 .learn-ipa{
   font-size:18px;color:var(--primary);font-style:italic;
   margin-top:2px;letter-spacing:1px;
-  font-family:"Lucida Sans Unicode","Arial Unicode MS",serif;
+  font-family:var(--font-ipa);
   user-select:none;cursor:pointer;display:inline-block;
   transition:transform .12s;
 }
@@ -507,7 +508,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
   display:inline-flex;align-items:center;justify-content:center;
   width:56px;height:56px;border-radius:50%;
   background:linear-gradient(135deg,#FF6B6B,#FF8E53);
-  color:#fff;font-weight:900;font-family:"Baloo 2";font-size:28px;
+  color:#fff;font-weight:900;font-family:var(--font-display);font-size:28px;
   box-shadow:0 3px 0 rgba(0,0,0,.15);
   margin:0 auto 4px;
 }
@@ -516,8 +517,8 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
 .nb-card .em.num-badge.purple{background:linear-gradient(135deg,#A18CD1,#FBC2EB)}
 .nb-card .em.num-badge.yellow{background:linear-gradient(135deg,#F6D365,#FDA085)}
 .nb-card .em.num-badge.pink{background:linear-gradient(135deg,#FF9A9E,#FECFEF)}
-.nb-card .en{font-size:22px;font-weight:700;font-family:"Baloo 2";margin-top:6px}
-.nb-card .ipa{font-size:14px;color:var(--primary);font-style:italic;margin-top:2px;font-family:"Lucida Sans Unicode","Arial Unicode MS",serif}
+.nb-card .en{font-size:22px;font-weight:700;font-family:var(--font-display);margin-top:6px}
+.nb-card .ipa{font-size:14px;color:var(--primary);font-style:italic;margin-top:2px;font-family:var(--font-ipa)}
 .nb-card .zh{font-size:14px;color:var(--text-soft)}
 .empty-tip{text-align:center;color:var(--text-soft);padding:60px 20px;font-size:18px}
 
@@ -568,7 +569,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
   display:inline-flex;align-items:center;justify-content:center;
   width:80px;height:80px;border-radius:50%;
   background:linear-gradient(135deg,#FF6B6B,#FF8E53);
-  color:#fff;font-weight:900;font-size:40px;font-family:"Baloo 2";
+  color:#fff;font-weight:900;font-size:40px;font-family:var(--font-display);
   box-shadow:0 4px 0 rgba(0,0,0,.15);
 }
 .nb-play-card .em.num-badge.blue{background:linear-gradient(135deg,#4FACFE,#00F2FE)}
@@ -576,8 +577,8 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
 .nb-play-card .em.num-badge.purple{background:linear-gradient(135deg,#A18CD1,#FBC2EB)}
 .nb-play-card .em.num-badge.yellow{background:linear-gradient(135deg,#F6D365,#FDA085)}
 .nb-play-card .em.num-badge.pink{background:linear-gradient(135deg,#FF9A9E,#FECFEF)}
-.nb-play-card .en{font-size:32px;font-weight:700;font-family:"Baloo 2";color:var(--text)}
-.nb-play-card .ipa{font-size:16px;color:var(--primary);font-style:italic;margin-top:4px;font-family:"Lucida Sans Unicode","Arial Unicode MS",serif}
+.nb-play-card .en{font-size:32px;font-weight:700;font-family:var(--font-display);color:var(--text)}
+.nb-play-card .ipa{font-size:16px;color:var(--primary);font-style:italic;margin-top:4px;font-family:var(--font-ipa)}
 .nb-play-card .zh{font-size:20px;color:var(--text-soft);margin-top:4px}
 /* 版本号 */
 .version-tag{
@@ -829,7 +830,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       </div>
     </div>
     <!-- 版本号：每次修改代码发布新版本时请更新此处 -->
-    <div class="version-tag">@Stong v1.6.0</div>
+    <div class="version-tag">@Stong v1.6.1</div>
   </section>
 
   <!-- ============ 国际音标视图 ============ -->
@@ -949,13 +950,13 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       <div style="font-size:28px;color:#9C8A78;margin-bottom:12px;text-align:center" id="dialog-progress"></div>
       <div style="background:#FFF8F0;border-radius:20px;padding:20px;margin-bottom:16px;text-align:left">
         <div style="font-size:14px;color:#FF6B9D;margin-bottom:6px">👦 问：</div>
-        <div style="font-size:26px;font-weight:700;font-family:'Baloo 2';color:#4A3A2A" id="dialog-q">Hello!</div>
+        <div style="font-size:26px;font-weight:700;font-family:var(--font-display);color:#4A3A2A" id="dialog-q">Hello!</div>
         <div style="font-size:15px;color:#9C8A78;margin-top:4px" id="dialog-qzh">你好！</div>
         <button class="btn sky small" onclick="speak(document.getElementById('dialog-q').textContent)" style="margin-top:8px">🔊 听发音</button>
       </div>
       <div style="background:#F0FFF4;border-radius:20px;padding:20px;margin-bottom:20px;text-align:left">
         <div style="font-size:14px;color:#5FCC8F;margin-bottom:6px">👧 答：</div>
-        <div style="font-size:26px;font-weight:700;font-family:'Baloo 2';color:#4A3A2A" id="dialog-a">Hi!</div>
+        <div style="font-size:26px;font-weight:700;font-family:var(--font-display);color:#4A3A2A" id="dialog-a">Hi!</div>
         <div style="font-size:15px;color:#9C8A78;margin-top:4px" id="dialog-azh">嗨！</div>
         <button class="btn success small" onclick="speak(document.getElementById('dialog-a').textContent)" style="margin-top:8px">🔊 听发音</button>
       </div>
@@ -2711,10 +2712,10 @@ function renderDictResult(r, source){
   const result = document.getElementById("dict-result");
   const badge = source === "local" ? "📚 本地词典" : "🌐 在线翻译";
   const emojiHtml = r.emoji ? '<span style="font-size:56px;display:block;margin-bottom:8px">'+ r.emoji +'</span>' : '';
-  const ipaHtml = r.ipa ? '<div style="font-size:18px;color:var(--primary);font-style:italic;margin-top:6px;font-family:Lucida Sans Unicode,serif">/'+ r.ipa +'/</div>' : '';
+  const ipaHtml = r.ipa ? '<div style="font-size:18px;color:var(--primary);font-style:italic;margin-top:6px;font-family:var(--font-ipa)">/'+ r.ipa +'/</div>' : '';
   const enHtml = r.type === "en"
-    ? '<div style="font-size:32px;font-weight:700;font-family:Baloo 2,sans-serif">'+ r.en +'</div>' + ipaHtml
-    : '<div style="font-size:32px;font-weight:700;font-family:Baloo 2,sans-serif">'+ r.en +'</div>';
+    ? '<div style="font-size:32px;font-weight:700;font-family:var(--font-display)">'+ r.en +'</div>' + ipaHtml
+    : '<div style="font-size:32px;font-weight:700;font-family:var(--font-display)">'+ r.en +'</div>';
   const zhHtml = '<div style="font-size:24px;color:var(--text-secondary);margin-top:8px">'+ r.zh +'</div>';
   const speakBtn = r.en ? '<button class="btn" style="margin-top:14px;padding:8px 18px" onclick="speak(\''+ r.en.replace(/'/g,"\\'") +'\')">🔊 朗读</button>' : '';
   result.innerHTML =
