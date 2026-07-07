@@ -10,7 +10,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="xue.png">
 <title>英语单词大冒险 · 小学英语学习游戏</title>
-<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Baloo+2:wght@400;500;600;700;800&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Baloo+2:wght@400;500;600;700;800&family=Comic+Neue:wght@400;700&family=Quicksand:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ====================== 基础与变量 ====================== */
 :root{
@@ -26,16 +26,38 @@
   --text-soft:#7A6652;
   --shadow:0 8px 24px rgba(240,122,62,.18);
   --radius:28px;
+  --font-body:"ZCOOL KuaiLe","Baloo 2","Comic Neue",system-ui,sans-serif;
+  --font-display:"Baloo 2","ZCOOL KuaiLe",system-ui,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
 body{
-  font-family:"ZCOOL KuaiLe","Baloo 2","Comic Neue",system-ui,sans-serif;
+  font-family:var(--font-body);
   background:var(--bg);
   color:var(--text);
   overflow-x:hidden;
   min-height:100vh;
   position:relative;
+}
+body.font-system{
+  --font-body:system-ui,-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  --font-display:system-ui,-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+}
+body.font-cartoon{
+  --font-body:"ZCOOL KuaiLe","Baloo 2","Comic Neue",system-ui,sans-serif;
+  --font-display:"Baloo 2","ZCOOL KuaiLe",system-ui,sans-serif;
+}
+body.font-round{
+  --font-body:"Quicksand","Nunito","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  --font-display:"Fredoka","Quicksand",system-ui,sans-serif;
+}
+body.font-clean{
+  --font-body:-apple-system,BlinkMacSystemFont,"Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif;
+  --font-display:"Nunito","PingFang SC",system-ui,sans-serif;
+}
+body.font-serif{
+  --font-body:Georgia,"Times New Roman","Songti SC","SimSun",serif;
+  --font-display:Georgia,"Times New Roman","Songti SC",serif;
 }
 /* 装饰背景：飘动元素 */
 .bg-deco{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
@@ -763,6 +785,18 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
         </label>
       </div>
       <div class="set-row">
+        <div class="name">字体风格
+          <small>选择喜欢的页面字体</small>
+        </div>
+        <div class="speed-group" id="font-group">
+          <button class="speed-btn" data-font="cartoon">卡通</button>
+          <button class="speed-btn" data-font="system">系统</button>
+          <button class="speed-btn" data-font="round">圆润</button>
+          <button class="speed-btn" data-font="clean">简洁</button>
+          <button class="speed-btn" data-font="serif">衬线</button>
+        </div>
+      </div>
+      <div class="set-row">
         <div class="name">朗读语速
           <small>调整英文发音速度</small>
         </div>
@@ -795,7 +829,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       </div>
     </div>
     <!-- 版本号：每次修改代码发布新版本时请更新此处 -->
-    <div class="version-tag">@Stong v1.5.9</div>
+    <div class="version-tag">@Stong v1.6.0</div>
   </section>
 
   <!-- ============ 国际音标视图 ============ -->
@@ -1795,6 +1829,7 @@ const state = {
   sound:true,
   autospeak:true,
   reduceMotion:false,
+  fontStyle:"cartoon",
   rate:0.8,
   voice:"en-US-JennyNeural",
   // 已学单词
@@ -1868,7 +1903,7 @@ function saveState(){
   try{
     localStorage.setItem("engGameState", JSON.stringify({
       learned:state.learned,
-      settings:{sound:state.sound,autospeak:state.autospeak,rate:state.rate,voice:state.voice},
+      settings:{sound:state.sound,autospeak:state.autospeak,reduceMotion:state.reduceMotion,fontStyle:state.fontStyle,rate:state.rate,voice:state.voice},
       stars:state.stars,
       badges:state.badges,
       gLevel:state.gLevel,
@@ -1905,6 +1940,8 @@ function loadState(){
     if(obj.settings){
       state.sound = obj.settings.sound !== false;
       state.autospeak = obj.settings.autospeak !== false;
+      state.reduceMotion = !!obj.settings.reduceMotion;
+      state.fontStyle = obj.settings.fontStyle || "cartoon";
       state.rate = obj.settings.rate || 0.8;
       state.voice = obj.settings.voice || "en-US-JennyNeural";
     }
@@ -1914,6 +1951,13 @@ function loadState(){
     if(obj.learnIndexes) state.learnIndexes = obj.learnIndexes;
     if(obj.learnTheme) state.learnTheme = obj.learnTheme;
   }catch(e){}
+}
+function applyFont(){
+  document.body.classList.remove("font-cartoon","font-system","font-round","font-clean","font-serif");
+  document.body.classList.add("font-" + (state.fontStyle || "cartoon"));
+}
+function applyReduceMotion(){
+  document.body.classList.toggle("reduce-motion", state.reduceMotion);
 }
 
 /* ====================== 视图切换 ====================== */
@@ -3308,6 +3352,16 @@ function initSettings(){
     saveState();
     applyReduceMotion();
   };
+  document.querySelectorAll(".speed-btn[data-font]").forEach(b=>{
+    b.classList.toggle("active", b.dataset.font===state.fontStyle);
+    b.onclick = ()=>{
+      document.querySelectorAll(".speed-btn[data-font]").forEach(x=>x.classList.remove("active"));
+      b.classList.add("active");
+      state.fontStyle = b.dataset.font;
+      saveState();
+      applyFont();
+    };
+  });
   document.querySelectorAll(".speed-btn[data-rate]").forEach(b=>{
     b.classList.toggle("active", parseFloat(b.dataset.rate)===state.rate);
     b.onclick = ()=>{
@@ -3459,6 +3513,7 @@ function buildBgDeco(){
 
 /* ====================== 启动 ====================== */
 loadState();
+applyFont();
 applyReduceMotion();
 buildBgDeco();
 renderHomeStats();
