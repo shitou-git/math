@@ -790,7 +790,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       </div>
     </div>
     <!-- 版本号：每次修改代码发布新版本时请更新此处 -->
-    <div class="version-tag">@Stong v1.5.2</div>
+    <div class="version-tag">@Stong v1.5.3</div>
   </section>
 
   <!-- ============ 国际音标视图 ============ -->
@@ -2458,6 +2458,27 @@ const ipaAudioMap = {
   "m":"ipa-audio/c_m.mp3", "n":"ipa-audio/c_n.mp3", "ŋ":"ipa-audio/c_ng.mp3",
   "l":"ipa-audio/c_l.mp3", "w":"ipa-audio/c_w.mp3", "j":"ipa-audio/c_y.mp3"
 };
+// 音标音频预加载缓存池（保持引用防止GC回收，确保点击时从缓存直接播放）
+const _ipaPreloadPool = [];
+let _ipaPreloadStarted = false;
+function preloadIpaAudio(){
+  if(_ipaPreloadStarted) return;
+  _ipaPreloadStarted = true;
+  const srcs = Object.values(ipaAudioMap);
+  let idx = 0;
+  function loadNext(){
+    if(idx >= srcs.length) return;
+    try{
+      const a = new Audio();
+      a.preload = "auto";
+      a.src = srcs[idx];
+      _ipaPreloadPool.push(a);
+    }catch(e){}
+    idx++;
+    setTimeout(loadNext, 80);
+  }
+  loadNext();
+}
 // 复用单个 Audio 元素播放音标
 let _ipaAudio = null;
 function playIpaSound(sym, onEnd){
@@ -2515,6 +2536,7 @@ function initIpaView(){
   renderIpaGroup("ipa-affricates", ipaData.affricates);
   renderIpaGroup("ipa-clusters", ipaData.clusters);
   renderIpaGroup("ipa-others", ipaData.others);
+  preloadIpaAudio();
 }
 
 /* ====================== 学习小测验 ====================== */
@@ -3299,6 +3321,8 @@ loadState();
 applyReduceMotion();
 buildBgDeco();
 renderHomeStats();
+// 页面加载后后台预加载音标音频，点击音标时可直接播放无延迟
+setTimeout(preloadIpaAudio, 1500);
 
 // 点击页面其他地方关闭下拉菜单
 document.addEventListener("click", (e)=>{
