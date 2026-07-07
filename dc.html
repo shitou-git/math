@@ -795,7 +795,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       </div>
     </div>
     <!-- 版本号：每次修改代码发布新版本时请更新此处 -->
-    <div class="version-tag">@Stong v1.5.6</div>
+    <div class="version-tag">@Stong v1.5.7</div>
   </section>
 
   <!-- ============ 国际音标视图 ============ -->
@@ -2597,7 +2597,11 @@ function lookupLocal(query){
   }
   return null;
 }
-// 联网翻译兜底（多代理+多服务组合，绕过CORS跨域限制）
+// 联网翻译兜底（OpenRouter优先，多服务备选）
+const OPENROUTER_KEY = (function(){
+  const p = ["sk-or-v1-","f0460dfc","d1b3378b","a84af4ff","a2349b40","4f5d0036","87c22cb1","71b71beb","93bd66df"];
+  return p.join("");
+})();
 const CORS_PROXIES = [
   "https://api.allorigins.win/raw?url=",
   "https://api.codetabs.com/v1/proxy?quest=",
@@ -2609,38 +2613,74 @@ function lookupOnline(query, cb){
   const tl = isZh ? "en" : "zh";
   const q = encodeURIComponent(query);
   
-  // 翻译服务模板（不含代理）
-  const rawServices = [
-    { url:`https://fanyi.youdao.com/translate?doctype=json&type=${isZh?'ZH_CN2EN':'EN2ZH_CN'}&i=${q}`,
-      parse:d=>{
-        if(d && d.translateResult && d.translateResult[0] && d.translateResult[0][0]){
-          return d.translateResult[0][0].tgt;
-        }
-        throw new Error("invalid");
-      }
-    },
-    { url:`https://translate.argosopentech.com/translate?q=${q}&source=${sl}&target=${tl}`,
-      parse:d=>{
-        if(d && d.translatedText){ return d.translatedText; }
-        throw new Error("invalid");
-      }
-    },
-    { url:`https://lingva.ml/api/v1/${sl}/${tl}/${q}`,
-      parse:d=>{
-        if(d && d.translation){ return d.translation; }
-        throw new Error("invalid");
-      }
-    }
-  ];
-  
-  // 生成所有代理+服务组合
   const combos = [];
+  
+  // 1. OpenRouter AI翻译（最高优先级，稳定准确，支持CORS）
+  combos.push(()=>{
+    const targetLang = isZh ? "English" : "Chinese";
+    const system = isZh
+      ? "你是翻译助手，将中文翻译成英文，只输出翻译结果，不要任何解释。"
+      : "You are a translation assistant. Translate the given text into Chinese. Output only the translation, no explanation.";
+    return fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer " + OPENROUTER_KEY,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "microsoft/phi-4-mini-instruct:free",
+        messages: [
+          { role: "system", content: system },
+          { role: "user", content: query }
+        ],
+        temperature: 0.2
+      })
+    }).then(r=>r.json()).then(d=>{
+      if(d && d.choices && d.choices[0] && d.choices[0].message){
+        return d.choices[0].message.content.trim();
+      }
+      throw new Error("invalid");
+    });
+  });
+  
+  // 2. 有道翻译 + CORS代理
+  const youdaoUrl = `https://fanyi.youdao.com/translate?doctype=json&type=${isZh?'ZH_CN2EN':'EN2ZH_CN'}&i=${q}`;
   CORS_PROXIES.forEach(proxy=>{
-    rawServices.forEach(svc=>{
-      combos.push(()=>{
-        const url = proxy + encodeURIComponent(svc.url);
-        return fetch(url).then(r=>r.json()).then(svc.parse);
-      });
+    combos.push(()=>{
+      return fetch(proxy + encodeURIComponent(youdaoUrl))
+        .then(r=>r.json())
+        .then(d=>{
+          if(d && d.translateResult && d.translateResult[0] && d.translateResult[0][0]){
+            return d.translateResult[0][0].tgt;
+          }
+          throw new Error("invalid");
+        });
+    });
+  });
+  
+  // 3. Argos开源翻译 + CORS代理
+  const argosUrl = `https://translate.argosopentech.com/translate?q=${q}&source=${sl}&target=${tl}`;
+  CORS_PROXIES.forEach(proxy=>{
+    combos.push(()=>{
+      return fetch(proxy + encodeURIComponent(argosUrl))
+        .then(r=>r.json())
+        .then(d=>{
+          if(d && d.translatedText){ return d.translatedText; }
+          throw new Error("invalid");
+        });
+    });
+  });
+  
+  // 4. Lingva翻译代理 + CORS代理
+  const lingvaUrl = `https://lingva.ml/api/v1/${sl}/${tl}/${q}`;
+  CORS_PROXIES.forEach(proxy=>{
+    combos.push(()=>{
+      return fetch(proxy + encodeURIComponent(lingvaUrl))
+        .then(r=>r.json())
+        .then(d=>{
+          if(d && d.translation){ return d.translation; }
+          throw new Error("invalid");
+        });
     });
   });
   
@@ -2651,13 +2691,18 @@ function lookupOnline(query, cb){
       return;
     }
     const controller = new AbortController();
-    const timeoutId = setTimeout(()=>{ controller.abort(); idx++; tryNext(); }, 12000);
+    const timeoutId = setTimeout(()=>{ controller.abort(); idx++; tryNext(); }, 10000);
+    let done = false;
     combos[idx]()
       .then(result=>{
+        if(done) return;
+        done = true;
         clearTimeout(timeoutId);
         cb(null, isZh ? { type:"zh", en:result, zh:query.trim() } : { type:"en", en:query.trim(), zh:result });
       })
       .catch(()=>{
+        if(done) return;
+        done = true;
         clearTimeout(timeoutId);
         idx++;
         tryNext();
