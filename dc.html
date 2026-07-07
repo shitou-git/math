@@ -795,7 +795,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       </div>
     </div>
     <!-- 版本号：每次修改代码发布新版本时请更新此处 -->
-    <div class="version-tag">@Stong v1.5.7</div>
+    <div class="version-tag">@Stong v1.5.8</div>
   </section>
 
   <!-- ============ 国际音标视图 ============ -->
@@ -2597,9 +2597,9 @@ function lookupLocal(query){
   }
   return null;
 }
-// 联网翻译兜底（OpenRouter优先，多服务备选）
-const OPENROUTER_KEY = (function(){
-  const p = ["sk-or-v1-","f0460dfc","d1b3378b","a84af4ff","a2349b40","4f5d0036","87c22cb1","71b71beb","93bd66df"];
+// 联网翻译兜底（AgnesAI优先，多服务备选）
+const AGNES_KEY = (function(){
+  const p = ["",""];
   return p.join("");
 })();
 const CORS_PROXIES = [
@@ -2615,33 +2615,34 @@ function lookupOnline(query, cb){
   
   const combos = [];
   
-  // 1. OpenRouter AI翻译（最高优先级，稳定准确，支持CORS）
-  combos.push(()=>{
-    const targetLang = isZh ? "English" : "Chinese";
-    const system = isZh
-      ? "你是翻译助手，将中文翻译成英文，只输出翻译结果，不要任何解释。"
-      : "You are a translation assistant. Translate the given text into Chinese. Output only the translation, no explanation.";
-    return fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": "Bearer " + OPENROUTER_KEY,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: "microsoft/phi-4-mini-instruct:free",
-        messages: [
-          { role: "system", content: system },
-          { role: "user", content: query }
-        ],
-        temperature: 0.2
-      })
-    }).then(r=>r.json()).then(d=>{
-      if(d && d.choices && d.choices[0] && d.choices[0].message){
-        return d.choices[0].message.content.trim();
-      }
-      throw new Error("invalid");
+  // 1. AgnesAI翻译（最高优先级，稳定准确，支持CORS）
+  if(AGNES_KEY){
+    combos.push(()=>{
+      const system = isZh
+        ? "你是翻译助手，将中文翻译成英文，只输出翻译结果，不要任何解释。"
+        : "You are a translation assistant. Translate the given text into Chinese. Output only the translation, no explanation.";
+      return fetch("https://apihub.agnes-ai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer " + AGNES_KEY,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "agnes-2.0-flash",
+          messages: [
+            { role: "system", content: system },
+            { role: "user", content: query }
+          ],
+          temperature: 0.2
+        })
+      }).then(r=>r.json()).then(d=>{
+        if(d && d.choices && d.choices[0] && d.choices[0].message){
+          return d.choices[0].message.content.trim();
+        }
+        throw new Error("invalid");
+      });
     });
-  });
+  }
   
   // 2. 有道翻译 + CORS代理
   const youdaoUrl = `https://fanyi.youdao.com/translate?doctype=json&type=${isZh?'ZH_CN2EN':'EN2ZH_CN'}&i=${q}`;
