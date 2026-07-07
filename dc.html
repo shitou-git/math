@@ -205,58 +205,32 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
   display:grid;grid-template-columns:repeat(3,1fr);gap:18px;max-width:720px;margin:0 auto;
 }
 .mem-card{
-  aspect-ratio:3/4;perspective:1000px;cursor:pointer;
+  aspect-ratio:3/4;cursor:pointer;border-radius:24px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--card);box-shadow:0 6px 0 #e6d8c6;
+  border:4px solid #f0e2d0;
+  transition:transform .15s ease, border-color .15s ease, background .15s ease;
 }
-.mem-inner{
-  position:relative;width:100%;height:100%;
-  transform-style:preserve-3d;transition:transform .45s ease;
-}
-.mem-card.flipped .mem-inner{transform:rotateY(180deg)}
-.mem-card.matched .mem-inner{transform:rotateY(180deg) scale(.92)}
-.mem-card.matched{animation:matchPop .6s ease}
+.mem-card:hover:not(.matched):not(.selected){transform:translateY(-4px);border-color:var(--primary)}
+.mem-card:active:not(.matched):not(.selected){transform:translateY(2px);box-shadow:0 2px 0 #e6d8c6}
+.mem-card.selected{border-color:var(--primary);background:#FFF8F0;transform:scale(1.05)}
+.mem-card.matched{animation:matchPop .4s ease;border-color:var(--success);background:#D4F5DD}
 @keyframes matchPop{
   0%{transform:scale(1)}
   40%{transform:scale(1.12)}
-  100%{transform:scale(.92)}
+  100%{transform:scale(.95)}
 }
-.mem-face{
-  position:absolute;inset:0;backface-visibility:hidden;border-radius:24px;
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 6px 0 #e6d8c6;
+.mem-card-content{
+  font-size:28px;font-weight:700;font-family:var(--font-display);text-align:center;
+  padding:8px;line-height:1.3;
 }
-.mem-front{
-  background:linear-gradient(135deg,#FFB682,#FF9F68);
-  color:#fff;font-size:50px;
-  border:4px dashed rgba(255,255,255,.6);
-}
-.mem-front span{animation:spin 4s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.mem-back{
-  background:var(--card);transform:rotateY(180deg);
-  border:4px solid #f0e2d0;
-  flex-direction:column;text-align:center;padding:8px;
-}
-.mem-back.emoji-type{font-size:64px}
-.mem-back.emoji-type.num-badge-game{
-  font-size:48px;font-weight:900;font-family:var(--font-display);color:#fff;
-  width:100px;height:100px;border-radius:50%;
-  display:inline-flex;align-items:center;justify-content:center;
-  background:linear-gradient(135deg,#FF6B6B,#FF8E53);
-  box-shadow:0 6px 0 rgba(0,0,0,.15), inset 0 -4px 0 rgba(0,0,0,.1);
-  margin:auto;
-}
-.mem-back.emoji-type.num-badge-game.blue{background:linear-gradient(135deg,#4FACFE,#00F2FE)}
-.mem-back.emoji-type.num-badge-game.green{background:linear-gradient(135deg,#43E97B,#38F9D7)}
-.mem-back.emoji-type.num-badge-game.purple{background:linear-gradient(135deg,#A18CD1,#FBC2EB)}
-.mem-back.emoji-type.num-badge-game.yellow{background:linear-gradient(135deg,#F6D365,#FDA085)}
-.mem-back.emoji-type.num-badge-game.pink{background:linear-gradient(135deg,#FF9A9E,#FECFEF)}
-.mem-back.word-type{font-size:30px;font-weight:700;font-family:var(--font-display);color:var(--text)}
-.mem-back.word-type small{display:block;font-size:14px;color:var(--text-soft);margin-top:4px;font-family:"ZCOOL KuaiLe"}
-.mem-card.shake .mem-back{animation:shake .4s}
+.mem-card-content.zh{color:var(--primary);font-size:32px}
+.mem-card-content.en{color:var(--text);font-size:24px}
+.mem-card.shake{animation:shake .4s}
 @keyframes shake{
-  0%,100%{transform:rotateY(180deg) translateX(0)}
-  25%{transform:rotateY(180deg) translateX(-8px)}
-  75%{transform:rotateY(180deg) translateX(8px)}
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-8px)}
+  75%{transform:translateX(8px)}
 }
 
 /* 主题下拉菜单 */
@@ -830,7 +804,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       </div>
     </div>
     <!-- 版本号：每次修改代码发布新版本时请更新此处 -->
-    <div class="version-tag">@Stong v1.6.1</div>
+    <div class="version-tag">@Stong v1.6.2</div>
   </section>
 
   <!-- ============ 国际音标视图 ============ -->
@@ -2761,32 +2735,24 @@ function getQuizDistractors(word, n){
 
 // 为一个单词生成一道题，题型在三种里随机
 function makeQuizQuestion(word){
-  const types = ["emoji2en", "en2zh", "listen2en"];
+  const types = ["zh2en", "en2zh", "listen2en"];
   const type = types[Math.floor(Math.random() * types.length)];
   const distractors = getQuizDistractors(word, 3);
-  // 复制一份再洗牌，避免污染原数组
   const opts = shuffleArr([word, ...distractors]);
   let options, correct, promptText, promptZh, promptClass;
-  const numColors = ["","blue","green","purple","yellow","pink"];
-  const isNum = /^\d+$/.test(word.emoji);
-  if(type === "emoji2en"){
+  if(type === "zh2en"){
     options = opts.map(w=>({label:w.en, value:w.en}));
     correct = word.en;
-    promptText = word.emoji;
-    promptZh = "这个图片对应的单词是？";
-    if(isNum){
-      const colorIdx = parseInt(word.emoji) % numColors.length;
-      promptClass = "num-badge-quiz " + (numColors[colorIdx] || "");
-    }else{
-      promptClass = "";
-    }
+    promptText = word.zh;
+    promptZh = "这个汉字对应的英文单词是？";
+    promptClass = "word";
   }else if(type === "en2zh"){
     options = opts.map(w=>({label:w.zh, value:w.zh}));
     correct = word.zh;
     promptText = word.en;
     promptZh = "这个单词的意思是？";
     promptClass = "word";
-  }else{  // listen2en：听发音选单词
+  }else{
     options = opts.map(w=>({label:w.en, value:w.en}));
     correct = word.en;
     promptText = "🔊";
@@ -2942,69 +2908,41 @@ function startGame(){
   state.gCombo = 0;
   state.gErrors = 0;
   state.gFirstCard = null;
-  state.gLock = true;   // 初始锁定，记忆阶段不可点击
-  state.gMemorize = true; // 记忆阶段标记
-  // 关卡难度：每关选 3-N 对，记忆时间递减
+  state.gLock = false;
   const pairs = Math.min(3 + Math.floor((state.gLevel-1)/2), 6);
   state.gTotalPairs = pairs;
   state.gLeft = pairs;
-  // 记忆时间：关卡1=5秒，每升1关减0.5秒，最少2秒
-  const memTime = Math.max(2, 5 - (state.gLevel-1)*0.5);
-  state.gMemTime = memTime;
-  // 从全部词库随机选取
   const allWords = [];
   Object.keys(wordDatabase).forEach(k=>{
     wordDatabase[k].words.forEach(w=>allWords.push(w));
   });
   shuffle(allWords);
   const picked = allWords.slice(0, pairs);
-  // 生成卡片：一半 emoji，一半 word
   const cards = [];
   picked.forEach((w,i)=>{
-    cards.push({type:"emoji",pairId:i,emoji:w.emoji,en:w.en,zh:w.zh});
-    cards.push({type:"word",pairId:i,emoji:w.emoji,en:w.en,zh:w.zh});
+    cards.push({type:"zh",pairId:i,emoji:w.emoji,en:w.en,zh:w.zh});
+    cards.push({type:"en",pairId:i,emoji:w.emoji,en:w.en,zh:w.zh});
   });
   shuffle(cards);
-  // 渲染
   const grid = document.getElementById("card-grid");
   grid.innerHTML = "";
   const cols = pairs<=3?3:(pairs<=4?4:(pairs<=5?5:6));
   grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-  const numColors = ["","blue","green","purple","yellow","pink"];
   cards.forEach((c,idx)=>{
     const el = document.createElement("div");
-    el.className = "mem-card flipped";  // 初始正面展示
+    el.className = "mem-card";
     el.dataset.pairId = c.pairId;
     el.dataset.idx = idx;
     el.dataset.en = c.en;
     el.dataset.zh = c.zh;
-    const isNum = /^\d+$/.test(c.emoji);
-    const numColor = isNum ? (numColors[parseInt(c.emoji) % numColors.length] || "") : "";
-    el.innerHTML = `
-      <div class="mem-inner">
-        <div class="mem-face mem-front"><span>❓</span></div>
-        ${c.type==="emoji"
-          ? (isNum
-              ? `<div class="mem-face mem-back emoji-type num-badge-game ${numColor}">${c.emoji}</div>`
-              : `<div class="mem-face mem-back emoji-type">${c.emoji}</div>`)
-          : `<div class="mem-face mem-back word-type">${c.en}<small>${c.zh}</small></div>`}
-      </div>`;
+    el.dataset.type = c.type;
+    el.innerHTML = `<div class="mem-card-content ${c.type}">${c.type==="zh"?c.zh:c.en}</div>`;
     el.addEventListener("click",()=>flipCard(el));
     grid.appendChild(el);
   });
   updateGameStats();
-  // 显示记忆倒计时条
-  showMemorizeBar(memTime);
-  // 记忆时间结束后翻回背面
-  setTimeout(()=>{
-    state.gMemorize = false;
-    state.gLock = false;
-    document.querySelectorAll(".mem-card.flipped:not(.matched)").forEach(el=>{
-      el.classList.remove("flipped");
-    });
-    toast("开始配对！加油！💪");
-    beep("start");
-  }, memTime*1000);
+  toast("点击汉字和对应的英文单词进行配对！💪");
+  beep("start");
 }
 // 记忆倒计时条
 function showMemorizeBar(seconds){
@@ -3017,37 +2955,39 @@ function showMemorizeBar(seconds){
 }
 function flipCard(el){
   if(state.gLock) return;
-  if(el.classList.contains("flipped") || el.classList.contains("matched")) return;
-  el.classList.add("flipped");
-  beep("flip");
+  if(el.classList.contains("matched") || el.classList.contains("selected")) return;
+  el.classList.add("selected");
+  beep("click");
+  speak(el.dataset.en);
   if(!state.gFirstCard){
     state.gFirstCard = el;
-    // 朗读该单词
-    speak(el.dataset.en);
     return;
   }
-  // 第二张
-  state.gLock = true;
   const first = state.gFirstCard;
   state.gFirstCard = null;
-  // 朗读第二张卡片
-  speak(el.dataset.en);
+  if(first.dataset.type === el.dataset.type){
+    beep("err");
+    toast("请选择不同类型的卡片！");
+    setTimeout(()=>{
+      first.classList.remove("selected");
+      el.classList.remove("selected");
+    }, 500);
+    return;
+  }
+  state.gLock = true;
   if(first.dataset.pairId === el.dataset.pairId){
-    // 配对成功
     state.gCombo++;
     const gain = 10 + (state.gCombo-1)*2;
     state.gScore += gain;
     state.gLeft--;
     showFloatScore(el, "+"+gain);
     beep("ok");
-    addStars(2);  // 配对成功获得2颗星星
-    // 标记已学单词(按主题独立记录,并写入真实 emoji)
-    state.learned[learnedKey(el.dataset.theme, el.dataset.en)] = {zh:el.dataset.zh, emoji:el.dataset.emoji};
-    saveState();
+    addStars(2);
     setTimeout(()=>{
       first.classList.add("matched");
+      first.classList.remove("selected");
       el.classList.add("matched");
-      // 检查通关
+      el.classList.remove("selected");
       if(state.gLeft<=0){
         setTimeout(levelClear, 500);
       }
@@ -3055,15 +2995,14 @@ function flipCard(el){
       updateGameStats();
     }, 350);
   }else{
-    // 失败
     state.gCombo = 0;
     state.gErrors++;
     beep("err");
     first.classList.add("shake");
     el.classList.add("shake");
     setTimeout(()=>{
-      first.classList.remove("flipped","shake");
-      el.classList.remove("flipped","shake");
+      first.classList.remove("selected","shake");
+      el.classList.remove("selected","shake");
       state.gLock = false;
       updateGameStats();
     }, 800);
