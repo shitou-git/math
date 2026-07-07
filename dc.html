@@ -649,6 +649,16 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
         <h3>查词翻译</h3>
         <p>英汉互译查询</p>
       </div>
+      <div class="menu-card" role="button" tabindex="0" onclick="go('school-view', 'primary')" onkeydown="if(event.key==='Enter')go('school-view', 'primary')">
+        <span class="ico">🎒</span>
+        <h3>小学词汇</h3>
+        <p>200个核心单词</p>
+      </div>
+      <div class="menu-card" role="button" tabindex="0" onclick="go('school-view', 'junior')" onkeydown="if(event.key==='Enter')go('school-view', 'junior')">
+        <span class="ico">📖</span>
+        <h3>初中词汇</h3>
+        <p>250个核心单词</p>
+      </div>
       <div class="menu-card" role="button" tabindex="0" onclick="go('settings-view')" onkeydown="if(event.key==='Enter')go('settings-view')">
         <span class="ico">⚙️</span>
         <h3>设置</h3>
@@ -805,6 +815,22 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
     </div>
     <!-- 版本号：每次修改代码发布新版本时请更新此处 -->
     <div class="version-tag">@Stong v1.6.5</div>
+  </section>
+
+  <!-- ============ 学校词汇视图 ============ -->
+  <section class="view" id="school-view">
+    <div class="topbar">
+      <button class="back-btn" onclick="go('home-view')">← 返回</button>
+      <h2 class="page-title" id="school-title">🎒 小学词汇</h2>
+      <button class="back-btn" style="visibility:hidden">占位</button>
+    </div>
+    <div style="max-width:680px;margin:0 auto">
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <button class="btn" id="btn-primary" onclick="switchSchoolTab('primary')">🎒 小学</button>
+        <button class="btn" id="btn-junior" onclick="switchSchoolTab('junior')">📖 初中</button>
+      </div>
+      <div id="school-words-container"></div>
+    </div>
   </section>
 
   <!-- ============ 国际音标视图 ============ -->
@@ -1512,6 +1538,11 @@ const wordDatabase = {
     {en:"cherry", zh:"樱桃", emoji:"🍒", ipa:"tʃˈɛri"},
     {en:"fruit", zh:"水果", emoji:"🍎", ipa:"frˈut"}
   ]}
+};
+
+const schoolWords = {
+  primary: { name: { en: "Primary School", zh: "小学词汇" }, icon: "🎒", count: 200 },
+  junior: { name: { en: "Junior High", zh: "初中词汇" }, icon: "📖", count: 250 }
 };
 
 /* ====================== 对话场景数据库 ====================== */
