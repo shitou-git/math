@@ -795,7 +795,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       </div>
     </div>
     <!-- 版本号：每次修改代码发布新版本时请更新此处 -->
-    <div class="version-tag">@Stong v1.5.5</div>
+    <div class="version-tag">@Stong v1.5.6</div>
   </section>
 
   <!-- ============ 国际音标视图 ============ -->
@@ -2597,47 +2597,62 @@ function lookupLocal(query){
   }
   return null;
 }
-// 联网翻译兜底（多服务备选，国内网络友好，免费无需key）
+// 联网翻译兜底（多代理+多服务组合，绕过CORS跨域限制）
+const CORS_PROXIES = [
+  "https://api.allorigins.win/raw?url=",
+  "https://api.codetabs.com/v1/proxy?quest=",
+  "https://cors.eu.org/?"
+];
 function lookupOnline(query, cb){
   const isZh = /[\u4e00-\u9fa5]/.test(query);
   const sl = isZh ? "zh" : "en";
   const tl = isZh ? "en" : "zh";
   const q = encodeURIComponent(query);
   
-  // 备选翻译服务列表，按优先级顺序尝试
-  const services = [
-    // 有道翻译（国内最稳定）
-    () => fetch(`https://fanyi.youdao.com/translate?doctype=json&type=${isZh?'ZH_CN2EN':'EN2ZH_CN'}&i=${q}`, {
-      headers: { "User-Agent": "Mozilla/5.0", "Referer": "https://fanyi.youdao.com/" }
-    }).then(r=>r.json()).then(d=>{
-      if(d && d.translateResult && d.translateResult[0] && d.translateResult[0][0]){
-        return d.translateResult[0][0].tgt;
+  // 翻译服务模板（不含代理）
+  const rawServices = [
+    { url:`https://fanyi.youdao.com/translate?doctype=json&type=${isZh?'ZH_CN2EN':'EN2ZH_CN'}&i=${q}`,
+      parse:d=>{
+        if(d && d.translateResult && d.translateResult[0] && d.translateResult[0][0]){
+          return d.translateResult[0][0].tgt;
+        }
+        throw new Error("invalid");
       }
-      throw new Error("invalid data");
-    }),
-    // Argos开源翻译API（免费，无需key）
-    () => fetch(`https://translate.argosopentech.com/translate?q=${q}&source=${sl}&target=${tl}`)
-      .then(r=>r.json()).then(d=>{
+    },
+    { url:`https://translate.argosopentech.com/translate?q=${q}&source=${sl}&target=${tl}`,
+      parse:d=>{
         if(d && d.translatedText){ return d.translatedText; }
-        throw new Error("invalid data");
-      }),
-    // Lingva翻译代理（免费，无需key）
-    () => fetch(`https://lingva.ml/api/v1/${sl}/${tl}/${q}`)
-      .then(r=>r.json()).then(d=>{
+        throw new Error("invalid");
+      }
+    },
+    { url:`https://lingva.ml/api/v1/${sl}/${tl}/${q}`,
+      parse:d=>{
         if(d && d.translation){ return d.translation; }
-        throw new Error("invalid data");
-      })
+        throw new Error("invalid");
+      }
+    }
   ];
+  
+  // 生成所有代理+服务组合
+  const combos = [];
+  CORS_PROXIES.forEach(proxy=>{
+    rawServices.forEach(svc=>{
+      combos.push(()=>{
+        const url = proxy + encodeURIComponent(svc.url);
+        return fetch(url).then(r=>r.json()).then(svc.parse);
+      });
+    });
+  });
   
   let idx = 0;
   function tryNext(){
-    if(idx >= services.length){
-      cb("所有翻译服务均不可用，请检查网络", null);
+    if(idx >= combos.length){
+      cb(null, null);
       return;
     }
     const controller = new AbortController();
-    const timeoutId = setTimeout(()=>{ controller.abort(); idx++; tryNext(); }, 10000);
-    services[idx]()
+    const timeoutId = setTimeout(()=>{ controller.abort(); idx++; tryNext(); }, 12000);
+    combos[idx]()
       .then(result=>{
         clearTimeout(timeoutId);
         cb(null, isZh ? { type:"zh", en:result, zh:query.trim() } : { type:"en", en:query.trim(), zh:result });
@@ -2675,8 +2690,8 @@ function doLookup(){
   // 2. 本地没有，显示加载中，联网查询
   result.innerHTML = '<div style="text-align:center;color:var(--text-soft);padding:40px;font-size:15px">⏳ 正在联网翻译...</div>';
   lookupOnline(query, (err, data)=>{
-    if(err || !data){
-      result.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:40px;font-size:15px">😅 翻译失败，请检查网络后重试<br><span style="font-size:13px">'+ (err||"") +'</span></div>';
+    if(!data){
+      result.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:40px;font-size:15px">😅 当前网络环境下无法使用在线翻译<br><span style="font-size:13px">支持的488个核心词汇可秒查</span></div>';
       return;
     }
     renderDictResult(data, "online");
