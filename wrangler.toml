@@ -1,0 +1,11 @@
+name = "wordbook-api"
+main = "src/index.js"
+compatibility_date = "2026-07-08"
+
+[[d1_databases]]
+binding = "WORDBOOK_DB"
+database_name = "wordbook-db"
+database_id = ""
+
+[vars]
+ADMIN_PASSWORD = "changeme123"
