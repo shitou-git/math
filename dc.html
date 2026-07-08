@@ -4483,7 +4483,7 @@ function startGame(){
   state.gCombo = 0;
   state.gErrors = 0;
   state.gFirstCard = null;
-  state.gLock = false;
+  state.gLock = true;
   const pairs = Math.min(3 + Math.floor((state.gLevel-1)/2), 6);
   state.gTotalPairs = pairs;
   state.gLeft = pairs;
@@ -4518,6 +4518,7 @@ function startGame(){
   updateGameStats();
   toast("点击汉字和对应的英文单词进行配对！💪");
   beep("start");
+  setTimeout(()=>{ state.gLock = false; }, 300);
 }
 // 记忆倒计时条
 function showMemorizeBar(seconds){
