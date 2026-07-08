@@ -961,7 +961,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
       </div>
       <div id="dict-result" style="min-height:200px"></div>
       <div style="text-align:center;color:var(--text-muted);font-size:13px;margin-top:24px;padding:12px;background:var(--bg-card);border-radius:10px">
-        💡 内置 488 个核心词汇可秒查，生词自动联网翻译<br>支持英文查中文、中文查英文
+        💡 内置核心词汇 + 中小学词汇可秒查，生词自动联网翻译<br>支持英文查中文、中文查英文
       </div>
     </div>
   </section>
@@ -4102,6 +4102,15 @@ function buildLocalDict(){
       }
     });
   }
+  // 接入中小学词汇数据
+  for(const level in schoolWords){
+    schoolWords[level].words.forEach(w=>{
+      if(w.en && w.zh){
+        _localDict[w.en.toLowerCase()] = { zh:w.zh, ipa:w.ipa||"", emoji:w.emoji||"" };
+        _localDict["zh:"+w.zh] = { en:w.en, ipa:w.ipa||"", emoji:w.emoji||"" };
+      }
+    });
+  }
   _localDictReady = true;
 }
 function lookupLocal(query){
@@ -4213,7 +4222,7 @@ function doLookup(){
   result.innerHTML = '<div style="text-align:center;color:var(--text-soft);padding:40px;font-size:15px">⏳ 正在联网翻译...</div>';
   lookupOnline(query, (err, data)=>{
     if(!data){
-      result.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:40px;font-size:15px">😅 当前网络环境下无法使用在线翻译<br><span style="font-size:13px">支持的488个核心词汇可秒查</span></div>';
+      result.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:40px;font-size:15px">😅 当前网络环境下无法使用在线翻译<br><span style="font-size:13px">内置核心词汇与中小学词汇可秒查</span></div>';
       return;
     }
     renderDictResult(data, "online");
