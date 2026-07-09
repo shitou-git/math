@@ -687,6 +687,85 @@
             margin: 0;
         }
 
+        /* 旋转干扰层样式 */
+        .schulte-grid {
+            position: relative;
+        }
+
+        .schulte-rotate-layer {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .schulte-rotate-layer.layer-1 {
+            z-index: 0;
+            width: 100%;
+            height: 100%;
+            animation: rotate-clockwise 25s linear infinite;
+        }
+
+        .schulte-rotate-layer.layer-2 {
+            z-index: 0;
+            width: 70%;
+            height: 70%;
+            animation: rotate-counter 18s linear infinite;
+        }
+
+        .schulte-rotate-layer.layer-3 {
+            z-index: 0;
+            width: 45%;
+            height: 45%;
+            animation: rotate-clockwise 12s linear infinite;
+        }
+
+        .schulte-rotate-layer::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: repeating-conic-gradient(
+                from 0deg,
+                rgba(100, 116, 139, 0.04) 0deg 15deg,
+                rgba(148, 163, 184, 0.08) 15deg 30deg,
+                rgba(100, 116, 139, 0.04) 30deg 45deg
+            );
+        }
+
+        .schulte-rotate-layer.layer-2::before {
+            background: repeating-conic-gradient(
+                from 0deg,
+                rgba(139, 92, 246, 0.05) 0deg 20deg,
+                rgba(99, 102, 241, 0.1) 20deg 40deg,
+                rgba(139, 92, 246, 0.05) 40deg 60deg
+            );
+        }
+
+        .schulte-rotate-layer.layer-3::before {
+            background: repeating-conic-gradient(
+                from 0deg,
+                rgba(59, 130, 246, 0.04) 0deg 25deg,
+                rgba(14, 165, 233, 0.07) 25deg 50deg,
+                rgba(59, 130, 246, 0.04) 50deg 75deg
+            );
+        }
+
+        @keyframes rotate-clockwise {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes rotate-counter {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(-360deg); }
+        }
+
         /* 响应式样式 - 移动端适配 */
         @media (max-width: 768px) {
             body {
@@ -1560,7 +1639,7 @@
             <div style="text-align: center; margin-top: 30px;">
                 <div style="display: inline-flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;" onclick="window.open('https://shitou-git.github.io/chat/index', '_blank')"><img src="Z.webp" style="width: 64px; height: 64px; border-radius: 10px;"><span style="font-size: 14px; font-weight: 600;">灵知</span></div>
             </div>
-            <div style="text-align: center; margin-top: 20px; color: rgba(255,255,255,0.6); font-size: 12px;">v1.0.8</div>
+            <div style="text-align: center; margin-top: 20px; color: rgba(255,255,255,0.6); font-size: 12px;">v1.0.9</div>
         </div>
 
         <!-- 幻方游戏页面 -->
@@ -1762,6 +1841,7 @@
                     <button class="diff-btn" data-mode="challenge7">挑战7×7</button>
                     <button class="diff-btn" data-mode="reverse5">倒序5×5</button>
                     <button class="diff-btn" data-mode="color5">色彩干扰</button>
+                    <button class="diff-btn" data-mode="rotate5">旋转干扰</button>
                 </div>
                 <div class="schulte-info">
                     <div class="schulte-timer" id="schulteTimer">⏱ 00:00</div>
@@ -2939,16 +3019,18 @@
         let schulteMaxNum = 25;
         let schulteReverse = false;
         let schulteColorMode = false;
+        let schulteRotateMode = false;
         let schulteStartTime = 0;
         let schulteTimerInterval = null;
         let schulteFinished = false;
 
         const schulteModeConfig = {
-            classic5:   { size: 5, reverse: false, color: false },
-            advance6:   { size: 6, reverse: false, color: false },
-            challenge7: { size: 7, reverse: false, color: false },
-            reverse5:   { size: 5, reverse: true,  color: false },
-            color5:     { size: 5, reverse: false, color: true  }
+            classic5:   { size: 5, reverse: false, color: false, rotate: false },
+            advance6:   { size: 6, reverse: false, color: false, rotate: false },
+            challenge7: { size: 7, reverse: false, color: false, rotate: false },
+            reverse5:   { size: 5, reverse: true,  color: false, rotate: false },
+            color5:     { size: 5, reverse: false, color: true,  rotate: false },
+            rotate5:    { size: 5, reverse: false, color: false, rotate: true  }
         };
 
         const schulteColorClasses = ['color-red', 'color-blue', 'color-green', 'color-orange', 'color-purple'];
@@ -2974,6 +3056,7 @@
             schulteSize = config.size;
             schulteReverse = config.reverse;
             schulteColorMode = config.color;
+            schulteRotateMode = config.rotate;
             schulteMaxNum = schulteSize * schulteSize;
             schulteCurrentTarget = schulteReverse ? schulteMaxNum : 1;
             schulteFinished = false;
@@ -3005,12 +3088,27 @@
             for (let i = 1; i <= schulteMaxNum; i++) numbers.push(i);
             const shuffled = shuffleArray(numbers);
 
-            // 色彩干扰模式：为每个数字分配随机颜色
+            // 色彩干扰模式：三角形背景 + 彩色数字
             const colorMap = {};
+            const bgTriangleMap = {};
+            const bgColors = ['#d1d5db', '#f3f4f6', '#e5e7eb', '#f9fafb', '#dfe6e9'];
             if (schulteColorMode) {
                 shuffled.forEach(num => {
                     colorMap[num] = schulteColorClasses[Math.floor(Math.random() * schulteColorClasses.length)];
+                    const color1 = bgColors[Math.floor(Math.random() * bgColors.length)];
+                    const color2 = bgColors[Math.floor(Math.random() * bgColors.length)];
+                    bgTriangleMap[num] = { color1, color2 };
                 });
+            }
+
+            // 旋转干扰模式：为每个单元格分配旋转层
+            const rotateLayers = [];
+            if (schulteRotateMode) {
+                for (let i = 0; i < 3; i++) {
+                    const layer = document.createElement('div');
+                    layer.className = `schulte-rotate-layer layer-${i + 1}`;
+                    grid.appendChild(layer);
+                }
             }
 
             for (let i = 0; i < schulteMaxNum; i++) {
@@ -3021,6 +3119,13 @@
 
                 if (schulteColorMode && colorMap[shuffled[i]]) {
                     cell.classList.add(colorMap[shuffled[i]]);
+                    const bg = bgTriangleMap[shuffled[i]];
+                    cell.style.background = `linear-gradient(135deg, ${bg.color1} 0%, ${bg.color1} 50%, ${bg.color2} 50%, ${bg.color2} 100%)`;
+                }
+
+                if (schulteRotateMode) {
+                    cell.style.position = 'relative';
+                    cell.style.zIndex = '2';
                 }
 
                 cell.addEventListener('click', () => handleSchulteCellClick(cell, shuffled[i]));
