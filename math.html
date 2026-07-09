@@ -705,14 +705,15 @@
         }
 
         .schulte-rotate-container {
-            width: 340px;
-            height: 340px;
+            width: 360px;
+            height: 360px;
             border-radius: 50%;
             background: #f8fafc;
-            border: 6px solid #1e293b;
+            border: 4px solid #1e293b;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
             display: block;
             padding: 0;
+            overflow: hidden;
         }
 
         .schulte-ring {
@@ -726,10 +727,10 @@
 
         .schulte-ring-item {
             position: absolute;
-            width: 36px;
-            height: 36px;
-            margin-left: -18px;
-            margin-top: -18px;
+            width: 80px;
+            height: 50px;
+            margin-left: -40px;
+            margin-top: -25px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -737,34 +738,29 @@
             font-weight: 700;
             cursor: pointer;
             pointer-events: auto;
-            background: white;
-            border-radius: 50%;
-            border: 2px solid rgba(0, 0, 0, 0.1);
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            color: #1e293b;
             -webkit-user-select: none;
             user-select: none;
             touch-action: manipulation;
         }
 
         .schulte-ring-item:hover {
-            transform-origin: center;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
         }
 
         .schulte-ring-item:active {
-            transform: scale(0.9);
+            transform: scale(0.95);
         }
 
         .schulte-ring-item.correct {
-            background: #dcfce7;
-            color: #16a34a !important;
+            color: #16a34a;
             cursor: default;
             pointer-events: none;
         }
 
         .schulte-ring-item.wrong {
-            background: #fee2e2;
-            color: #dc2626 !important;
+            color: #dc2626;
             animation: schulte-shake 0.4s ease;
         }
 
@@ -773,15 +769,16 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background: #1e293b;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 20px;
             pointer-events: none;
+            z-index: 10;
         }
 
         @keyframes rotate-clockwise {
@@ -792,6 +789,57 @@
         @keyframes rotate-counter {
             from { transform: rotate(0deg); }
             to { transform: rotate(-360deg); }
+        }
+
+        /* 旋转干扰背景样式 */
+        .schulte-bg-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .schulte-bg-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 2px solid #cbd5e1;
+            border-radius: 50%;
+            background: transparent;
+        }
+
+        .schulte-bg-inner {
+            width: 130px;
+            height: 130px;
+        }
+
+        .schulte-bg-middle {
+            width: 260px;
+            height: 260px;
+        }
+
+        .schulte-bg-line {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 2px;
+            height: 50%;
+            background: #cbd5e1;
+            transform-origin: bottom center;
+            margin-left: -1px;
+        }
+
+        .schulte-bg-line-middle {
+            height: 69%;
+        }
+
+        .schulte-bg-line-outer {
+            height: 89%;
         }
 
         /* 响应式样式 - 移动端适配 */
@@ -1012,17 +1060,27 @@
             }
 
             .schulte-ring-item {
-                width: 32px;
-                height: 32px;
-                margin-left: -16px;
-                margin-top: -16px;
+                width: 60px;
+                height: 40px;
+                margin-left: -30px;
+                margin-top: -20px;
                 font-size: 15px;
             }
 
             .schulte-center {
-                width: 40px;
-                height: 40px;
-                font-size: 20px;
+                width: 30px;
+                height: 30px;
+                font-size: 16px;
+            }
+
+            .schulte-bg-inner {
+                width: 100px;
+                height: 100px;
+            }
+
+            .schulte-bg-middle {
+                width: 200px;
+                height: 200px;
             }
 
             .footer {
@@ -1236,21 +1294,31 @@
             .schulte-rotate-container {
                 width: 240px;
                 height: 240px;
-                border-width: 4px;
+                border-width: 3px;
             }
 
             .schulte-ring-item {
-                width: 28px;
-                height: 28px;
-                margin-left: -14px;
-                margin-top: -14px;
+                width: 50px;
+                height: 35px;
+                margin-left: -25px;
+                margin-top: -17px;
                 font-size: 13px;
             }
 
             .schulte-center {
-                width: 34px;
-                height: 34px;
-                font-size: 18px;
+                width: 26px;
+                height: 26px;
+                font-size: 14px;
+            }
+
+            .schulte-bg-inner {
+                width: 85px;
+                height: 85px;
+            }
+
+            .schulte-bg-middle {
+                width: 170px;
+                height: 170px;
             }
 
             .btn, .action-btn {
@@ -3158,30 +3226,28 @@
             const shuffled = shuffleArray(numbers);
 
             if (schulteRotateMode) {
-                // 旋转干扰模式：三层同心圆转盘
                 grid.className = 'schulte-grid schulte-rotate-container';
 
-                // 分配数字到三层环
-                const innerNums = shuffled.slice(0, 6);
-                const middleNums = shuffled.slice(6, 16);
-                const outerNums = shuffled.slice(16, 25);
+                // 添加背景圆环和分隔线
+                addRingBackgrounds(grid);
 
-                // 创建内圈（逆时针，最慢）
-                const innerRing = createRotateRing('inner', innerNums, 6, 'counter', 30);
+                // 分配数字到三层环
+                const innerNums = shuffled.slice(0, 8);
+                const middleNums = shuffled.slice(8, 18);
+                const outerNums = shuffled.slice(18, 25);
+
+                const innerRing = createRotateRing('inner', innerNums, 8, 'counter', 30);
                 grid.appendChild(innerRing);
 
-                // 创建中圈（顺时针，中速）
                 const middleRing = createRotateRing('middle', middleNums, 10, 'clockwise', 22);
                 grid.appendChild(middleRing);
 
-                // 创建外圈（逆时针，最快）
-                const outerRing = createRotateRing('outer', outerNums, 9, 'counter', 16);
+                const outerRing = createRotateRing('outer', outerNums, 7, 'counter', 16);
                 grid.appendChild(outerRing);
 
-                // 中心装饰
                 const center = document.createElement('div');
                 center.className = 'schulte-center';
-                center.textContent = '🎯';
+                center.textContent = '';
                 grid.appendChild(center);
 
             } else {
@@ -3230,9 +3296,6 @@
                 item.textContent = num;
                 item.style.transform = `rotate(${angle}deg) translateY(-${radius}px) rotate(-${angle}deg)`;
 
-                const colorClass = schulteColorClasses[Math.floor(Math.random() * schulteColorClasses.length)];
-                item.classList.add(colorClass);
-
                 item.addEventListener('click', (e) => {
                     e.stopPropagation();
                     handleSchulteCellClick(item, num);
@@ -3246,9 +3309,55 @@
         }
 
         function ringRadius(ringName) {
-            if (ringName === 'inner') return 65;
-            if (ringName === 'middle') return 110;
-            return 150;
+            if (ringName === 'inner') return 60;
+            if (ringName === 'middle') return 120;
+            return 165;
+        }
+
+        function addRingBackgrounds(grid) {
+            const bgContainer = document.createElement('div');
+            bgContainer.className = 'schulte-bg-container';
+            grid.appendChild(bgContainer);
+
+            // 添加内圈背景圆
+            const innerBg = document.createElement('div');
+            innerBg.className = 'schulte-bg-ring schulte-bg-inner';
+            bgContainer.appendChild(innerBg);
+
+            // 添加中圈背景圆
+            const middleBg = document.createElement('div');
+            middleBg.className = 'schulte-bg-ring schulte-bg-middle';
+            bgContainer.appendChild(middleBg);
+
+            // 添加分隔线（内圈8个扇区）
+            for (let i = 0; i < 8; i++) {
+                const line = document.createElement('div');
+                line.className = 'schulte-bg-line';
+                line.style.transform = `rotate(${i * 45}deg)`;
+                line.style.height = '50%';
+                line.style.top = '0';
+                bgContainer.appendChild(line);
+            }
+
+            // 添加中圈分隔线（10个扇区）
+            for (let i = 0; i < 10; i++) {
+                const line = document.createElement('div');
+                line.className = 'schulte-bg-line schulte-bg-line-middle';
+                line.style.transform = `rotate(${i * 36}deg)`;
+                line.style.height = '50%';
+                line.style.top = '0';
+                bgContainer.appendChild(line);
+            }
+
+            // 添加外圈分隔线（7个扇区）
+            for (let i = 0; i < 7; i++) {
+                const line = document.createElement('div');
+                line.className = 'schulte-bg-line schulte-bg-line-outer';
+                line.style.transform = `rotate(${i * 360/7}deg)`;
+                line.style.height = '50%';
+                line.style.top = '0';
+                bgContainer.appendChild(line);
+            }
         }
 
         function handleSchulteCellClick(cell, number) {
