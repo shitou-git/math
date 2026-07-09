@@ -562,297 +562,517 @@
             font-family: monospace;
         }
 
-        /* 舒尔特方格样式 */
-        .schulte-info {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 25px;
-            margin: 15px 0 20px 0;
-            flex-wrap: wrap;
+        /* 舒尔特方格新样式 */
+        .schulte-app {
+            display: grid;
+            grid-template-columns: 260px minmax(0, 1fr) 280px;
+            gap: 16px;
+            align-items: start;
+            margin-top: 15px;
         }
 
-        .schulte-timer {
-            font-size: 20px;
+        .schulte-panel {
+            background: white;
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .schulte-panel-title {
+            font-size: 14px;
+            letter-spacing: 1px;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-bottom: 14px;
             font-weight: 600;
+        }
+
+        .schulte-field {
+            margin-bottom: 20px;
+        }
+
+        .schulte-field-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 9px;
+            color: #1e293b;
+        }
+
+        .schulte-tag {
+            font-size: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            padding: 2px 7px;
+            border-radius: 20px;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
+        .schulte-seg {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+        }
+
+        .schulte-seg-btn {
+            flex: 1 1 auto;
+            min-width: 60px;
+            padding: 8px 8px;
+            font-size: 12px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.18s;
+            font-family: inherit;
+            font-weight: 500;
+        }
+
+        .schulte-seg-btn:hover {
+            color: #1e293b;
+            border-color: #667eea;
+        }
+
+        .schulte-seg-btn.active {
+            color: #fff;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35);
+        }
+
+        .schulte-checks {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .schulte-check {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            cursor: pointer;
+            user-select: none;
+            padding: 7px 10px;
+            border-radius: 10px;
+            transition: background 0.15s;
+        }
+
+        .schulte-check:hover {
+            background: #f8fafc;
+        }
+
+        .schulte-check input {
+            display: none;
+        }
+
+        .schulte-check-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            border: 2px solid #cbd5e1;
+            position: relative;
+            flex-shrink: 0;
+            transition: all 0.18s;
+        }
+
+        .schulte-check input:checked + .schulte-check-box {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-color: transparent;
+        }
+
+        .schulte-check input:checked + .schulte-check-box::after {
+            content: "✓";
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .schulte-check-text {
+            font-size: 13px;
+            font-weight: 500;
+            line-height: 1.2;
+            color: #1e293b;
+        }
+
+        .schulte-check-text small {
+            display: block;
+            font-size: 10px;
+            color: #94a3b8;
+            font-weight: 400;
+        }
+
+        /* 游戏区 */
+        .schulte-stage {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .schulte-hud {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .schulte-hud-item {
+            background: white;
+            border-radius: 14px;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .schulte-hud-label {
+            display: block;
+            font-size: 11px;
+            color: #64748b;
+            letter-spacing: 0.5px;
+        }
+
+        .schulte-hud-value {
+            display: block;
+            font-size: clamp(18px, 2.5vw, 26px);
+            font-weight: 700;
+            margin-top: 3px;
+            font-variant-numeric: tabular-nums;
+            color: #1e293b;
+        }
+
+        #schulteTargetNum {
             color: #667eea;
         }
 
-        .schulte-next {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1e293b;
-            padding: 6px 18px;
-            background: #f0f5ff;
-            border-radius: 20px;
+        .schulte-hud-item.danger .schulte-hud-value {
+            color: #dc2626;
         }
 
-        .schulte-best {
-            font-size: 16px;
-            font-weight: 500;
-            color: #64748b;
-        }
-
-        .schulte-grid-wrapper {
-            display: flex;
-            justify-content: center;
-            margin: 10px 0 20px 0;
-        }
-
-        .schulte-grid {
-            display: inline-grid;
-            gap: 4px;
-            padding: 6px;
-            background: #1e293b;
-            border-radius: 12px;
-        }
-
-        .schulte-grid.grid-5 {
-            grid-template-columns: repeat(5, 1fr);
-        }
-
-        .schulte-grid.grid-6 {
-            grid-template-columns: repeat(6, 1fr);
-        }
-
-        .schulte-grid.grid-7 {
-            grid-template-columns: repeat(7, 1fr);
-        }
-
-        .schulte-cell {
-            width: 58px;
-            height: 58px;
+        .schulte-board-wrap {
+            position: relative;
             background: white;
-            border: none;
-            border-radius: 8px;
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            min-height: 300px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
+        }
+
+        .schulte-board {
+            position: relative;
+            width: 100%;
+            max-width: min(65vh, 100%);
+            aspect-ratio: 1 / 1;
+        }
+
+        .schulte-cell {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
             font-weight: 700;
-            color: #1e293b;
+            font-variant-numeric: tabular-nums;
             cursor: pointer;
-            transition: all 0.15s ease;
-            -webkit-user-select: none;
+            transition: left .5s cubic-bezier(.4, 0, .2, 1), top .5s cubic-bezier(.4, 0, .2, 1),
+                        width .5s cubic-bezier(.4, 0, .2, 1), height .5s cubic-bezier(.4, 0, .2, 1),
+                        opacity .4s ease, background .18s, transform .12s;
             user-select: none;
-            touch-action: manipulation;
+            -webkit-user-select: none;
+            color: #1e293b;
+            overflow: hidden;
         }
 
         .schulte-cell:hover {
-            background: #f0f5ff;
-        }
-
-        .schulte-cell:active {
-            transform: scale(0.95);
+            transform: translate(-50%, -50%) scale(1.06);
+            background: #eef2ff;
         }
 
         .schulte-cell.correct {
             background: #dcfce7;
             color: #16a34a;
-            transform: scale(0.95);
-            cursor: default;
+            pointer-events: none;
         }
 
         .schulte-cell.wrong {
+            animation: schulte-shake 0.32s;
             background: #fee2e2;
-            color: #dc2626;
-            animation: schulte-shake 0.4s ease;
         }
-
-        .schulte-cell.color-red, .schulte-ring-item.color-red { color: #dc2626; }
-        .schulte-cell.color-blue, .schulte-ring-item.color-blue { color: #2563eb; }
-        .schulte-cell.color-green, .schulte-ring-item.color-green { color: #16a34a; }
-        .schulte-cell.color-orange, .schulte-ring-item.color-orange { color: #ea580c; }
-        .schulte-cell.color-purple, .schulte-ring-item.color-purple { color: #9333ea; }
-        .schulte-cell.color-teal, .schulte-ring-item.color-teal { color: #0d9488; }
-        .schulte-cell.color-brown, .schulte-ring-item.color-brown { color: #7c2d12; }
-        .schulte-cell.color-pink, .schulte-ring-item.color-pink { color: #be185d; }
-
-        .schulte-cell.bg-triangle-1 { background: linear-gradient(135deg, #fef3c7 0%, #fef3c7 50%, #fce7f3 50%, #fce7f3 100%); }
-        .schulte-cell.bg-triangle-2 { background: linear-gradient(135deg, #dbeafe 0%, #dbeafe 50%, #dcfce7 50%, #dcfce7 100%); }
-        .schulte-cell.bg-triangle-3 { background: linear-gradient(135deg, #fce7f3 0%, #fce7f3 50%, #e0e7ff 50%, #e0e7ff 100%); }
-        .schulte-cell.bg-triangle-4 { background: linear-gradient(135deg, #d1fae5 0%, #d1fae5 50%, #fef9c3 50%, #fef9c3 100%); }
-        .schulte-cell.bg-triangle-5 { background: linear-gradient(135deg, #fed7aa 0%, #fed7aa 50%, #f3e8ff 50%, #f3e8ff 100%); }
-        .schulte-cell.bg-triangle-6 { background: linear-gradient(135deg, #e0f2fe 0%, #e0f2fe 50%, #fde68a 50%, #fde68a 100%); }
-        .schulte-cell.bg-triangle-7 { background: linear-gradient(135deg, #fce7f3 0%, #fce7f3 50%, #fed7aa 50%, #fed7aa 100%); }
-        .schulte-cell.bg-triangle-8 { background: linear-gradient(135deg, #cffafe 0%, #cffafe 50%, #fee2e2 50%, #fee2e2 100%); }
 
         @keyframes schulte-shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-4px); }
-            75% { transform: translateX(4px); }
+            0%, 100% { transform: translate(-50%, -50%); }
+            20% { transform: translate(calc(-50% - 6px), -50%); }
+            40% { transform: translate(calc(-50% + 6px), -50%); }
+            60% { transform: translate(calc(-50% - 4px), -50%); }
+            80% { transform: translate(calc(-50% + 4px), -50%); }
         }
 
-        .schulte-result {
-            text-align: center;
-            font-size: 20px;
-            font-weight: 700;
-            min-height: 32px;
-            margin: 10px 0;
-        }
-
-        .schulte-result.success {
-            color: #16a34a;
-        }
-
-        .schulte-rules-toggle h4 {
-            margin: 0;
-        }
-
-        /* 旋转干扰模式：三层同心圆转盘 */
-        .schulte-grid {
+        .schulte-cell .num {
             position: relative;
+            z-index: 2;
         }
 
-        .schulte-rotate-container {
-            width: 360px;
-            height: 360px;
-            border-radius: 50%;
-            background: #f8fafc;
-            border: 4px solid #1e293b;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        /* 抖动干扰 */
+        .schulte-board.jitter .schulte-cell {
+            animation: schulte-jitter 0.9s ease-in-out infinite;
+        }
+
+        .schulte-board.jitter .schulte-cell:nth-child(3n) {
+            animation-duration: 1.1s;
+            animation-delay: 0.1s;
+        }
+
+        .schulte-board.jitter .schulte-cell:nth-child(3n+1) {
+            animation-duration: 0.75s;
+            animation-delay: 0.2s;
+        }
+
+        .schulte-board.jitter .schulte-cell:nth-child(2n) {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes schulte-jitter {
+            0%, 100% { transform: translate(-50%, -50%) translate(0, 0) rotate(0deg); }
+            25% { transform: translate(-50%, -50%) translate(2px, -2px) rotate(0.6deg); }
+            50% { transform: translate(-50%, -50%) translate(-2px, 2px) rotate(-0.6deg); }
+            75% { transform: translate(-50%, -50%) translate(1px, 1px) rotate(0.3deg); }
+        }
+
+        /* 旋转干扰 */
+        .schulte-board.rotate {
+            animation: schulte-board-rotate 45s linear infinite;
+            transform-origin: center;
+        }
+
+        @keyframes schulte-board-rotate {
+            from { transform: rotate(0deg) scale(0.92); }
+            to { transform: rotate(360deg) scale(0.92); }
+        }
+
+        /* 镜像干扰 */
+        .schulte-cell.mirror .num {
+            display: inline-block;
+            transform: scaleX(-1);
+        }
+
+        /* 字体干扰 */
+        .font-round {
+            font-family: "Comic Sans MS", "Chalkboard SE", "PingFang SC", cursive;
+        }
+
+        .font-serif {
+            font-family: Georgia, "Times New Roman", "Songti SC", serif;
+        }
+
+        .font-mono {
+            font-family: "SF Mono", "Consolas", "Courier New", monospace;
+        }
+
+        .font-cond {
+            font-family: "Arial Narrow", "Helvetica Neue", sans-serif;
+            font-stretch: condensed;
+        }
+
+        /* 覆盖层 */
+        .schulte-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0;
-            overflow: hidden;
+            border-radius: 18px;
+            z-index: 5;
         }
 
-        .schulte-ring {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 340px;
-            height: 340px;
-            margin-left: -170px;
-            margin-top: -170px;
-            pointer-events: none;
-            border-radius: 50%;
+        .schulte-overlay.hidden {
+            display: none;
         }
 
-        .schulte-ring-item {
-            position: absolute;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .schulte-overlay-card {
+            background: white;
+            border-radius: 18px;
+            padding: 28px 32px;
+            text-align: center;
+            max-width: 80%;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .schulte-overlay-emoji {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        .schulte-overlay-card h3 {
             font-size: 20px;
-            font-weight: 700;
-            cursor: pointer;
-            pointer-events: auto;
+            margin-bottom: 8px;
             color: #1e293b;
-            -webkit-user-select: none;
-            user-select: none;
-            touch-action: manipulation;
-            width: 50px;
-            height: 50px;
-            margin-left: -25px;
-            margin-top: -25px;
         }
 
-        .schulte-ring-item.correct {
-            color: #16a34a;
-            cursor: default;
-            pointer-events: none;
+        .schulte-overlay-card p {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 16px;
+            line-height: 1.6;
         }
 
-        .schulte-ring-item.wrong {
-            color: #dc2626;
-            animation: schulte-shake 0.4s ease;
+        /* 控制按钮 */
+        .schulte-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
-        .schulte-center {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #1e293b;
-            z-index: 10;
-            pointer-events: none;
+        .schulte-btn {
+            padding: 11px 22px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            color: #1e293b;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.18s;
+            font-family: inherit;
+            min-width: 85px;
         }
 
-        @keyframes rotate-clockwise {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        .schulte-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            border-color: #667eea;
         }
 
-        @keyframes rotate-counter {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(-360deg); }
+        .schulte-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
         }
 
-        .schulte-ring-inner {
-            width: 140px;
-            height: 140px;
-            margin-left: -70px;
-            margin-top: -70px;
+        .schulte-btn.primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 6px 18px rgba(102, 126, 234, 0.35);
         }
 
-        .schulte-ring-middle {
-            width: 280px;
-            height: 280px;
-            margin-left: -140px;
-            margin-top: -140px;
-        }
-
-        .schulte-ring-outer {
-            width: 360px;
-            height: 360px;
-            margin-left: -180px;
-            margin-top: -180px;
-        }
-
-        /* 旋转干扰背景样式 */
-        .schulte-bg-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .schulte-bg-ring {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border: 2px solid #cbd5e1;
-            border-radius: 50%;
+        .schulte-btn.ghost {
             background: transparent;
         }
 
-        .schulte-bg-inner {
-            width: 130px;
-            height: 130px;
+        /* 历史记录 */
+        .schulte-history-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 14px;
         }
 
-        .schulte-bg-middle {
-            width: 260px;
-            height: 260px;
+        .schulte-stat {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 8px 10px;
         }
 
-        .schulte-bg-line {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            width: 2px;
-            height: 50%;
-            background: #cbd5e1;
-            transform-origin: bottom center;
-            margin-left: -1px;
+        .schulte-stat .schulte-stat-v {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
         }
 
-        .schulte-bg-line-middle {
-            height: 69%;
+        .schulte-stat .schulte-stat-l {
+            font-size: 10px;
+            color: #64748b;
         }
 
-        .schulte-bg-line-outer {
-            height: 89%;
+        .schulte-history-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 50vh;
+            overflow-y: auto;
+            padding: 0;
+            margin: 0;
+        }
+
+        .schulte-history-item {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 9px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            animation: schulte-fadeIn 0.3s;
+        }
+
+        @keyframes schulte-fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: none; }
+        }
+
+        .schulte-history-item .row1 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .schulte-history-item .mode-badge {
+            font-size: 10px;
+            padding: 2px 7px;
+            border-radius: 20px;
+            background: rgba(102, 126, 234, 0.15);
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .schulte-history-item .res-ok {
+            color: #16a34a;
+            font-weight: 700;
+        }
+
+        .schulte-history-item .res-fail {
+            color: #dc2626;
+            font-weight: 700;
+        }
+
+        .schulte-history-item .meta {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .schulte-history-item .date {
+            font-size: 10px;
+            color: #94a3b8;
+        }
+
+        .schulte-empty {
+            font-size: 12px;
+            color: #94a3b8;
+            text-align: center;
+            padding: 16px 0;
+        }
+
+        /* 完成动画 */
+        .schulte-board.solved .schulte-cell {
+            animation: schulte-celebrate 0.6s ease;
+        }
+
+        @keyframes schulte-celebrate {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            40% { transform: translate(-50%, -50%) scale(1.12); }
+            100% { transform: translate(-50%, -50%) scale(1); }
         }
 
         /* 响应式样式 - 移动端适配 */
@@ -1035,50 +1255,20 @@
             }
 
             /* 舒尔特方格移动端适配 */
-            .schulte-info {
-                gap: 12px;
+            .schulte-app {
+                grid-template-columns: 1fr;
             }
 
-            .schulte-timer {
-                font-size: 16px;
+            .schulte-settings, .schulte-history {
+                order: 2;
             }
 
-            .schulte-next {
-                font-size: 15px;
-                padding: 5px 14px;
+            .schulte-stage {
+                order: 1;
             }
 
-            .schulte-cell {
-                width: 50px;
-                height: 50px;
-                font-size: 18px;
-            }
-
-            .schulte-grid.grid-6 .schulte-cell {
-                width: 44px;
-                height: 44px;
-                font-size: 16px;
-            }
-
-            .schulte-grid.grid-7 .schulte-cell {
-                width: 40px;
-                height: 40px;
-                font-size: 15px;
-            }
-
-            /* 旋转干扰移动端 */
-            .schulte-rotate-container {
-                width: 280px;
-                height: 280px;
-            }
-
-            .schulte-ring-item {
-                font-size: 16px;
-            }
-
-            .schulte-center {
-                width: 30px;
-                height: 30px;
+            .schulte-history-list {
+                max-height: 280px;
             }
 
             .footer {
@@ -1270,34 +1460,18 @@
             }
 
             /* 舒尔特方格小屏幕适配 */
-            .schulte-cell {
-                width: 42px;
-                height: 42px;
-                font-size: 16px;
+            .schulte-hud-value {
+                font-size: 18px;
             }
 
-            .schulte-grid.grid-6 .schulte-cell {
-                width: 38px;
-                height: 38px;
-                font-size: 14px;
+            .schulte-btn {
+                flex: 1 1 auto;
+                min-width: 0;
+                padding: 10px 12px;
             }
 
-            .schulte-grid.grid-7 .schulte-cell {
-                width: 34px;
-                height: 34px;
-                font-size: 13px;
-            }
-
-            /* 旋转干扰小屏幕 */
-            .schulte-rotate-container {
-                width: 240px;
-                height: 240px;
-                border-width: 3px;
-            }
-
-            .schulte-center {
-                width: 26px;
-                height: 26px;
+            .schulte-board {
+                max-width: 92vw;
             }
 
             .btn, .action-btn {
@@ -1755,7 +1929,7 @@
             <div style="text-align: center; margin-top: 30px;">
                 <div style="display: inline-flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;" onclick="window.open('https://shitou-git.github.io/chat/index', '_blank')"><img src="Z.webp" style="width: 64px; height: 64px; border-radius: 10px;"><span style="font-size: 14px; font-weight: 600;">灵知</span></div>
             </div>
-            <div style="text-align: center; margin-top: 20px; color: rgba(255,255,255,0.6); font-size: 12px;">v1.1.1</div>
+            <div style="text-align: center; margin-top: 20px; color: rgba(255,255,255,0.6); font-size: 12px;">v1.2.0</div>
         </div>
 
         <!-- 幻方游戏页面 -->
@@ -1950,48 +2124,126 @@
                 <h1>🎯 舒尔特方格</h1>
                 <p>按顺序点击数字，锻炼专注力</p>
             </div>
-            <div class="game-container">
-                <div class="difficulty-selector" id="schulteModeSelector">
-                    <button class="diff-btn active" data-mode="classic5">经典5×5</button>
-                    <button class="diff-btn" data-mode="advance6">进阶6×6</button>
-                    <button class="diff-btn" data-mode="challenge7">挑战7×7</button>
-                    <button class="diff-btn" data-mode="reverse5">倒序5×5</button>
-                    <button class="diff-btn" data-mode="color5">色彩干扰</button>
-                    <button class="diff-btn" data-mode="rotate5">旋转干扰</button>
-                </div>
-                <div class="schulte-info">
-                    <div class="schulte-timer" id="schulteTimer">⏱ 00:00</div>
-                    <div class="schulte-next" id="schulteNext">下一个：1</div>
-                    <div class="schulte-best" id="schulteBest">🏆 最佳：--</div>
-                </div>
-                <div class="schulte-grid-wrapper">
-                    <div id="schulteGrid" class="schulte-grid"></div>
-                </div>
-                <div class="schulte-result" id="schulteResult"></div>
-                <div class="action-buttons">
-                    <button class="action-btn" onclick="resetSchulteGame()">重新开始</button>
-                </div>
-                <div class="game-rules schulte-rules-toggle" onclick="toggleSchulteRules()" style="cursor:pointer;">
-                    <h4>▼ 训练方法</h4>
-                </div>
-                <div class="game-rules schulte-rules-content" id="schulteRulesContent" style="display:none; margin-top:0; border-top-left-radius:0; border-top-right-radius:0;">
-                    <div style="text-align: left; line-height: 1.8; font-size: 14px; color: #333;">
-                        <p><strong>什么是舒尔特方格？</strong></p>
-                        <p>舒尔特方格是国际公认最简单、最有效的注意力训练方法，由德国心理治疗师舒尔特发明。</p>
-                        <p style="margin-top:10px;"><strong>训练方法：</strong></p>
-                        <p>1. 眼睛距表格 30～35cm，视点自然放在表格中心</p>
-                        <p>2. 用余光寻找数字，而非逐个扫视</p>
-                        <p>3. 按顺序找到并点击数字，尽量减少眼球移动</p>
-                        <p style="margin-top:10px;"><strong>评级标准（5×5经典模式）：</strong></p>
-                        <p>⭐⭐⭐ 优秀：< 25秒</p>
-                        <p>⭐⭐ 良好：25～40秒</p>
-                        <p>⭐ 一般：40～60秒</p>
-                        <p>继续加油：> 60秒</p>
-                        <p style="margin-top:10px;"><strong>训练建议：</strong></p>
-                        <p>• 每天练习 10～15 分钟，坚持 2 周可见明显效果</p>
-                        <p>• 先练 5×5，稳定在 25 秒以内再升级</p>
-                        <p>• 倒序模式和色彩干扰模式可进阶训练逆向注意力和抗干扰能力</p>
+            <div class="schulte-app">
+                <!-- 设置面板 -->
+                <div class="schulte-panel schulte-settings">
+                    <h3 class="schulte-panel-title">训练设置</h3>
+                    
+                    <div class="schulte-field">
+                        <label class="schulte-field-label">方格规模</label>
+                        <div class="schulte-seg" id="schulteSizeSeg">
+                            <button class="schulte-seg-btn active" data-size="5">25 (5×5)</button>
+                            <button class="schulte-seg-btn" data-size="6">36 (6×6)</button>
+                            <button class="schulte-seg-btn" data-size="7">49 (7×7)</button>
+                        </div>
                     </div>
+
+                    <div class="schulte-field">
+                        <label class="schulte-field-label">图形布局</label>
+                        <div class="schulte-seg" id="schulteLayoutSeg">
+                            <button class="schulte-seg-btn active" data-layout="grid">方形</button>
+                            <button class="schulte-seg-btn" data-layout="circle">圆形</button>
+                            <button class="schulte-seg-btn" data-layout="triangle">三角</button>
+                            <button class="schulte-seg-btn" data-layout="nested">嵌套</button>
+                            <button class="schulte-seg-btn" data-layout="hexagon">蜂巢</button>
+                            <button class="schulte-seg-btn" data-layout="radial">圆盘</button>
+                            <button class="schulte-seg-btn" data-layout="irregular">变式</button>
+                        </div>
+                    </div>
+
+                    <div class="schulte-field">
+                        <label class="schulte-field-label">排序模式</label>
+                        <div class="schulte-seg" id="schulteOrderSeg">
+                            <button class="schulte-seg-btn active" data-order="asc">正序 ↑</button>
+                            <button class="schulte-seg-btn" data-order="desc">倒序 ↓</button>
+                        </div>
+                    </div>
+
+                    <div class="schulte-field">
+                        <label class="schulte-field-label">干扰模式 <span class="schulte-tag">可叠加</span></label>
+                        <div class="schulte-checks">
+                            <label class="schulte-check">
+                                <input type="checkbox" id="schulteInterfColor" />
+                                <span class="schulte-check-box"></span>
+                                <span class="schulte-check-text">颜色干扰<small>数字随机配色</small></span>
+                            </label>
+                            <label class="schulte-check">
+                                <input type="checkbox" id="schulteInterfFont" />
+                                <span class="schulte-check-box"></span>
+                                <span class="schulte-check-text">字体干扰<small>随机字体形态</small></span>
+                            </label>
+                            <label class="schulte-check">
+                                <input type="checkbox" id="schulteInterfJitter" />
+                                <span class="schulte-check-box"></span>
+                                <span class="schulte-check-text">抖动干扰<small>格子周期抖动</small></span>
+                            </label>
+                            <label class="schulte-check">
+                                <input type="checkbox" id="schulteInterfMirror" />
+                                <span class="schulte-check-box"></span>
+                                <span class="schulte-check-text">镜像干扰<small>部分数字翻转</small></span>
+                            </label>
+                            <label class="schulte-check">
+                                <input type="checkbox" id="schulteInterfZoneColor" />
+                                <span class="schulte-check-box"></span>
+                                <span class="schulte-check-text">色块分区<small>按区域区分背景色</small></span>
+                            </label>
+                            <label class="schulte-check">
+                                <input type="checkbox" id="schulteInterfRotation" />
+                                <span class="schulte-check-box"></span>
+                                <span class="schulte-check-text">旋转干扰<small>面板整体缓慢旋转</small></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 游戏区 -->
+                <div class="schulte-stage">
+                    <div class="schulte-hud">
+                        <div class="schulte-hud-item">
+                            <span class="schulte-hud-label">当前目标</span>
+                            <span class="schulte-hud-value" id="schulteTargetNum">—</span>
+                        </div>
+                        <div class="schulte-hud-item">
+                            <span class="schulte-hud-label">用时</span>
+                            <span class="schulte-hud-value" id="schulteTimeValue">0.0s</span>
+                        </div>
+                        <div class="schulte-hud-item">
+                            <span class="schulte-hud-label">进度</span>
+                            <span class="schulte-hud-value" id="schulteProgressValue">0 / 25</span>
+                        </div>
+                    </div>
+
+                    <div class="schulte-board-wrap">
+                        <div class="schulte-board" id="schulteBoard" aria-label="舒尔特方格"></div>
+                        <div class="schulte-overlay" id="schulteOverlay">
+                            <div class="schulte-overlay-card">
+                                <div class="schulte-overlay-emoji" id="schulteOverlayEmoji">🎯</div>
+                                <h3 id="schulteOverlayTitle">准备开始</h3>
+                                <p id="schulteOverlayDesc">点击下方「开始」按钮，按顺序点击数字。</p>
+                                <button class="schulte-btn primary" id="schulteOverlayStart">开始训练</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="schulte-controls">
+                        <button class="schulte-btn primary" id="schulteStartBtn">开始</button>
+                        <button class="schulte-btn" id="schultePauseBtn" disabled>暂停</button>
+                        <button class="schulte-btn" id="schulteResumeBtn" disabled>恢复</button>
+                        <button class="schulte-btn ghost" id="schulteResetBtn">重置</button>
+                    </div>
+                </div>
+
+                <!-- 历史记录 -->
+                <div class="schulte-panel schulte-history">
+                    <h3 class="schulte-panel-title">历史成绩</h3>
+                    <div class="schulte-history-stats" id="schulteHistoryStats">
+                        <div class="schulte-stat"><div class="schulte-stat-v">0</div><div class="schulte-stat-l">总场次</div></div>
+                        <div class="schulte-stat"><div class="schulte-stat-v">0</div><div class="schulte-stat-l">成功</div></div>
+                        <div class="schulte-stat"><div class="schulte-stat-v">—</div><div class="schulte-stat-l">最佳</div></div>
+                        <div class="schulte-stat"><div class="schulte-stat-v">—</div><div class="schulte-stat-l">成功率</div></div>
+                    </div>
+                    <ul class="schulte-history-list" id="schulteHistoryList"></ul>
+                    <p class="schulte-empty" id="schulteHistoryEmpty">暂无记录，完成一局后会出现在这里。</p>
                 </div>
             </div>
         </div>
@@ -2075,9 +2327,8 @@
             document.getElementById('sudokuPage').classList.remove('active');
             stopTimer();
             // 清除舒尔特方格计时器
-            if (schulteTimerInterval) {
-                clearInterval(schulteTimerInterval);
-                schulteTimerInterval = null;
+            if (typeof stopSchulteClock === 'function') {
+                stopSchulteClock();
             }
             currentGame = 'home';
         }
@@ -3129,340 +3380,487 @@
         });
 
         // ========== 舒尔特方格游戏 ==========
-        let schulteMode = 'classic5';
-        let schulteSize = 5;
-        let schulteCurrentTarget = 1;
-        let schulteMaxNum = 25;
-        let schulteReverse = false;
-        let schulteColorMode = false;
-        let schulteRotateMode = false;
-        let schulteStartTime = 0;
-        let schulteTimerInterval = null;
-        let schulteFinished = false;
+        const SCHULTE_STORE_KEY = "schulte_records_v2";
+        const SCHULTE_LAYOUT_LABEL = { grid: "方形", circle: "圆形", triangle: "三角", nested: "嵌套", hexagon: "蜂巢", radial: "圆盘", irregular: "变式" };
+        const SCHULTE_ORDER_LABEL = { asc: "正序", desc: "倒序" };
 
-        const schulteModeConfig = {
-            classic5:   { size: 5, reverse: false, color: false, rotate: false },
-            advance6:   { size: 6, reverse: false, color: false, rotate: false },
-            challenge7: { size: 7, reverse: false, color: false, rotate: false },
-            reverse5:   { size: 5, reverse: true,  color: false, rotate: false },
-            color5:     { size: 5, reverse: false, color: true,  rotate: false },
-            rotate5:    { size: 5, reverse: false, color: false, rotate: true  }
+        const schulteState = {
+            size: 5,
+            layout: "grid",
+            order: "asc",
+            interf: { color: false, font: false, jitter: false, mirror: false, zoneColor: false, rotation: false },
+            running: false,
+            paused: false,
+            finished: false,
+            numbers: [],
+            count: 0,
+            next: 1,
+            step: 1,
+            elapsed: 0,
+            rafId: null,
+            lastTick: 0,
         };
 
-        const schulteColorClasses = ['color-red', 'color-blue', 'color-green', 'color-orange', 'color-purple', 'color-teal', 'color-brown', 'color-pink'];
-        const schulteBgClasses = ['bg-triangle-1', 'bg-triangle-2', 'bg-triangle-3', 'bg-triangle-4', 'bg-triangle-5', 'bg-triangle-6', 'bg-triangle-7', 'bg-triangle-8'];
+        let schulteCellEls = [];
+
+        const SCHULTE_FONT_CLASSES = ["font-round", "font-serif", "font-mono", "font-cond"];
+        const SCHULTE_COLORS = [
+            "#667eea", "#764ba2", "#16a34a", "#f59e0b", "#dc2626", "#0891b2",
+            "#ea580c", "#65a30d", "#db2777", "#4f46e5", "#ec4899", "#0d9488",
+        ];
+        const SCHULTE_ZONE_COLORS = [
+            "rgba(220, 38, 38, 0.18)", "rgba(102, 126, 234, 0.18)", "rgba(22, 163, 74, 0.18)", "rgba(245, 158, 11, 0.18)",
+            "rgba(118, 75, 162, 0.18)", "rgba(8, 145, 178, 0.18)", "rgba(234, 88, 12, 0.18)", "rgba(101, 163, 13, 0.18)",
+        ];
 
         function initSchulte() {
-            setupSchulteModeListeners();
-            resetSchulteGame();
+            bindSchulteSeg("schulteSizeSeg", "size", (v) => {
+                schulteState.size = parseInt(v, 10);
+                refreshSchulteIdle();
+            });
+            bindSchulteSeg("schulteLayoutSeg", "layout", (v) => {
+                schulteState.layout = v;
+                refreshSchulteIdle();
+            });
+            bindSchulteSeg("schulteOrderSeg", "order", (v) => {
+                schulteState.order = v;
+                refreshSchulteIdle();
+            });
+
+            ["schulteInterfColor", "schulteInterfFont", "schulteInterfJitter", "schulteInterfMirror", "schulteInterfZoneColor", "schulteInterfRotation"].forEach((id) => {
+                const key = id.replace("schulteInterf", "").replace(/^./, (c) => c.toLowerCase());
+                document.getElementById(id).addEventListener("change", (e) => {
+                    schulteState.interf[key] = e.target.checked;
+                    updateSchulteAllInterferences();
+                });
+            });
+
+            document.getElementById("schulteStartBtn").addEventListener("click", startSchulteGame);
+            document.getElementById("schultePauseBtn").addEventListener("click", pauseSchulteGame);
+            document.getElementById("schulteResumeBtn").addEventListener("click", resumeSchulteGame);
+            document.getElementById("schulteResetBtn").addEventListener("click", resetSchulteGame);
+            document.getElementById("schulteOverlayStart").addEventListener("click", () => {
+                if (document.getElementById("schulteOverlayStart").dataset.action === "start") startSchulteGame();
+                else resumeSchulteGame();
+            });
+
+            renderSchulteHistory();
+            refreshSchulteIdle();
+            showSchulteOverlay("🎯", "准备开始", schulteIdleDesc(), "开始训练", true);
         }
 
-        function setupSchulteModeListeners() {
-            document.querySelectorAll('#schulteModeSelector .diff-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('#schulteModeSelector .diff-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    schulteMode = btn.dataset.mode;
-                    resetSchulteGame();
-                });
+        function bindSchulteSeg(segId, attr, cb) {
+            const seg = document.getElementById(segId);
+            seg.addEventListener("click", (e) => {
+                const btn = e.target.closest(".schulte-seg-btn");
+                if (!btn) return;
+                seg.querySelectorAll(".schulte-seg-btn").forEach((b) => b.classList.remove("active"));
+                btn.classList.add("active");
+                cb(btn.dataset[attr]);
             });
         }
 
-        function resetSchulteGame() {
-            const config = schulteModeConfig[schulteMode];
-            schulteSize = config.size;
-            schulteReverse = config.reverse;
-            schulteColorMode = config.color;
-            schulteRotateMode = config.rotate;
-            schulteMaxNum = schulteSize * schulteSize;
-            schulteCurrentTarget = schulteReverse ? schulteMaxNum : 1;
-            schulteFinished = false;
-
-            // 清除计时器
-            if (schulteTimerInterval) {
-                clearInterval(schulteTimerInterval);
-                schulteTimerInterval = null;
-            }
-            schulteStartTime = 0;
-
-            // 更新UI
-            document.getElementById('schulteTimer').textContent = '⏱ 00:00';
-            updateSchulteNextDisplay();
-            updateSchulteBestDisplay();
-            document.getElementById('schulteResult').textContent = '';
-            document.getElementById('schulteResult').className = 'schulte-result';
-
-            renderSchulteGrid();
+        function schulteIdleDesc() {
+            const start = 1;
+            const end = schulteState.count;
+            const range = schulteState.order === "asc" ? `${start} 到 ${end}` : `${end} 到 ${start}`;
+            return `点击「开始」后，按${SCHULTE_ORDER_LABEL[schulteState.order]}依次点击数字 ${range}（${SCHULTE_LAYOUT_LABEL[schulteState.layout]}布局）。`;
         }
 
-        function renderSchulteGrid() {
-            const grid = document.getElementById('schulteGrid');
-            grid.innerHTML = '';
-
-            // 生成随机数字序列
-            const numbers = [];
-            for (let i = 1; i <= schulteMaxNum; i++) numbers.push(i);
-            const shuffled = shuffleArray(numbers);
-
-            if (schulteRotateMode) {
-                grid.className = 'schulte-grid schulte-rotate-container';
-
-                const innerNums = shuffled.slice(0, 8);
-                const middleNums = shuffled.slice(8, 18);
-                const outerNums = shuffled.slice(18, 25);
-
-                const innerRing = createRotateRing('inner', innerNums, 8, 'counter', 30);
-                grid.appendChild(innerRing);
-
-                const middleRing = createRotateRing('middle', middleNums, 10, 'clockwise', 22);
-                grid.appendChild(middleRing);
-
-                const outerRing = createRotateRing('outer', outerNums, 7, 'counter', 16);
-                grid.appendChild(outerRing);
-
-                const center = document.createElement('div');
-                center.className = 'schulte-center';
-                grid.appendChild(center);
-
-            } else {
-                // 普通方格模式
-                grid.className = `schulte-grid grid-${schulteSize}`;
-
-                // 色彩干扰模式：三角形背景 + 彩色数字
-                const colorMap = {};
-                const bgMap = {};
-                if (schulteColorMode) {
-                    shuffled.forEach(num => {
-                        colorMap[num] = schulteColorClasses[Math.floor(Math.random() * schulteColorClasses.length)];
-                        bgMap[num] = schulteBgClasses[Math.floor(Math.random() * schulteBgClasses.length)];
-                    });
-                }
-
-                for (let i = 0; i < schulteMaxNum; i++) {
-                    const cell = document.createElement('div');
-                    cell.className = 'schulte-cell';
-                    cell.textContent = shuffled[i];
-                    cell.dataset.number = shuffled[i];
-
-                    if (schulteColorMode && colorMap[shuffled[i]]) {
-                        cell.classList.add(colorMap[shuffled[i]]);
-                        cell.classList.add(bgMap[shuffled[i]]);
-                    }
-
-                    cell.addEventListener('click', () => handleSchulteCellClick(cell, shuffled[i]));
-                    grid.appendChild(cell);
-                }
-            }
-        }
-
-        function createRotateRing(ringName, nums, count, direction, duration) {
-            const ring = document.createElement('div');
-            ring.className = `schulte-ring schulte-ring-${ringName}`;
-            ring.style.animation = `rotate-${direction} ${duration}s linear infinite`;
-            ring.style.transformOrigin = 'center center';
-
-            const sizes = {
-                inner: { width: 140, height: 140, r1: 0, r2: 70 },
-                middle: { width: 280, height: 280, r1: 70, r2: 140 },
-                outer: { width: 360, height: 360, r1: 140, r2: 180 }
-            };
-
-            const size = sizes[ringName];
-            const svgSize = size.width;
-            const cx = svgSize / 2;
-            const cy = svgSize / 2;
-
-            // 创建 SVG 绘制扇形格子
-            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            svg.setAttribute('width', svgSize);
-            svg.setAttribute('height', svgSize);
-            svg.style.position = 'absolute';
-            svg.style.left = '-50%';
-            svg.style.top = '-50%';
-            svg.style.transform = 'translate(50%, 50%)';
-            svg.style.pointerEvents = 'none';
-
-            const perAngle = 360 / count;
-
-            for (let i = 0; i < count; i++) {
-                const startAngle = i * perAngle - 90;
-                const endAngle = (i + 1) * perAngle - 90;
-
-                const path = createSectorPath(cx, cy, size.r1, size.r2, startAngle, endAngle);
-                const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                pathEl.setAttribute('d', path);
-                pathEl.setAttribute('fill', '#ffffff');
-                pathEl.setAttribute('stroke', '#cbd5e1');
-                pathEl.setAttribute('stroke-width', '2');
-                svg.appendChild(pathEl);
-            }
-
-            ring.appendChild(svg);
-
-            // 添加数字（反向旋转以保持水平）
-            const reverseDirection = direction === 'clockwise' ? 'counter' : 'clockwise';
-            for (let i = 0; i < count; i++) {
-                const num = nums[i];
-                const angle = (i + 0.5) * perAngle - 90;
-                const midR = (size.r1 + size.r2) / 2;
-                const x = cx + Math.cos(angle * Math.PI / 180) * midR;
-                const y = cy + Math.sin(angle * Math.PI / 180) * midR;
-
-                const item = document.createElement('div');
-                item.className = 'schulte-ring-item';
-                item.dataset.number = num;
-                item.dataset.ring = ringName;
-                item.textContent = num;
-                item.style.left = `${x}px`;
-                item.style.top = `${y}px`;
-                item.style.fontSize = ringName === 'inner' ? '16px' : '20px';
-                item.style.animation = `rotate-${reverseDirection} ${duration}s linear infinite`;
-                item.style.transformOrigin = 'center center';
-
-                item.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    handleSchulteCellClick(item, num);
+        function computeSchulteLayout(layout, size) {
+            let count, coords = [], cell;
+            if (layout === "grid") {
+                count = size * size;
+                coords = Array.from({ length: count }, (_, i) => ({
+                    x: ((i % size) + 0.5) / size * 100,
+                    y: (Math.floor(i / size) + 0.5) / size * 100,
+                }));
+                cell = (86 / size);
+            } else if (layout === "circle") {
+                count = size * size;
+                const R = 42;
+                coords = Array.from({ length: count }, (_, i) => {
+                    const a = -Math.PI / 2 + (i * 2 * Math.PI) / count;
+                    return { x: 50 + R * Math.cos(a), y: 50 + R * Math.sin(a) };
                 });
-                ring.appendChild(item);
+                cell = Math.min((2 * Math.PI * R) / count * 0.82, 18);
+            } else if (layout === "triangle") {
+                const rows = size;
+                count = (rows * (rows + 1)) / 2;
+                const sp = 80 / rows;
+                coords = [];
+                for (let r = 0; r < rows; r++) {
+                    const y = ((r + 0.5) / rows) * 100;
+                    for (let j = 0; j <= r; j++) coords.push({ x: 50 + (j - r / 2) * sp, y });
+                }
+                cell = Math.min(sp * 0.85, 18);
+            } else if (layout === "hexagon") {
+                const rows = size, cols = size;
+                count = rows * cols;
+                const s = Math.min(100 / (cols * 1.5 + 0.5), 100 / (rows * 1.732 + 0.866));
+                const dx = 1.5 * s, dy = Math.sqrt(3) * s;
+                const ox = (100 - (cols - 1) * dx) / 2, oy = (100 - (rows - 1) * dy) / 2;
+                coords = [];
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        coords.push({ x: ox + c * dx + (r % 2) * dx * 0.5, y: oy + r * dy });
+                    }
+                }
+                cell = s * 1.1;
+            } else if (layout === "radial") {
+                const rings = size, sectors = size;
+                count = rings * sectors;
+                coords = [];
+                const Rmax = 44;
+                for (let k = 0; k < rings; k++) {
+                    const radius = ((k + 0.5) / rings) * Rmax;
+                    for (let j = 0; j < sectors; j++) {
+                        const a = -Math.PI / 2 + (j * 2 * Math.PI) / sectors;
+                        coords.push({ x: 50 + radius * Math.cos(a), y: 50 + radius * Math.sin(a) });
+                    }
+                }
+                cell = Math.min((2 * Math.PI * Rmax) / sectors * 0.75, (Rmax / rings) * 0.85, 16);
+            } else if (layout === "irregular") {
+                count = size * size;
+                coords = Array.from({ length: count }, (_, i) => ({
+                    x: ((i % size) + 0.5) / size * 100,
+                    y: (Math.floor(i / size) + 0.5) / size * 100,
+                }));
+                cell = (86 / size);
+            } else {
+                count = size * size;
+                const Rmax = 44;
+                const R = Math.max(2, Math.round(Math.sqrt(count) / 2));
+                const weights = Array.from({ length: R }, (_, k) => k + 1);
+                const wsum = weights.reduce((a, b) => a + b, 0);
+                let counts = weights.map((w) => Math.max(1, Math.round((count * w) / wsum)));
+                let guard = 0;
+                let diff = count - counts.reduce((a, b) => a + b, 0);
+                while (diff !== 0 && guard++ < 2000) {
+                    const i = diff > 0 ? R - 1 : 0;
+                    counts[i] += Math.sign(diff);
+                    diff = count - counts.reduce((a, b) => a + b, 0);
+                }
+                coords = [];
+                for (let k = 0; k < R; k++) {
+                    const cr = counts[k];
+                    const radius = ((k + 0.5) / R) * Rmax;
+                    const offset = (k % 2) * (Math.PI / cr);
+                    for (let j = 0; j < cr; j++) {
+                        const a = offset + (j * 2 * Math.PI) / cr;
+                        coords.push({ x: 50 + radius * Math.cos(a), y: 50 + radius * Math.sin(a) });
+                    }
+                }
+                cell = Math.min((2 * Math.PI * Rmax) / counts[R - 1] * 0.8, 16);
             }
-
-            return ring;
+            return { count, coords, cell: Math.max(cell, 6) };
         }
 
-        function createSectorPath(cx, cy, innerR, outerR, startAngle, endAngle) {
-            const startRad = startAngle * Math.PI / 180;
-            const endRad = endAngle * Math.PI / 180;
-
-            const x1 = cx + outerR * Math.cos(startRad);
-            const y1 = cy + outerR * Math.sin(startRad);
-            const x2 = cx + outerR * Math.cos(endRad);
-            const y2 = cy + outerR * Math.sin(endRad);
-            const x3 = cx + innerR * Math.cos(endRad);
-            const y3 = cy + innerR * Math.sin(endRad);
-            const x4 = cx + innerR * Math.cos(startRad);
-            const y4 = cy + innerR * Math.sin(startRad);
-
-            const largeArc = endAngle - startAngle > 180 ? 1 : 0;
-
-            return [
-                `M ${x1} ${y1}`,
-                `A ${outerR} ${outerR} 0 ${largeArc} 1 ${x2} ${y2}`,
-                `L ${x3} ${y3}`,
-                `A ${innerR} ${innerR} 0 ${largeArc} 0 ${x4} ${y4}`,
-                'Z'
-            ].join(' ');
-        }
-
-        function handleSchulteCellClick(cell, number) {
-            if (schulteFinished) return;
-            if (cell.classList.contains('correct')) return;
-
-            // 首次点击启动计时器
-            if (schulteStartTime === 0) {
-                schulteStartTime = Date.now();
-                schulteTimerInterval = setInterval(updateSchulteTimer, 100);
+        function applySchulteLayout() {
+            const board = document.getElementById("schulteBoard");
+            const { count, coords, cell } = computeSchulteLayout(schulteState.layout, schulteState.size);
+            while (schulteCellEls.length < count) {
+                const el = document.createElement("div");
+                el.className = "schulte-cell";
+                const span = document.createElement("span");
+                span.className = "num";
+                el.appendChild(span);
+                el.addEventListener("click", () => onSchulteCellClick(parseInt(el.dataset.num, 10), el));
+                board.appendChild(el);
+                schulteCellEls.push(el);
             }
-
-            if (number === schulteCurrentTarget) {
-                // 正确
-                cell.classList.remove('wrong');
-                cell.classList.add('correct');
-
-                // 更新目标
-                if (schulteReverse) {
-                    schulteCurrentTarget--;
+            while (schulteCellEls.length > count) {
+                const el = schulteCellEls.pop();
+                el.style.opacity = "0";
+                setTimeout(() => el.remove(), 420);
+            }
+            for (let i = 0; i < count; i++) {
+                const el = schulteCellEls[i];
+                const num = schulteState.numbers[i];
+                el.dataset.num = num;
+                el.querySelector(".num").textContent = num;
+                const p = coords[i];
+                el.style.left = p.x + "%";
+                el.style.top = p.y + "%";
+                el.style.width = cell + "%";
+                el.style.height = cell + "%";
+                el.style.fontSize = (cell * 0.34) + "vmin";
+                el.style.opacity = "1";
+                el.style.pointerEvents = "auto";
+                el.classList.remove("correct", "wrong");
+                styleSchulteCell(el, num, i);
+                if (schulteState.layout === "hexagon") {
+                    el.style.clipPath = "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)";
+                } else if (schulteState.layout === "irregular") {
+                    const pts = [
+                        [rndSchulte(0, 12), rndSchulte(0, 12)], [rndSchulte(88, 100), rndSchulte(0, 12)],
+                        [rndSchulte(88, 100), rndSchulte(88, 100)], [rndSchulte(0, 12), rndSchulte(88, 100)],
+                    ];
+                    el.style.clipPath = `polygon(${pts.map(([x, y]) => x + "% " + y + "%").join(", ")})`;
                 } else {
-                    schulteCurrentTarget++;
+                    el.style.clipPath = "";
                 }
+            }
+            schulteState.count = count;
+            board.className = "schulte-board";
+            if (schulteState.interf.jitter) board.classList.add("jitter");
+            if (schulteState.interf.rotation) board.classList.add("rotate");
+        }
 
-                updateSchulteNextDisplay();
+        function rndSchulte(min, max) {
+            return Math.random() * (max - min) + min;
+        }
 
-                // 检查是否完成
-                if (schulteReverse ? schulteCurrentTarget < 1 : schulteCurrentTarget > schulteMaxNum) {
-                    schulteFinished = true;
-                    clearInterval(schulteTimerInterval);
-                    schulteTimerInterval = null;
-
-                    const elapsed = (Date.now() - schulteStartTime) / 1000;
-                    const rating = getSchulteRating(elapsed);
-                    document.getElementById('schulteResult').textContent = `🎉 完成！用时 ${elapsed.toFixed(1)} 秒 ${rating}`;
-                    document.getElementById('schulteResult').className = 'schulte-result success';
-                    document.getElementById('schulteNext').textContent = '已完成！';
-
-                    // 保存最佳成绩
-                    saveSchulteBest(elapsed);
-                    updateSchulteBestDisplay();
-                }
+        function styleSchulteCell(el, num, i) {
+            const span = el.querySelector(".num");
+            if (schulteState.interf.color) span.style.color = SCHULTE_COLORS[num % SCHULTE_COLORS.length];
+            else span.style.color = "";
+            SCHULTE_FONT_CLASSES.forEach((f) => span.classList.remove(f));
+            if (schulteState.interf.font) span.classList.add(SCHULTE_FONT_CLASSES[num % SCHULTE_FONT_CLASSES.length]);
+            el.classList.toggle("mirror", schulteState.interf.mirror && num % 2 === 0);
+            if (schulteState.interf.zoneColor) {
+                el.style.backgroundColor = SCHULTE_ZONE_COLORS[schulteZoneFor(i) % SCHULTE_ZONE_COLORS.length];
             } else {
-                // 错误：闪红
-                cell.classList.add('wrong');
-                setTimeout(() => cell.classList.remove('wrong'), 400);
+                el.style.backgroundColor = "";
             }
         }
 
-        function updateSchulteNextDisplay() {
-            const nextEl = document.getElementById('schulteNext');
-            if (schulteFinished) {
-                nextEl.textContent = '已完成！';
+        function schulteZoneFor(i) {
+            const { count } = computeSchulteLayout(schulteState.layout, schulteState.size);
+            if (schulteState.layout === "grid") {
+                const row = Math.floor(i / schulteState.size), col = i % schulteState.size;
+                return (row < schulteState.size / 2 ? 0 : 2) + (col < schulteState.size / 2 ? 0 : 1);
+            }
+            if (schulteState.layout === "triangle") {
+                const row = Math.floor((Math.sqrt(8 * i + 1) - 1) / 2);
+                return row;
+            }
+            if (schulteState.layout === "hexagon") return Math.floor(i / schulteState.size);
+            return Math.floor((i / count) * 4) % 4;
+        }
+
+        function buildSchulteBoard() {
+            const { count } = computeSchulteLayout(schulteState.layout, schulteState.size);
+            schulteState.numbers = shuffleArray(Array.from({ length: count }, (_, i) => 1 + i));
+            applySchulteLayout();
+        }
+
+        function updateSchulteAllInterferences() {
+            schulteCellEls.forEach((el, i) => styleSchulteCell(el, parseInt(el.dataset.num, 10), i));
+            const board = document.getElementById("schulteBoard");
+            board.classList.toggle("jitter", schulteState.interf.jitter);
+            board.classList.toggle("rotate", schulteState.interf.rotation);
+        }
+
+        function updateSchulteProgress() {
+            const total = schulteState.count;
+            let done, t;
+            if (schulteState.order === "asc") {
+                done = schulteState.next - 1;
+                t = schulteState.next;
+                if (schulteState.next > total) t = "✓";
             } else {
-                const label = schulteReverse ? '下一个' : '下一个';
-                nextEl.textContent = `${label}：${schulteCurrentTarget}`;
+                done = total - schulteState.next + 1;
+                t = schulteState.next;
+                if (schulteState.next < 1) t = "✓";
             }
+            document.getElementById("schulteProgressValue").textContent = `${Math.max(0, done)} / ${total}`;
+            document.getElementById("schulteTargetNum").textContent = t;
         }
 
-        function updateSchulteTimer() {
-            if (!schulteStartTime) return;
-            const elapsed = Math.floor((Date.now() - schulteStartTime) / 1000);
-            const minutes = String(Math.floor(elapsed / 60)).padStart(2, '0');
-            const seconds = String(elapsed % 60).padStart(2, '0');
-            document.getElementById('schulteTimer').textContent = `⏱ ${minutes}:${seconds}`;
-        }
-
-        function getSchulteRating(elapsed) {
-            // 基准：5×5 标准，其他模式按格子数等比换算
-            const baseCells = 25;
-            const factor = (schulteSize * schulteSize) / baseCells;
-            const adjustedTime = elapsed / factor;
-
-            if (adjustedTime < 25) return '⭐⭐⭐ 优秀';
-            if (adjustedTime < 40) return '⭐⭐ 良好';
-            if (adjustedTime < 60) return '⭐ 一般';
-            return '继续加油';
-        }
-
-        function getSchulteBestKey() {
-            return `schulte_best_${schulteMode}`;
-        }
-
-        function saveSchulteBest(elapsed) {
-            const key = getSchulteBestKey();
-            const current = localStorage.getItem(key);
-            if (!current || elapsed < parseFloat(current)) {
-                localStorage.setItem(key, elapsed.toFixed(1));
-            }
-        }
-
-        function updateSchulteBestDisplay() {
-            const key = getSchulteBestKey();
-            const best = localStorage.getItem(key);
-            const bestEl = document.getElementById('schulteBest');
-            if (best) {
-                bestEl.textContent = `🏆 最佳：${parseFloat(best).toFixed(1)}s`;
+        function onSchulteCellClick(num, cell) {
+            if (!schulteState.running || schulteState.paused || schulteState.finished) return;
+            if (cell.classList.contains("correct")) return;
+            if (num === schulteState.next) {
+                cell.classList.remove("wrong");
+                cell.classList.add("correct");
+                cell.style.pointerEvents = "none";
+                schulteState.next += schulteState.step;
+                updateSchulteProgress();
+                const finished = schulteState.order === "asc" ? schulteState.next > schulteState.count : schulteState.next < 1;
+                if (finished) finishSchulteGame("success");
             } else {
-                bestEl.textContent = '🏆 最佳：--';
+                cell.classList.remove("wrong");
+                void cell.offsetWidth;
+                cell.classList.add("wrong");
+                setTimeout(() => cell.classList.remove("wrong"), 350);
             }
         }
 
-        function toggleSchulteRules() {
-            const content = document.getElementById('schulteRulesContent');
-            const toggle = document.querySelector('.schulte-rules-toggle h4');
-            if (content.style.display === 'none') {
-                content.style.display = 'block';
-                toggle.textContent = '▲ 训练方法';
+        function schulteTick(now) {
+            if (!schulteState.running || schulteState.paused) return;
+            const dt = now - schulteState.lastTick;
+            schulteState.lastTick = now;
+            schulteState.elapsed += dt;
+            document.getElementById("schulteTimeValue").textContent = fmtSchulteTime(schulteState.elapsed);
+            schulteState.rafId = requestAnimationFrame(schulteTick);
+        }
+
+        function startSchulteClock() {
+            schulteState.lastTick = performance.now();
+            schulteState.rafId = requestAnimationFrame(schulteTick);
+        }
+
+        function stopSchulteClock() {
+            if (schulteState.rafId) cancelAnimationFrame(schulteState.rafId);
+            schulteState.rafId = null;
+        }
+
+        function fmtSchulteTime(ms) {
+            const s = ms / 1000;
+            if (s < 60) return s.toFixed(1) + "s";
+            const m = Math.floor(s / 60);
+            const r = (s - m * 60).toFixed(1);
+            return `${m}:${r.padStart(4, "0")}`;
+        }
+
+        function startSchulteGame() {
+            buildSchulteBoard();
+            schulteState.running = true;
+            schulteState.paused = false;
+            schulteState.finished = false;
+            schulteState.step = schulteState.order === "asc" ? 1 : -1;
+            schulteState.next = schulteState.order === "asc" ? 1 : schulteState.count;
+            schulteState.elapsed = 0;
+            document.getElementById("schulteTimeValue").textContent = "0.0s";
+            document.getElementById("schulteOverlay").classList.add("hidden");
+            document.getElementById("schulteStartBtn").disabled = true;
+            document.getElementById("schultePauseBtn").disabled = false;
+            document.getElementById("schulteResumeBtn").disabled = true;
+            document.getElementById("schulteResetBtn").disabled = false;
+            updateSchulteProgress();
+            startSchulteClock();
+        }
+
+        function pauseSchulteGame() {
+            if (!schulteState.running || schulteState.paused) return;
+            schulteState.paused = true;
+            stopSchulteClock();
+            document.getElementById("schultePauseBtn").disabled = true;
+            document.getElementById("schulteResumeBtn").disabled = false;
+            showSchulteOverlay("⏸", "已暂停", "点击「恢复」继续训练。", "继续", false);
+        }
+
+        function resumeSchulteGame() {
+            if (!schulteState.running || !schulteState.paused) return;
+            schulteState.paused = false;
+            document.getElementById("schulteOverlay").classList.add("hidden");
+            document.getElementById("schultePauseBtn").disabled = false;
+            document.getElementById("schulteResumeBtn").disabled = true;
+            startSchulteClock();
+        }
+
+        function resetSchulteGame() {
+            stopSchulteClock();
+            schulteState.running = false;
+            schulteState.paused = false;
+            schulteState.finished = false;
+            document.getElementById("schulteStartBtn").disabled = false;
+            document.getElementById("schultePauseBtn").disabled = true;
+            document.getElementById("schulteResumeBtn").disabled = true;
+            document.getElementById("schulteResetBtn").disabled = false;
+            showSchulteOverlay("🎯", "准备开始", schulteIdleDesc(), "开始训练", true);
+            refreshSchulteIdle();
+        }
+
+        function finishSchulteGame(reason) {
+            stopSchulteClock();
+            schulteState.running = false;
+            schulteState.finished = true;
+            document.getElementById("schultePauseBtn").disabled = true;
+            document.getElementById("schulteResumeBtn").disabled = true;
+            document.getElementById("schulteStartBtn").disabled = false;
+            const total = schulteState.count;
+            const success = reason === "success";
+            const usedMs = schulteState.elapsed;
+            const found = schulteState.order === "asc" ? schulteState.next - 1 : total - schulteState.next + 1;
+            if (success) {
+                document.getElementById("schulteBoard").classList.add("solved");
+                const desc = `你完成了全部 ${total} 个方格，用时 ${fmtSchulteTime(usedMs)}。`;
+                showSchulteOverlay("🎉", "全部完成！", desc, "再来一局", true);
             } else {
-                content.style.display = 'none';
-                toggle.textContent = '▼ 训练方法';
+                const desc = `本局未完成。已找到 ${Math.max(0, found)} / ${total} 个数字，用时 ${fmtSchulteTime(usedMs)}。`;
+                showSchulteOverlay("🏁", "已结束本轮", desc, "再来一局", true);
             }
+            saveSchulteRecord({
+                size: schulteState.size, count: total, layout: schulteState.layout, order: schulteState.order,
+                success, timeMs: Math.round(usedMs), found: Math.max(0, found),
+                interf: { ...schulteState.interf }, date: Date.now(),
+            });
+        }
+
+        function showSchulteOverlay(emoji, title, desc, btnText, startAction) {
+            document.getElementById("schulteOverlayEmoji").textContent = emoji;
+            document.getElementById("schulteOverlayTitle").textContent = title;
+            document.getElementById("schulteOverlayDesc").textContent = desc;
+            document.getElementById("schulteOverlayStart").textContent = btnText;
+            document.getElementById("schulteOverlayStart").dataset.action = startAction ? "start" : "resume";
+            document.getElementById("schulteOverlay").classList.remove("hidden");
+        }
+
+        function refreshSchulteIdle() {
+            if (schulteState.running) return;
+            schulteState.count = computeSchulteLayout(schulteState.layout, schulteState.size).count;
+            schulteState.step = schulteState.order === "asc" ? 1 : -1;
+            schulteState.next = schulteState.order === "asc" ? 1 : schulteState.count;
+            document.getElementById("schulteTimeValue").textContent = "0.0s";
+            buildSchulteBoard();
+            schulteCellEls.forEach((c) => (c.style.pointerEvents = "none"));
+            updateSchulteProgress();
+            // 更新覆盖层描述
+            if (!document.getElementById("schulteOverlay").classList.contains("hidden")) {
+                document.getElementById("schulteOverlayDesc").textContent = schulteIdleDesc();
+            }
+        }
+
+        // ---------- 历史记录 ----------
+        function loadSchulteRecords() {
+            try { return JSON.parse(localStorage.getItem(SCHULTE_STORE_KEY)) || []; } catch (e) { return []; }
+        }
+
+        function saveSchulteRecord(rec) {
+            const list = loadSchulteRecords();
+            list.unshift(rec);
+            if (list.length > 100) list.length = 100;
+            try { localStorage.setItem(SCHULTE_STORE_KEY, JSON.stringify(list)); } catch (e) {}
+            renderSchulteHistory();
+        }
+
+        function renderSchulteHistory() {
+            const all = loadSchulteRecords();
+            const list = document.getElementById("schulteHistoryList");
+            const empty = document.getElementById("schulteHistoryEmpty");
+
+            const okList = all.filter((r) => r.success);
+            const best = okList.length ? okList.reduce((a, b) => (a.timeMs <= b.timeMs ? a : b)) : null;
+            document.getElementById("schulteHistoryStats").innerHTML = `
+                <div class="schulte-stat"><div class="schulte-stat-v">${all.length}</div><div class="schulte-stat-l">总场次</div></div>
+                <div class="schulte-stat"><div class="schulte-stat-v">${okList.length}</div><div class="schulte-stat-l">成功</div></div>
+                <div class="schulte-stat"><div class="schulte-stat-v">${best ? fmtSchulteTime(best.timeMs) : "—"}</div><div class="schulte-stat-l">最佳</div></div>
+                <div class="schulte-stat"><div class="schulte-stat-v">${all.length ? Math.round((okList.length / all.length) * 100) + "%" : "—"}</div><div class="schulte-stat-l">成功率</div></div>`;
+
+            list.innerHTML = "";
+            empty.classList.toggle("hidden", all.length > 0);
+            const interfTxt = (r) => Object.entries(r.interf || {}).filter(([, v]) => v)
+                .map(([k]) => ({ color: "色", font: "字", jitter: "抖", mirror: "镜", zoneColor: "区", rotation: "转" }[k])).join("");
+            all.slice(0, 20).forEach((r) => {
+                const li = document.createElement("li");
+                li.className = "schulte-history-item";
+                const orderTxt = r.order === "desc" ? "倒" : "正";
+                const resTxt = r.success ? "完成" : `弃 ${r.found}/${r.count}`;
+                const resCls = r.success ? "res-ok" : "res-fail";
+                const d = new Date(r.date);
+                const dateStr = `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+                li.innerHTML = `
+                    <div class="row1">
+                        <span><span class="mode-badge">${orderTxt}</span>
+                            &nbsp;${r.size}×${r.size}·${SCHULTE_LAYOUT_LABEL[r.layout] || "方"}${interfTxt(r) ? "·" + interfTxt(r) : ""}</span>
+                        <span class="${resCls}">${resTxt}</span>
+                    </div>
+                    <div class="meta">⏱ ${fmtSchulteTime(r.timeMs)}</div>
+                    <div class="date">${dateStr}</div>`;
+                list.appendChild(li);
+            });
         }
 
         // ========== 数独游戏代码 ==========
