@@ -711,7 +711,9 @@
             background: #f8fafc;
             border: 4px solid #1e293b;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             padding: 0;
             overflow: hidden;
         }
@@ -720,15 +722,12 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 0;
-            height: 0;
+            width: 340px;
+            height: 340px;
+            margin-left: -170px;
+            margin-top: -170px;
             pointer-events: none;
-            transform-origin: 0 0;
-        }
-
-        .schulte-ring svg {
-            position: absolute;
-            pointer-events: none;
+            border-radius: 50%;
         }
 
         .schulte-ring-item {
@@ -744,14 +743,10 @@
             -webkit-user-select: none;
             user-select: none;
             touch-action: manipulation;
-        }
-
-        .schulte-ring-item:hover {
-            opacity: 0.8;
-        }
-
-        .schulte-ring-item:active {
-            transform: scale(0.9);
+            width: 50px;
+            height: 50px;
+            margin-left: -25px;
+            margin-top: -25px;
         }
 
         .schulte-ring-item.correct {
@@ -786,6 +781,27 @@
         @keyframes rotate-counter {
             from { transform: rotate(0deg); }
             to { transform: rotate(-360deg); }
+        }
+
+        .schulte-ring-inner {
+            width: 140px;
+            height: 140px;
+            margin-left: -70px;
+            margin-top: -70px;
+        }
+
+        .schulte-ring-middle {
+            width: 280px;
+            height: 280px;
+            margin-left: -140px;
+            margin-top: -140px;
+        }
+
+        .schulte-ring-outer {
+            width: 360px;
+            height: 360px;
+            margin-left: -180px;
+            margin-top: -180px;
         }
 
         /* 旋转干扰背景样式 */
@@ -1739,7 +1755,7 @@
             <div style="text-align: center; margin-top: 30px;">
                 <div style="display: inline-flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;" onclick="window.open('https://shitou-git.github.io/chat/index', '_blank')"><img src="Z.webp" style="width: 64px; height: 64px; border-radius: 10px;"><span style="font-size: 14px; font-weight: 600;">灵知</span></div>
             </div>
-            <div style="text-align: center; margin-top: 20px; color: rgba(255,255,255,0.6); font-size: 12px;">v1.1.0</div>
+            <div style="text-align: center; margin-top: 20px; color: rgba(255,255,255,0.6); font-size: 12px;">v1.1.1</div>
         </div>
 
         <!-- 幻方游戏页面 -->
@@ -3195,13 +3211,13 @@
                 const middleNums = shuffled.slice(8, 18);
                 const outerNums = shuffled.slice(18, 25);
 
-                const innerRing = createRotateRingSVG('inner', innerNums, 8, 'counter', 30, 0, 60);
+                const innerRing = createRotateRing('inner', innerNums, 8, 'counter', 30);
                 grid.appendChild(innerRing);
 
-                const middleRing = createRotateRingSVG('middle', middleNums, 10, 'clockwise', 22, 60, 120);
+                const middleRing = createRotateRing('middle', middleNums, 10, 'clockwise', 22);
                 grid.appendChild(middleRing);
 
-                const outerRing = createRotateRingSVG('outer', outerNums, 7, 'counter', 16, 120, 170);
+                const outerRing = createRotateRing('outer', outerNums, 7, 'counter', 16);
                 grid.appendChild(outerRing);
 
                 const center = document.createElement('div');
@@ -3239,19 +3255,31 @@
             }
         }
 
-        function createRotateRingSVG(ringName, nums, count, direction, duration, innerR, outerR) {
+        function createRotateRing(ringName, nums, count, direction, duration) {
             const ring = document.createElement('div');
-            ring.className = `schulte-ring ring-${ringName}`;
+            ring.className = `schulte-ring schulte-ring-${ringName}`;
             ring.style.animation = `rotate-${direction} ${duration}s linear infinite`;
+            ring.style.transformOrigin = 'center center';
+
+            const sizes = {
+                inner: { width: 140, height: 140, r1: 0, r2: 70 },
+                middle: { width: 280, height: 280, r1: 70, r2: 140 },
+                outer: { width: 360, height: 360, r1: 140, r2: 180 }
+            };
+
+            const size = sizes[ringName];
+            const svgSize = size.width;
+            const cx = svgSize / 2;
+            const cy = svgSize / 2;
 
             // 创建 SVG 绘制扇形格子
-            const svgSize = outerR * 2;
             const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
             svg.setAttribute('width', svgSize);
             svg.setAttribute('height', svgSize);
             svg.style.position = 'absolute';
-            svg.style.left = `${-outerR}px`;
-            svg.style.top = `${-outerR}px`;
+            svg.style.left = '-50%';
+            svg.style.top = '-50%';
+            svg.style.transform = 'translate(50%, 50%)';
             svg.style.pointerEvents = 'none';
 
             const perAngle = 360 / count;
@@ -3260,7 +3288,7 @@
                 const startAngle = i * perAngle - 90;
                 const endAngle = (i + 1) * perAngle - 90;
 
-                const path = createSectorPath(0, 0, innerR, outerR, startAngle, endAngle);
+                const path = createSectorPath(cx, cy, size.r1, size.r2, startAngle, endAngle);
                 const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                 pathEl.setAttribute('d', path);
                 pathEl.setAttribute('fill', '#ffffff');
@@ -3271,13 +3299,14 @@
 
             ring.appendChild(svg);
 
-            // 添加数字
+            // 添加数字（反向旋转以保持水平）
+            const reverseDirection = direction === 'clockwise' ? 'counter' : 'clockwise';
             for (let i = 0; i < count; i++) {
                 const num = nums[i];
                 const angle = (i + 0.5) * perAngle - 90;
-                const midR = (innerR + outerR) / 2;
-                const x = Math.cos(angle * Math.PI / 180) * midR;
-                const y = Math.sin(angle * Math.PI / 180) * midR;
+                const midR = (size.r1 + size.r2) / 2;
+                const x = cx + Math.cos(angle * Math.PI / 180) * midR;
+                const y = cy + Math.sin(angle * Math.PI / 180) * midR;
 
                 const item = document.createElement('div');
                 item.className = 'schulte-ring-item';
@@ -3286,11 +3315,9 @@
                 item.textContent = num;
                 item.style.left = `${x}px`;
                 item.style.top = `${y}px`;
-                item.style.width = outerR - innerR > 30 ? '40px' : '32px';
-                item.style.height = outerR - innerR > 30 ? '30px' : '24px';
-                item.style.marginLeft = outerR - innerR > 30 ? '-20px' : '-16px';
-                item.style.marginTop = outerR - innerR > 30 ? '-15px' : '-12px';
-                item.style.fontSize = outerR - innerR > 30 ? '20px' : '16px';
+                item.style.fontSize = ringName === 'inner' ? '16px' : '20px';
+                item.style.animation = `rotate-${reverseDirection} ${duration}s linear infinite`;
+                item.style.transformOrigin = 'center center';
 
                 item.addEventListener('click', (e) => {
                     e.stopPropagation();
