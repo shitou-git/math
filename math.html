@@ -3478,12 +3478,31 @@
                 cell = (86 / size);
             } else if (layout === "circle") {
                 count = size * size;
-                const R = 42;
-                coords = Array.from({ length: count }, (_, i) => {
-                    const a = -Math.PI / 2 + (i * 2 * Math.PI) / count;
-                    return { x: 50 + R * Math.cos(a), y: 50 + R * Math.sin(a) };
-                });
-                cell = Math.min((2 * Math.PI * R) / count * 0.82, 18);
+                const Rmax = 44;
+                if (count <= 25) {
+                    const R = Rmax * 0.85;
+                    coords = Array.from({ length: count }, (_, i) => {
+                        const a = -Math.PI / 2 + (i * 2 * Math.PI) / count;
+                        return { x: 50 + R * Math.cos(a), y: 50 + R * Math.sin(a) };
+                    });
+                    cell = Math.min((2 * Math.PI * R) / count * 0.82, 16);
+                } else {
+                    const innerCount = Math.round(count * 0.4);
+                    const outerCount = count - innerCount;
+                    const innerR = Rmax * 0.5;
+                    const outerR = Rmax * 0.92;
+                    for (let i = 0; i < innerCount; i++) {
+                        const a = -Math.PI / 2 + (i * 2 * Math.PI) / innerCount;
+                        coords.push({ x: 50 + innerR * Math.cos(a), y: 50 + innerR * Math.sin(a) });
+                    }
+                    for (let i = 0; i < outerCount; i++) {
+                        const a = -Math.PI / 2 + Math.PI / outerCount + (i * 2 * Math.PI) / outerCount;
+                        coords.push({ x: 50 + outerR * Math.cos(a), y: 50 + outerR * Math.sin(a) });
+                    }
+                    const outerCell = (2 * Math.PI * outerR) / outerCount * 0.8;
+                    const innerCell = (2 * Math.PI * innerR) / innerCount * 0.8;
+                    cell = Math.min(outerCell, innerCell, 14);
+                }
             } else if (layout === "triangle") {
                 const rows = size;
                 count = (rows * (rows + 1)) / 2;
@@ -3508,18 +3527,36 @@
                 }
                 cell = s * 1.1;
             } else if (layout === "radial") {
-                const rings = size, sectors = size;
-                count = rings * sectors;
-                coords = [];
+                count = size * size;
                 const Rmax = 44;
+                const rings = size >= 7 ? 5 : size >= 6 ? 4 : 3;
+                const weights = Array.from({ length: rings }, (_, k) => k + 1);
+                const wsum = weights.reduce((a, b) => a + b, 0);
+                let ringCounts = weights.map((w) => Math.max(6, Math.round((count * w) / wsum)));
+                let guard = 0;
+                let diff = count - ringCounts.reduce((a, b) => a + b, 0);
+                while (diff !== 0 && guard++ < 2000) {
+                    const i = diff > 0 ? rings - 1 : 0;
+                    ringCounts[i] += Math.sign(diff);
+                    if (ringCounts[i] < 4) ringCounts[i] = 4;
+                    diff = count - ringCounts.reduce((a, b) => a + b, 0);
+                }
+                coords = [];
                 for (let k = 0; k < rings; k++) {
                     const radius = ((k + 0.5) / rings) * Rmax;
-                    for (let j = 0; j < sectors; j++) {
-                        const a = -Math.PI / 2 + (j * 2 * Math.PI) / sectors;
+                    const cr = ringCounts[k];
+                    const offset = (k % 2) * (Math.PI / cr);
+                    for (let j = 0; j < cr; j++) {
+                        const a = offset + (j * 2 * Math.PI) / cr;
                         coords.push({ x: 50 + radius * Math.cos(a), y: 50 + radius * Math.sin(a) });
                     }
                 }
-                cell = Math.min((2 * Math.PI * Rmax) / sectors * 0.75, (Rmax / rings) * 0.85, 16);
+                const outerRingCount = ringCounts[ringCounts.length - 1];
+                const outerCircumference = 2 * Math.PI * Rmax;
+                const cellByOuter = (outerCircumference / outerRingCount) * 0.75;
+                const cellByRing = (Rmax / rings) * 0.7;
+                cell = Math.min(cellByOuter, cellByRing, 13);
+                cell = Math.max(cell, 5);
             } else if (layout === "irregular") {
                 count = size * size;
                 coords = Array.from({ length: count }, (_, i) => ({
