@@ -719,16 +719,13 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 100%;
-            height: 100%;
-            transform: translate(-50%, -50%);
+            width: 0;
+            height: 0;
             pointer-events: none;
         }
 
         .schulte-ring-item {
             position: absolute;
-            top: 50%;
-            left: 50%;
             width: 36px;
             height: 36px;
             margin-left: -18px;
@@ -747,7 +744,6 @@
             -webkit-user-select: none;
             user-select: none;
             touch-action: manipulation;
-            transition: transform 0.1s ease;
         }
 
         .schulte-ring-item:hover {
@@ -789,13 +785,13 @@
         }
 
         @keyframes rotate-clockwise {
-            from { transform: translate(-50%, -50%) rotate(0deg); }
-            to { transform: translate(-50%, -50%) rotate(360deg); }
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         @keyframes rotate-counter {
-            from { transform: translate(-50%, -50%) rotate(0deg); }
-            to { transform: translate(-50%, -50%) rotate(-360deg); }
+            from { transform: rotate(0deg); }
+            to { transform: rotate(-360deg); }
         }
 
         /* 响应式样式 - 移动端适配 */
@@ -3226,14 +3222,14 @@
             for (let i = 0; i < count; i++) {
                 const num = nums[i];
                 const angle = (360 / count) * i;
+                const radius = ringRadius(ringName);
                 const item = document.createElement('div');
                 item.className = 'schulte-ring-item';
                 item.dataset.number = num;
                 item.dataset.ring = ringName;
                 item.textContent = num;
-                item.style.transform = `rotate(${angle}deg) translateY(-${ringRadiusPercent(ringName)}%) rotate(-${angle}deg)`;
+                item.style.transform = `rotate(${angle}deg) translateY(-${radius}px) rotate(-${angle}deg)`;
 
-                // 随机颜色
                 const colorClass = schulteColorClasses[Math.floor(Math.random() * schulteColorClasses.length)];
                 item.classList.add(colorClass);
 
@@ -3244,16 +3240,15 @@
                 ring.appendChild(item);
             }
 
-            // 设置旋转动画
             ring.style.animation = `rotate-${direction} ${duration}s linear infinite`;
 
             return ring;
         }
 
-        function ringRadiusPercent(ringName) {
-            if (ringName === 'inner') return 38;
-            if (ringName === 'middle') return 65;
-            return 88;
+        function ringRadius(ringName) {
+            if (ringName === 'inner') return 65;
+            if (ringName === 'middle') return 110;
+            return 150;
         }
 
         function handleSchulteCellClick(cell, number) {
