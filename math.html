@@ -664,6 +664,18 @@
         .schulte-cell.color-green { color: #16a34a; }
         .schulte-cell.color-orange { color: #ea580c; }
         .schulte-cell.color-purple { color: #9333ea; }
+        .schulte-cell.color-teal { color: #0d9488; }
+        .schulte-cell.color-brown { color: #7c2d12; }
+        .schulte-cell.color-pink { color: #be185d; }
+
+        .schulte-cell.bg-triangle-1 { background: linear-gradient(135deg, #fef3c7 0%, #fef3c7 50%, #fce7f3 50%, #fce7f3 100%); }
+        .schulte-cell.bg-triangle-2 { background: linear-gradient(135deg, #dbeafe 0%, #dbeafe 50%, #dcfce7 50%, #dcfce7 100%); }
+        .schulte-cell.bg-triangle-3 { background: linear-gradient(135deg, #fce7f3 0%, #fce7f3 50%, #e0e7ff 50%, #e0e7ff 100%); }
+        .schulte-cell.bg-triangle-4 { background: linear-gradient(135deg, #d1fae5 0%, #d1fae5 50%, #fef9c3 50%, #fef9c3 100%); }
+        .schulte-cell.bg-triangle-5 { background: linear-gradient(135deg, #fed7aa 0%, #fed7aa 50%, #f3e8ff 50%, #f3e8ff 100%); }
+        .schulte-cell.bg-triangle-6 { background: linear-gradient(135deg, #e0f2fe 0%, #e0f2fe 50%, #fde68a 50%, #fde68a 100%); }
+        .schulte-cell.bg-triangle-7 { background: linear-gradient(135deg, #fce7f3 0%, #fce7f3 50%, #fed7aa 50%, #fed7aa 100%); }
+        .schulte-cell.bg-triangle-8 { background: linear-gradient(135deg, #cffafe 0%, #cffafe 50%, #fee2e2 50%, #fee2e2 100%); }
 
         @keyframes schulte-shake {
             0%, 100% { transform: translateX(0); }
@@ -687,83 +699,103 @@
             margin: 0;
         }
 
-        /* 旋转干扰层样式 */
+        /* 旋转干扰模式：三层同心圆转盘 */
         .schulte-grid {
             position: relative;
         }
 
-        .schulte-rotate-layer {
+        .schulte-rotate-container {
+            width: 340px;
+            height: 340px;
+            border-radius: 50%;
+            background: #f8fafc;
+            border: 6px solid #1e293b;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            display: block;
+            padding: 0;
+        }
+
+        .schulte-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .schulte-ring-item {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 36px;
+            height: 36px;
+            margin-left: -18px;
+            margin-top: -18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            pointer-events: auto;
+            background: white;
+            border-radius: 50%;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: manipulation;
+            transition: transform 0.1s ease;
+        }
+
+        .schulte-ring-item:hover {
+            transform-origin: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .schulte-ring-item:active {
+            transform: scale(0.9);
+        }
+
+        .schulte-ring-item.correct {
+            background: #dcfce7;
+            color: #16a34a !important;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .schulte-ring-item.wrong {
+            background: #fee2e2;
+            color: #dc2626 !important;
+            animation: schulte-shake 0.4s ease;
+        }
+
+        .schulte-center {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
+            background: #1e293b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
             pointer-events: none;
-            overflow: hidden;
-        }
-
-        .schulte-rotate-layer.layer-1 {
-            z-index: 0;
-            width: 100%;
-            height: 100%;
-            animation: rotate-clockwise 25s linear infinite;
-        }
-
-        .schulte-rotate-layer.layer-2 {
-            z-index: 0;
-            width: 70%;
-            height: 70%;
-            animation: rotate-counter 18s linear infinite;
-        }
-
-        .schulte-rotate-layer.layer-3 {
-            z-index: 0;
-            width: 45%;
-            height: 45%;
-            animation: rotate-clockwise 12s linear infinite;
-        }
-
-        .schulte-rotate-layer::before {
-            content: '';
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            top: -50%;
-            left: -50%;
-            background: repeating-conic-gradient(
-                from 0deg,
-                rgba(100, 116, 139, 0.04) 0deg 15deg,
-                rgba(148, 163, 184, 0.08) 15deg 30deg,
-                rgba(100, 116, 139, 0.04) 30deg 45deg
-            );
-        }
-
-        .schulte-rotate-layer.layer-2::before {
-            background: repeating-conic-gradient(
-                from 0deg,
-                rgba(139, 92, 246, 0.05) 0deg 20deg,
-                rgba(99, 102, 241, 0.1) 20deg 40deg,
-                rgba(139, 92, 246, 0.05) 40deg 60deg
-            );
-        }
-
-        .schulte-rotate-layer.layer-3::before {
-            background: repeating-conic-gradient(
-                from 0deg,
-                rgba(59, 130, 246, 0.04) 0deg 25deg,
-                rgba(14, 165, 233, 0.07) 25deg 50deg,
-                rgba(59, 130, 246, 0.04) 50deg 75deg
-            );
         }
 
         @keyframes rotate-clockwise {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
         @keyframes rotate-counter {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(-360deg); }
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(-360deg); }
         }
 
         /* 响应式样式 - 移动端适配 */
@@ -977,6 +1009,26 @@
                 font-size: 15px;
             }
 
+            /* 旋转干扰移动端 */
+            .schulte-rotate-container {
+                width: 280px;
+                height: 280px;
+            }
+
+            .schulte-ring-item {
+                width: 32px;
+                height: 32px;
+                margin-left: -16px;
+                margin-top: -16px;
+                font-size: 15px;
+            }
+
+            .schulte-center {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+
             .footer {
                 padding: 15px;
                 font-size: 12px;
@@ -1182,6 +1234,27 @@
                 width: 34px;
                 height: 34px;
                 font-size: 13px;
+            }
+
+            /* 旋转干扰小屏幕 */
+            .schulte-rotate-container {
+                width: 240px;
+                height: 240px;
+                border-width: 4px;
+            }
+
+            .schulte-ring-item {
+                width: 28px;
+                height: 28px;
+                margin-left: -14px;
+                margin-top: -14px;
+                font-size: 13px;
+            }
+
+            .schulte-center {
+                width: 34px;
+                height: 34px;
+                font-size: 18px;
             }
 
             .btn, .action-btn {
@@ -1639,7 +1712,7 @@
             <div style="text-align: center; margin-top: 30px;">
                 <div style="display: inline-flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;" onclick="window.open('https://shitou-git.github.io/chat/index', '_blank')"><img src="Z.webp" style="width: 64px; height: 64px; border-radius: 10px;"><span style="font-size: 14px; font-weight: 600;">灵知</span></div>
             </div>
-            <div style="text-align: center; margin-top: 20px; color: rgba(255,255,255,0.6); font-size: 12px;">v1.0.9</div>
+            <div style="text-align: center; margin-top: 20px; color: rgba(255,255,255,0.6); font-size: 12px;">v1.1.0</div>
         </div>
 
         <!-- 幻方游戏页面 -->
@@ -3033,7 +3106,8 @@
             rotate5:    { size: 5, reverse: false, color: false, rotate: true  }
         };
 
-        const schulteColorClasses = ['color-red', 'color-blue', 'color-green', 'color-orange', 'color-purple'];
+        const schulteColorClasses = ['color-red', 'color-blue', 'color-green', 'color-orange', 'color-purple', 'color-teal', 'color-brown', 'color-pink'];
+        const schulteBgClasses = ['bg-triangle-1', 'bg-triangle-2', 'bg-triangle-3', 'bg-triangle-4', 'bg-triangle-5', 'bg-triangle-6', 'bg-triangle-7', 'bg-triangle-8'];
 
         function initSchulte() {
             setupSchulteModeListeners();
@@ -3081,56 +3155,105 @@
         function renderSchulteGrid() {
             const grid = document.getElementById('schulteGrid');
             grid.innerHTML = '';
-            grid.className = `schulte-grid grid-${schulteSize}`;
 
             // 生成随机数字序列
             const numbers = [];
             for (let i = 1; i <= schulteMaxNum; i++) numbers.push(i);
             const shuffled = shuffleArray(numbers);
 
-            // 色彩干扰模式：三角形背景 + 彩色数字
-            const colorMap = {};
-            const bgTriangleMap = {};
-            const bgColors = ['#d1d5db', '#f3f4f6', '#e5e7eb', '#f9fafb', '#dfe6e9'];
-            if (schulteColorMode) {
-                shuffled.forEach(num => {
-                    colorMap[num] = schulteColorClasses[Math.floor(Math.random() * schulteColorClasses.length)];
-                    const color1 = bgColors[Math.floor(Math.random() * bgColors.length)];
-                    const color2 = bgColors[Math.floor(Math.random() * bgColors.length)];
-                    bgTriangleMap[num] = { color1, color2 };
-                });
-            }
-
-            // 旋转干扰模式：为每个单元格分配旋转层
-            const rotateLayers = [];
             if (schulteRotateMode) {
-                for (let i = 0; i < 3; i++) {
-                    const layer = document.createElement('div');
-                    layer.className = `schulte-rotate-layer layer-${i + 1}`;
-                    grid.appendChild(layer);
+                // 旋转干扰模式：三层同心圆转盘
+                grid.className = 'schulte-grid schulte-rotate-container';
+
+                // 分配数字到三层环
+                const innerNums = shuffled.slice(0, 6);
+                const middleNums = shuffled.slice(6, 16);
+                const outerNums = shuffled.slice(16, 25);
+
+                // 创建内圈（逆时针，最慢）
+                const innerRing = createRotateRing('inner', innerNums, 6, 'counter', 30);
+                grid.appendChild(innerRing);
+
+                // 创建中圈（顺时针，中速）
+                const middleRing = createRotateRing('middle', middleNums, 10, 'clockwise', 22);
+                grid.appendChild(middleRing);
+
+                // 创建外圈（逆时针，最快）
+                const outerRing = createRotateRing('outer', outerNums, 9, 'counter', 16);
+                grid.appendChild(outerRing);
+
+                // 中心装饰
+                const center = document.createElement('div');
+                center.className = 'schulte-center';
+                center.textContent = '🎯';
+                grid.appendChild(center);
+
+            } else {
+                // 普通方格模式
+                grid.className = `schulte-grid grid-${schulteSize}`;
+
+                // 色彩干扰模式：三角形背景 + 彩色数字
+                const colorMap = {};
+                const bgMap = {};
+                if (schulteColorMode) {
+                    shuffled.forEach(num => {
+                        colorMap[num] = schulteColorClasses[Math.floor(Math.random() * schulteColorClasses.length)];
+                        bgMap[num] = schulteBgClasses[Math.floor(Math.random() * schulteBgClasses.length)];
+                    });
+                }
+
+                for (let i = 0; i < schulteMaxNum; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'schulte-cell';
+                    cell.textContent = shuffled[i];
+                    cell.dataset.number = shuffled[i];
+
+                    if (schulteColorMode && colorMap[shuffled[i]]) {
+                        cell.classList.add(colorMap[shuffled[i]]);
+                        cell.classList.add(bgMap[shuffled[i]]);
+                    }
+
+                    cell.addEventListener('click', () => handleSchulteCellClick(cell, shuffled[i]));
+                    grid.appendChild(cell);
                 }
             }
+        }
 
-            for (let i = 0; i < schulteMaxNum; i++) {
-                const cell = document.createElement('div');
-                cell.className = 'schulte-cell';
-                cell.textContent = shuffled[i];
-                cell.dataset.number = shuffled[i];
+        function createRotateRing(ringName, nums, count, direction, duration) {
+            const ring = document.createElement('div');
+            ring.className = `schulte-ring ring-${ringName}`;
 
-                if (schulteColorMode && colorMap[shuffled[i]]) {
-                    cell.classList.add(colorMap[shuffled[i]]);
-                    const bg = bgTriangleMap[shuffled[i]];
-                    cell.style.background = `linear-gradient(135deg, ${bg.color1} 0%, ${bg.color1} 50%, ${bg.color2} 50%, ${bg.color2} 100%)`;
-                }
+            for (let i = 0; i < count; i++) {
+                const num = nums[i];
+                const angle = (360 / count) * i;
+                const item = document.createElement('div');
+                item.className = 'schulte-ring-item';
+                item.dataset.number = num;
+                item.dataset.ring = ringName;
+                item.textContent = num;
+                item.style.transform = `rotate(${angle}deg) translateY(-${ringRadiusPercent(ringName)}%) rotate(-${angle}deg)`;
 
-                if (schulteRotateMode) {
-                    cell.style.position = 'relative';
-                    cell.style.zIndex = '2';
-                }
+                // 随机颜色
+                const colorClass = schulteColorClasses[Math.floor(Math.random() * schulteColorClasses.length)];
+                item.classList.add(colorClass);
 
-                cell.addEventListener('click', () => handleSchulteCellClick(cell, shuffled[i]));
-                grid.appendChild(cell);
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    handleSchulteCellClick(item, num);
+                });
+                ring.appendChild(item);
             }
+
+            // 设置旋转动画
+            ring.style.animation = `rotate-${direction} ${duration}s linear infinite`;
+
+            return ring;
+        }
+
+        function ringRadiusPercent(ringName) {
+            if (ringName === 'inner') return 38;
+            if (ringName === 'middle') return 65;
+            return 88;
         }
 
         function handleSchulteCellClick(cell, number) {
