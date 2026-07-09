@@ -1360,15 +1360,10 @@
                     <h2>幻方</h2>
                     <p>每行每列对角线和相等的神奇方格</p>
                 </div>
-                <div class="game-card" onclick="showGame('point24')">
-                    <div class="game-icon">🔢</div>
-                    <h2>加减法计算</h2>
-                    <p>练习加减法，锻炼计算能力</p>
-                </div>
-                <div class="game-card" onclick="showGame('multdiv')">
-                    <div class="game-icon">✖️</div>
-                    <h2>乘除法计算</h2>
-                    <p>练习乘除法，提升运算技巧</p>
+                <div class="game-card" onclick="showGame('arithmetic')">
+                    <div class="game-icon">🧮</div>
+                    <h2>四则运算</h2>
+                    <p>练习加减乘除，提升运算能力</p>
                 </div>
                 <div class="game-card" onclick="window.open('https://shitou-git.github.io/aoshu/aoshu.html', '_blank')">
                     <div class="game-icon">🧮</div>
@@ -1420,13 +1415,20 @@
             </div>
         </div>
 
-        <!-- 加减法计算游戏页面 -->
-        <div id="point24Page" class="game-page">
+        <!-- 四则运算游戏页面（加减法 + 乘除法合并） -->
+        <div id="arithmeticPage" class="game-page">
             <button class="back-btn" onclick="goHome()">← 返回首页</button>
             <div class="header">
-                <h1>🔢 加减法计算</h1>
-                <p>根据题目，使用数字按钮输入答案</p>
+                <h1>🧮 四则运算</h1>
+                <p>练习加减乘除，使用数字按钮输入答案</p>
             </div>
+            <!-- 模式切换：加减法 / 乘除法 -->
+            <div class="difficulty-selector" id="arithmeticModeSelector" style="margin-bottom: 20px;">
+                <button class="diff-btn active" data-mode="addsub" onclick="switchArithmeticMode('addsub')">➕➖ 加减法</button>
+                <button class="diff-btn" data-mode="multdiv" onclick="switchArithmeticMode('multdiv')">✖️➗ 乘除法</button>
+            </div>
+            <!-- 加减法区块 -->
+            <div id="addsubSection">
             <div class="game-container">
                 <div class="difficulty-selector">
                     <button class="diff-btn active" data-level="easy">初级</button>
@@ -1502,15 +1504,10 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- 乘除法计算游戏页面 -->
-        <div id="multdivPage" class="game-page">
-            <button class="back-btn" onclick="goHome()">← 返回首页</button>
-            <div class="header">
-                <h1>✖️ 乘除法计算</h1>
-                <p>根据题目，使用数字按钮输入答案</p>
             </div>
+
+            <!-- 乘除法区块 -->
+            <div id="multdivSection" style="display:none;">
             <div class="game-container">
                 <div class="difficulty-selector">
                     <button class="diff-btn active" data-level="easy">初级</button>
@@ -1567,6 +1564,7 @@
                     </div>
                 </div>
             </div>
+            </div>
         </div>
 
         <!-- 数独游戏页面 -->
@@ -1620,22 +1618,18 @@
         function showGame(game) {
             document.getElementById('homePage').style.display = 'none';
             document.getElementById('magicPage').classList.remove('active');
-            document.getElementById('point24Page').classList.remove('active');
-            document.getElementById('multdivPage').classList.remove('active');
+            document.getElementById('arithmeticPage').classList.remove('active');
             document.getElementById('sudokuPage').classList.remove('active');
-            
+
             if (game === 'sudoku') {
                 document.getElementById('sudokuPage').classList.add('active');
                 initSudoku();
             } else if (game === 'magic') {
                 document.getElementById('magicPage').classList.add('active');
                 resetMagicGame();
-            } else if (game === 'point24') {
-                document.getElementById('point24Page').classList.add('active');
-                resetPoint24Game();
-            } else if (game === 'multdiv') {
-                document.getElementById('multdivPage').classList.add('active');
-                resetMultdivGame();
+            } else if (game === 'arithmetic') {
+                document.getElementById('arithmeticPage').classList.add('active');
+                switchArithmeticMode('addsub');
             }
             currentGame = game;
         }
@@ -1643,11 +1637,30 @@
         function goHome() {
             document.getElementById('homePage').style.display = 'block';
             document.getElementById('magicPage').classList.remove('active');
-            document.getElementById('point24Page').classList.remove('active');
-            document.getElementById('multdivPage').classList.remove('active');
+            document.getElementById('arithmeticPage').classList.remove('active');
             document.getElementById('sudokuPage').classList.remove('active');
             stopTimer();
             currentGame = 'home';
+        }
+
+        // ========== 四则运算模式切换（加减法 / 乘除法） ==========
+        let arithmeticMode = 'addsub';
+        function switchArithmeticMode(mode) {
+            arithmeticMode = mode;
+            const addsubSection = document.getElementById('addsubSection');
+            const multdivSection = document.getElementById('multdivSection');
+            document.querySelectorAll('#arithmeticModeSelector .diff-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.mode === mode);
+            });
+            if (mode === 'addsub') {
+                addsubSection.style.display = 'block';
+                multdivSection.style.display = 'none';
+                resetPoint24Game();
+            } else {
+                addsubSection.style.display = 'none';
+                multdivSection.style.display = 'block';
+                resetMultdivGame();
+            }
         }
 
         function startTimer(timerId) {
@@ -2254,9 +2267,9 @@
             });
         });
 
-        document.querySelectorAll('#point24Page .diff-btn').forEach(btn => {
+        document.querySelectorAll('#addsubSection .diff-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('#point24Page .diff-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('#addsubSection .diff-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 point24Difficulty = btn.dataset.level;
                 resetPoint24Game();
@@ -2617,9 +2630,9 @@
         }
 
         // ========== 乘除法事件绑定 ==========
-        document.querySelectorAll('#multdivPage .diff-btn').forEach(btn => {
+        document.querySelectorAll('#multdivSection .diff-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('#multdivPage .diff-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('#multdivSection .diff-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 multdivDifficulty = btn.dataset.level;
                 resetMultdivGame();
