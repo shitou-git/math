@@ -562,6 +562,130 @@
             font-family: monospace;
         }
 
+        /* 舒尔特方格样式 */
+        .schulte-info {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            margin: 15px 0 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .schulte-timer {
+            font-size: 20px;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .schulte-next {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            padding: 6px 18px;
+            background: #f0f5ff;
+            border-radius: 20px;
+        }
+
+        .schulte-best {
+            font-size: 16px;
+            font-weight: 500;
+            color: #64748b;
+        }
+
+        .schulte-grid-wrapper {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0 20px 0;
+        }
+
+        .schulte-grid {
+            display: inline-grid;
+            gap: 4px;
+            padding: 6px;
+            background: #1e293b;
+            border-radius: 12px;
+        }
+
+        .schulte-grid.grid-5 {
+            grid-template-columns: repeat(5, 1fr);
+        }
+
+        .schulte-grid.grid-6 {
+            grid-template-columns: repeat(6, 1fr);
+        }
+
+        .schulte-grid.grid-7 {
+            grid-template-columns: repeat(7, 1fr);
+        }
+
+        .schulte-cell {
+            width: 58px;
+            height: 58px;
+            background: white;
+            border: none;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        .schulte-cell:hover {
+            background: #f0f5ff;
+        }
+
+        .schulte-cell:active {
+            transform: scale(0.95);
+        }
+
+        .schulte-cell.correct {
+            background: #dcfce7;
+            color: #16a34a;
+            transform: scale(0.95);
+            cursor: default;
+        }
+
+        .schulte-cell.wrong {
+            background: #fee2e2;
+            color: #dc2626;
+            animation: schulte-shake 0.4s ease;
+        }
+
+        .schulte-cell.color-red { color: #dc2626; }
+        .schulte-cell.color-blue { color: #2563eb; }
+        .schulte-cell.color-green { color: #16a34a; }
+        .schulte-cell.color-orange { color: #ea580c; }
+        .schulte-cell.color-purple { color: #9333ea; }
+
+        @keyframes schulte-shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+
+        .schulte-result {
+            text-align: center;
+            font-size: 20px;
+            font-weight: 700;
+            min-height: 32px;
+            margin: 10px 0;
+        }
+
+        .schulte-result.success {
+            color: #16a34a;
+        }
+
+        .schulte-rules-toggle h4 {
+            margin: 0;
+        }
+
         /* 响应式样式 - 移动端适配 */
         @media (max-width: 768px) {
             body {
@@ -739,6 +863,38 @@
 
             .game-rules p {
                 font-size: 13px;
+            }
+
+            /* 舒尔特方格移动端适配 */
+            .schulte-info {
+                gap: 12px;
+            }
+
+            .schulte-timer {
+                font-size: 16px;
+            }
+
+            .schulte-next {
+                font-size: 15px;
+                padding: 5px 14px;
+            }
+
+            .schulte-cell {
+                width: 50px;
+                height: 50px;
+                font-size: 18px;
+            }
+
+            .schulte-grid.grid-6 .schulte-cell {
+                width: 44px;
+                height: 44px;
+                font-size: 16px;
+            }
+
+            .schulte-grid.grid-7 .schulte-cell {
+                width: 40px;
+                height: 40px;
+                font-size: 15px;
             }
 
             .footer {
@@ -926,6 +1082,25 @@
 
             .diff-btn, .level-btn, .difficulty-btn {
                 padding: 8px 12px;
+                font-size: 13px;
+            }
+
+            /* 舒尔特方格小屏幕适配 */
+            .schulte-cell {
+                width: 42px;
+                height: 42px;
+                font-size: 16px;
+            }
+
+            .schulte-grid.grid-6 .schulte-cell {
+                width: 38px;
+                height: 38px;
+                font-size: 14px;
+            }
+
+            .schulte-grid.grid-7 .schulte-cell {
+                width: 34px;
+                height: 34px;
                 font-size: 13px;
             }
 
@@ -1365,6 +1540,11 @@
                     <h2>四则运算</h2>
                     <p>练习加减乘除，提升运算能力</p>
                 </div>
+                <div class="game-card" onclick="showGame('schulte')">
+                    <div class="game-icon">🎯</div>
+                    <h2>舒尔特方格</h2>
+                    <p>练习注意力，提升专注力</p>
+                </div>
                 <div class="game-card" onclick="window.open('https://shitou-git.github.io/aoshu/aoshu.html', '_blank')">
                     <div class="game-icon">🧮</div>
                     <h2>奥数</h2>
@@ -1379,7 +1559,7 @@
             <div style="text-align: center; margin-top: 30px;">
                 <div style="display: inline-flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;" onclick="window.open('https://shitou-git.github.io/chat/index', '_blank')"><img src="Z.webp" style="width: 64px; height: 64px; border-radius: 10px;"><span style="font-size: 14px; font-weight: 600;">灵知</span></div>
             </div>
-            <div style="text-align: center; margin-top: 20px; color: rgba(255,255,255,0.6); font-size: 12px;">v1.0.7</div>
+            <div style="text-align: center; margin-top: 20px; color: rgba(255,255,255,0.6); font-size: 12px;">v1.0.8</div>
         </div>
 
         <!-- 幻方游戏页面 -->
@@ -1567,6 +1747,58 @@
             </div>
         </div>
 
+        <!-- 舒尔特方格游戏页面 -->
+        <div id="schultePage" class="game-page">
+            <button class="back-btn" onclick="goHome()">← 返回首页</button>
+            <div class="header">
+                <h1>🎯 舒尔特方格</h1>
+                <p>按顺序点击数字，锻炼专注力</p>
+            </div>
+            <div class="game-container">
+                <div class="difficulty-selector" id="schulteModeSelector">
+                    <button class="diff-btn active" data-mode="classic5">经典5×5</button>
+                    <button class="diff-btn" data-mode="advance6">进阶6×6</button>
+                    <button class="diff-btn" data-mode="challenge7">挑战7×7</button>
+                    <button class="diff-btn" data-mode="reverse5">倒序5×5</button>
+                    <button class="diff-btn" data-mode="color5">色彩干扰</button>
+                </div>
+                <div class="schulte-info">
+                    <div class="schulte-timer" id="schulteTimer">⏱ 00:00</div>
+                    <div class="schulte-next" id="schulteNext">下一个：1</div>
+                    <div class="schulte-best" id="schulteBest">🏆 最佳：--</div>
+                </div>
+                <div class="schulte-grid-wrapper">
+                    <div id="schulteGrid" class="schulte-grid"></div>
+                </div>
+                <div class="schulte-result" id="schulteResult"></div>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="resetSchulteGame()">重新开始</button>
+                </div>
+                <div class="game-rules schulte-rules-toggle" onclick="toggleSchulteRules()" style="cursor:pointer;">
+                    <h4>▼ 训练方法</h4>
+                </div>
+                <div class="game-rules schulte-rules-content" id="schulteRulesContent" style="display:none; margin-top:0; border-top-left-radius:0; border-top-right-radius:0;">
+                    <div style="text-align: left; line-height: 1.8; font-size: 14px; color: #333;">
+                        <p><strong>什么是舒尔特方格？</strong></p>
+                        <p>舒尔特方格是国际公认最简单、最有效的注意力训练方法，由德国心理治疗师舒尔特发明。</p>
+                        <p style="margin-top:10px;"><strong>训练方法：</strong></p>
+                        <p>1. 眼睛距表格 30～35cm，视点自然放在表格中心</p>
+                        <p>2. 用余光寻找数字，而非逐个扫视</p>
+                        <p>3. 按顺序找到并点击数字，尽量减少眼球移动</p>
+                        <p style="margin-top:10px;"><strong>评级标准（5×5经典模式）：</strong></p>
+                        <p>⭐⭐⭐ 优秀：< 25秒</p>
+                        <p>⭐⭐ 良好：25～40秒</p>
+                        <p>⭐ 一般：40～60秒</p>
+                        <p>继续加油：> 60秒</p>
+                        <p style="margin-top:10px;"><strong>训练建议：</strong></p>
+                        <p>• 每天练习 10～15 分钟，坚持 2 周可见明显效果</p>
+                        <p>• 先练 5×5，稳定在 25 秒以内再升级</p>
+                        <p>• 倒序模式和色彩干扰模式可进阶训练逆向注意力和抗干扰能力</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- 数独游戏页面 -->
         <div id="sudokuPage" class="game-page">
             <button class="back-btn" onclick="goHome()">← 返回首页</button>
@@ -1619,6 +1851,7 @@
             document.getElementById('homePage').style.display = 'none';
             document.getElementById('magicPage').classList.remove('active');
             document.getElementById('arithmeticPage').classList.remove('active');
+            document.getElementById('schultePage').classList.remove('active');
             document.getElementById('sudokuPage').classList.remove('active');
 
             if (game === 'sudoku') {
@@ -1630,6 +1863,9 @@
             } else if (game === 'arithmetic') {
                 document.getElementById('arithmeticPage').classList.add('active');
                 switchArithmeticMode('addsub');
+            } else if (game === 'schulte') {
+                document.getElementById('schultePage').classList.add('active');
+                initSchulte();
             }
             currentGame = game;
         }
@@ -1638,8 +1874,14 @@
             document.getElementById('homePage').style.display = 'block';
             document.getElementById('magicPage').classList.remove('active');
             document.getElementById('arithmeticPage').classList.remove('active');
+            document.getElementById('schultePage').classList.remove('active');
             document.getElementById('sudokuPage').classList.remove('active');
             stopTimer();
+            // 清除舒尔特方格计时器
+            if (schulteTimerInterval) {
+                clearInterval(schulteTimerInterval);
+                schulteTimerInterval = null;
+            }
             currentGame = 'home';
         }
 
@@ -2688,6 +2930,214 @@
             renderCounter('point24');
             renderCounter('multdiv');
         });
+
+        // ========== 舒尔特方格游戏 ==========
+        let schulteMode = 'classic5';
+        let schulteSize = 5;
+        let schulteCurrentTarget = 1;
+        let schulteMaxNum = 25;
+        let schulteReverse = false;
+        let schulteColorMode = false;
+        let schulteStartTime = 0;
+        let schulteTimerInterval = null;
+        let schulteFinished = false;
+
+        const schulteModeConfig = {
+            classic5:   { size: 5, reverse: false, color: false },
+            advance6:   { size: 6, reverse: false, color: false },
+            challenge7: { size: 7, reverse: false, color: false },
+            reverse5:   { size: 5, reverse: true,  color: false },
+            color5:     { size: 5, reverse: false, color: true  }
+        };
+
+        const schulteColorClasses = ['color-red', 'color-blue', 'color-green', 'color-orange', 'color-purple'];
+
+        function initSchulte() {
+            setupSchulteModeListeners();
+            resetSchulteGame();
+        }
+
+        function setupSchulteModeListeners() {
+            document.querySelectorAll('#schulteModeSelector .diff-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#schulteModeSelector .diff-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    schulteMode = btn.dataset.mode;
+                    resetSchulteGame();
+                });
+            });
+        }
+
+        function resetSchulteGame() {
+            const config = schulteModeConfig[schulteMode];
+            schulteSize = config.size;
+            schulteReverse = config.reverse;
+            schulteColorMode = config.color;
+            schulteMaxNum = schulteSize * schulteSize;
+            schulteCurrentTarget = schulteReverse ? schulteMaxNum : 1;
+            schulteFinished = false;
+
+            // 清除计时器
+            if (schulteTimerInterval) {
+                clearInterval(schulteTimerInterval);
+                schulteTimerInterval = null;
+            }
+            schulteStartTime = 0;
+
+            // 更新UI
+            document.getElementById('schulteTimer').textContent = '⏱ 00:00';
+            updateSchulteNextDisplay();
+            updateSchulteBestDisplay();
+            document.getElementById('schulteResult').textContent = '';
+            document.getElementById('schulteResult').className = 'schulte-result';
+
+            renderSchulteGrid();
+        }
+
+        function renderSchulteGrid() {
+            const grid = document.getElementById('schulteGrid');
+            grid.innerHTML = '';
+            grid.className = `schulte-grid grid-${schulteSize}`;
+
+            // 生成随机数字序列
+            const numbers = [];
+            for (let i = 1; i <= schulteMaxNum; i++) numbers.push(i);
+            const shuffled = shuffleArray(numbers);
+
+            // 色彩干扰模式：为每个数字分配随机颜色
+            const colorMap = {};
+            if (schulteColorMode) {
+                shuffled.forEach(num => {
+                    colorMap[num] = schulteColorClasses[Math.floor(Math.random() * schulteColorClasses.length)];
+                });
+            }
+
+            for (let i = 0; i < schulteMaxNum; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'schulte-cell';
+                cell.textContent = shuffled[i];
+                cell.dataset.number = shuffled[i];
+
+                if (schulteColorMode && colorMap[shuffled[i]]) {
+                    cell.classList.add(colorMap[shuffled[i]]);
+                }
+
+                cell.addEventListener('click', () => handleSchulteCellClick(cell, shuffled[i]));
+                grid.appendChild(cell);
+            }
+        }
+
+        function handleSchulteCellClick(cell, number) {
+            if (schulteFinished) return;
+            if (cell.classList.contains('correct')) return;
+
+            // 首次点击启动计时器
+            if (schulteStartTime === 0) {
+                schulteStartTime = Date.now();
+                schulteTimerInterval = setInterval(updateSchulteTimer, 100);
+            }
+
+            if (number === schulteCurrentTarget) {
+                // 正确
+                cell.classList.remove('wrong');
+                cell.classList.add('correct');
+
+                // 更新目标
+                if (schulteReverse) {
+                    schulteCurrentTarget--;
+                } else {
+                    schulteCurrentTarget++;
+                }
+
+                updateSchulteNextDisplay();
+
+                // 检查是否完成
+                if (schulteReverse ? schulteCurrentTarget < 1 : schulteCurrentTarget > schulteMaxNum) {
+                    schulteFinished = true;
+                    clearInterval(schulteTimerInterval);
+                    schulteTimerInterval = null;
+
+                    const elapsed = (Date.now() - schulteStartTime) / 1000;
+                    const rating = getSchulteRating(elapsed);
+                    document.getElementById('schulteResult').textContent = `🎉 完成！用时 ${elapsed.toFixed(1)} 秒 ${rating}`;
+                    document.getElementById('schulteResult').className = 'schulte-result success';
+                    document.getElementById('schulteNext').textContent = '已完成！';
+
+                    // 保存最佳成绩
+                    saveSchulteBest(elapsed);
+                    updateSchulteBestDisplay();
+                }
+            } else {
+                // 错误：闪红
+                cell.classList.add('wrong');
+                setTimeout(() => cell.classList.remove('wrong'), 400);
+            }
+        }
+
+        function updateSchulteNextDisplay() {
+            const nextEl = document.getElementById('schulteNext');
+            if (schulteFinished) {
+                nextEl.textContent = '已完成！';
+            } else {
+                const label = schulteReverse ? '下一个' : '下一个';
+                nextEl.textContent = `${label}：${schulteCurrentTarget}`;
+            }
+        }
+
+        function updateSchulteTimer() {
+            if (!schulteStartTime) return;
+            const elapsed = Math.floor((Date.now() - schulteStartTime) / 1000);
+            const minutes = String(Math.floor(elapsed / 60)).padStart(2, '0');
+            const seconds = String(elapsed % 60).padStart(2, '0');
+            document.getElementById('schulteTimer').textContent = `⏱ ${minutes}:${seconds}`;
+        }
+
+        function getSchulteRating(elapsed) {
+            // 基准：5×5 标准，其他模式按格子数等比换算
+            const baseCells = 25;
+            const factor = (schulteSize * schulteSize) / baseCells;
+            const adjustedTime = elapsed / factor;
+
+            if (adjustedTime < 25) return '⭐⭐⭐ 优秀';
+            if (adjustedTime < 40) return '⭐⭐ 良好';
+            if (adjustedTime < 60) return '⭐ 一般';
+            return '继续加油';
+        }
+
+        function getSchulteBestKey() {
+            return `schulte_best_${schulteMode}`;
+        }
+
+        function saveSchulteBest(elapsed) {
+            const key = getSchulteBestKey();
+            const current = localStorage.getItem(key);
+            if (!current || elapsed < parseFloat(current)) {
+                localStorage.setItem(key, elapsed.toFixed(1));
+            }
+        }
+
+        function updateSchulteBestDisplay() {
+            const key = getSchulteBestKey();
+            const best = localStorage.getItem(key);
+            const bestEl = document.getElementById('schulteBest');
+            if (best) {
+                bestEl.textContent = `🏆 最佳：${parseFloat(best).toFixed(1)}s`;
+            } else {
+                bestEl.textContent = '🏆 最佳：--';
+            }
+        }
+
+        function toggleSchulteRules() {
+            const content = document.getElementById('schulteRulesContent');
+            const toggle = document.querySelector('.schulte-rules-toggle h4');
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                toggle.textContent = '▲ 训练方法';
+            } else {
+                content.style.display = 'none';
+                toggle.textContent = '▼ 训练方法';
+            }
+        }
 
         // ========== 数独游戏代码 ==========
         let sudokuCurrentSize = 4;
