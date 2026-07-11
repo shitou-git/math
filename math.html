@@ -3535,11 +3535,11 @@
             } else if (layout === "circle") {
                 count = size * size;
                 const Rmax = 46;
-                const centerR = 6;
+                const centerR = 10;
                 let rings, ringCounts;
                 if (count <= 25) {
                     rings = 2;
-                    const inner = Math.max(8, Math.round(count * 0.38));
+                    const inner = 8;
                     ringCounts = [inner, count - inner];
                 } else if (count <= 36) {
                     rings = 3;
@@ -3547,7 +3547,7 @@
                     ringCounts = [r1, r2, count - r1 - r2];
                 } else {
                     rings = 4;
-                    const r1 = 7, r2 = 11, r3 = 15;
+                    const r1 = 8, r2 = 12, r3 = 14;
                     ringCounts = [r1, r2, r3, count - r1 - r2 - r3];
                 }
                 const usableR = Rmax - centerR;
@@ -3566,11 +3566,13 @@
                         coords.push({ x: 50 + r * Math.cos(a), y: 50 + r * Math.sin(a) });
                     }
                 }
-                const outerCount = ringCounts[ringCounts.length - 1];
-                const outerCell = (2 * Math.PI * Rmax) / outerCount * 0.6;
-                const ringCell = ringWidth * 0.7;
-                cell = Math.min(outerCell, ringCell, 12);
-                cell = Math.max(cell, 5);
+                const innermostCount = ringCounts[0];
+                const innermostRadius = ringRadii[0];
+                const innerArc = (2 * Math.PI * innermostRadius) / innermostCount;
+                const cellByInnerArc = innerArc * 0.35;
+                const cellByRingWidth = ringWidth * 0.45;
+                cell = Math.min(cellByInnerArc, cellByRingWidth, 8);
+                cell = Math.max(cell, 3.5);
             } else if (layout === "triangle") {
                 const rows = size;
                 count = (rows * (rows + 1)) / 2;
@@ -3585,8 +3587,8 @@
                 const rows = size, cols = size;
                 count = rows * cols;
                 const s = Math.min(
-                    100 / (cols * 1.5 + 0.5),
-                    100 / (rows * Math.sqrt(3) * 0.5 + Math.sqrt(3) * 0.5)
+                    100 / (cols * 1.5 + 1),
+                    100 / (rows * Math.sqrt(3) * 0.5 + Math.sqrt(3) * 0.5 + 1)
                 );
                 const colStep = 1.5 * s;
                 const rowStep = Math.sqrt(3) * s * 0.5;
@@ -3604,7 +3606,7 @@
                         });
                     }
                 }
-                cell = s * 0.85;
+                cell = s * 0.8;
             } else if (layout === "radial") {
                 count = size * size;
                 const Rmax = 44;
@@ -3701,7 +3703,10 @@
                 el.style.top = p.y + "%";
                 el.style.width = cell + "%";
                 el.style.height = cell + "%";
-                el.style.fontSize = (cell * 0.34) + "vmin";
+                let fontSizeRatio = 0.34;
+                if (schulteState.layout === "circle") fontSizeRatio = 0.24;
+                if (schulteState.layout === "hexagon") fontSizeRatio = 0.28;
+                el.style.fontSize = (cell * fontSizeRatio) + "vmin";
                 el.style.opacity = "1";
                 el.style.pointerEvents = "auto";
                 el.classList.remove("correct", "wrong");
@@ -3752,8 +3757,8 @@
             if (layout === "hexagon") {
                 const rows = size, cols = size;
                 const s = Math.min(
-                    100 / (cols * 1.5 + 0.5),
-                    100 / (rows * Math.sqrt(3) * 0.5 + Math.sqrt(3) * 0.5)
+                    100 / (cols * 1.5 + 1),
+                    100 / (rows * Math.sqrt(3) * 0.5 + Math.sqrt(3) * 0.5 + 1)
                 );
                 const colStep = 1.5 * s;
                 const rowStep = Math.sqrt(3) * s * 0.5;
@@ -3769,7 +3774,7 @@
                         const points = [];
                         for (let k = 0; k < 6; k++) {
                             const angle = Math.PI / 3 * k;
-                            points.push((cx + s * 0.5 * Math.cos(angle)).toFixed(3) + "," + (cy + s * 0.5 * Math.sin(angle)).toFixed(3));
+                            points.push((cx + s * 0.47 * Math.cos(angle)).toFixed(3) + "," + (cy + s * 0.47 * Math.sin(angle)).toFixed(3));
                         }
                         const poly = document.createElementNS(ns, "polygon");
                         poly.setAttribute("points", points.join(" "));
@@ -3783,11 +3788,11 @@
             } else if (layout === "circle") {
                 const count = size * size;
                 const Rmax = 46;
-                const centerR = 6;
+                const centerR = 10;
                 let rings, ringCounts;
                 if (count <= 25) {
                     rings = 2;
-                    const inner = Math.max(8, Math.round(count * 0.38));
+                    const inner = 8;
                     ringCounts = [inner, count - inner];
                 } else if (count <= 36) {
                     rings = 3;
@@ -3795,7 +3800,7 @@
                     ringCounts = [r1, r2, count - r1 - r2];
                 } else {
                     rings = 4;
-                    const r1 = 7, r2 = 11, r3 = 15;
+                    const r1 = 8, r2 = 12, r3 = 14;
                     ringCounts = [r1, r2, r3, count - r1 - r2 - r3];
                 }
                 const usableR = Rmax - centerR;
