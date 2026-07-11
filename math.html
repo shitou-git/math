@@ -926,6 +926,37 @@
             pointer-events: auto;
         }
 
+        /* 数字反向旋转保持水平 */
+        .schulte-board.rotate .ring-0 .schulte-cell .num {
+            animation: schulte-num-rotate-ccw 20s linear infinite;
+            display: inline-block;
+        }
+        .schulte-board.rotate .ring-1 .schulte-cell .num {
+            animation: schulte-num-rotate-cw 30s linear infinite;
+            display: inline-block;
+        }
+        .schulte-board.rotate .ring-2 .schulte-cell .num {
+            animation: schulte-num-rotate-ccw 40s linear infinite;
+            display: inline-block;
+        }
+        .schulte-board.rotate .ring-3 .schulte-cell .num {
+            animation: schulte-num-rotate-cw 50s linear infinite;
+            display: inline-block;
+        }
+        .schulte-board.rotate .ring-4 .schulte-cell .num {
+            animation: schulte-num-rotate-ccw 60s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes schulte-num-rotate-cw {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes schulte-num-rotate-ccw {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(-360deg); }
+        }
+
         @keyframes schulte-ring-rotate-cw {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
