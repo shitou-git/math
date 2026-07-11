@@ -3703,33 +3703,58 @@
             } else if (layout === "radial") {
                 count = size * size;
                 const Rmax = 44;
-                const rings = size >= 7 ? 5 : size >= 6 ? 4 : 3;
-                const weights = Array.from({ length: rings }, (_, k) => k + 1);
-                const wsum = weights.reduce((a, b) => a + b, 0);
-                let ringCounts = weights.map((w) => Math.max(6, Math.round((count * w) / wsum)));
-                let guard = 0;
-                let diff = count - ringCounts.reduce((a, b) => a + b, 0);
-                while (diff !== 0 && guard++ < 2000) {
-                    const i = diff > 0 ? rings - 1 : 0;
-                    ringCounts[i] += Math.sign(diff);
-                    if (ringCounts[i] < 4) ringCounts[i] = 4;
-                    diff = count - ringCounts.reduce((a, b) => a + b, 0);
+                // 同心圆盘：中心1个 + 若干环
+                let ringCounts;
+                if (count === 25) {
+                    ringCounts = [1, 8, 8, 8];
+                } else if (count === 36) {
+                    ringCounts = [1, 8, 12, 15];
+                } else if (count === 49) {
+                    ringCounts = [1, 8, 12, 14, 14];
+                } else if (count < 25) {
+                    ringCounts = [1, count - 1];
+                } else {
+                    // 通用 fallback：中心1个，其余尽量均匀分配到4~5环
+                    const remaining = count - 1;
+                    const rings = Math.min(5, Math.max(3, Math.round(Math.sqrt(count) / 1.5)));
+                    const base = Math.floor(remaining / rings);
+                    ringCounts = [1];
+                    for (let k = 0; k < rings; k++) ringCounts.push(base);
+                    let diff = remaining - base * rings;
+                    let idx = rings;
+                    while (diff !== 0) {
+                        ringCounts[idx] += Math.sign(diff);
+                        if (idx > 1) idx--;
+                        else idx = rings;
+                        diff -= Math.sign(diff);
+                    }
+                }
+                const rings = ringCounts.length;
+                const ringRadii = [];
+                for (let k = 0; k < rings; k++) {
+                    // 中心半径0，各环均匀分布在 8~Rmax 之间
+                    if (k === 0) ringRadii.push(0);
+                    else ringRadii.push(8 + ((k - 0.5) / (rings - 1)) * (Rmax - 8));
                 }
                 coords = [];
                 for (let k = 0; k < rings; k++) {
-                    const radius = ((k + 0.5) / rings) * Rmax;
+                    const radius = ringRadii[k];
                     const cr = ringCounts[k];
+                    if (cr === 1) {
+                        coords.push({ x: 50, y: 50, ring: k });
+                        continue;
+                    }
                     const offset = (k % 2) * (Math.PI / cr);
                     for (let j = 0; j < cr; j++) {
-                        const a = offset + (j * 2 * Math.PI) / cr;
+                        const a = -Math.PI / 2 + offset + (j * 2 * Math.PI) / cr;
                         coords.push({ x: 50 + radius * Math.cos(a), y: 50 + radius * Math.sin(a), ring: k });
                     }
                 }
-                const outerRingCount = ringCounts[ringCounts.length - 1];
+                const outerRingCount = ringCounts[rings - 1];
                 const outerCircumference = 2 * Math.PI * Rmax;
-                const cellByOuter = (outerCircumference / outerRingCount) * 0.75;
-                const cellByRing = (Rmax / rings) * 0.7;
-                cell = Math.min(cellByOuter, cellByRing, 13);
+                const cellByOuter = (outerCircumference / outerRingCount) * 0.85;
+                const cellByRing = ((Rmax - 8) / (rings - 1)) * 0.9;
+                cell = Math.min(cellByOuter, cellByRing, 12);
                 cell = Math.max(cell, 5);
             }
             return { count, coords, cell: Math.max(cell, 6) };
@@ -3784,7 +3809,7 @@
                 el.style.width = cell + "%";
                 el.style.height = cell + "%";
                 let fontSizeRatio = 0.34;
-                if (schulteState.layout === "circle") fontSizeRatio = 0.42;
+                if (schulteState.layout === "circle" || schulteState.layout === "radial") fontSizeRatio = 0.42;
                 if (schulteState.layout === "hexagon") fontSizeRatio = 0.33;
                 el.style.fontSize = (cell * fontSizeRatio) + "vmin";
                 el.style.opacity = "1";
