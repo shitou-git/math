@@ -4030,11 +4030,12 @@
                     circle.setAttribute("stroke-dasharray", "2 2");
                     svg.appendChild(circle);
                 }
-                // 外边界圆
+                // 外边界圆（半径与虚线轨道等间距）
+                const outerR = 8 + ((rings - 0.5) / (rings - 1)) * (Rmax - 8);
                 const outerCircle = document.createElementNS(ns, "circle");
                 outerCircle.setAttribute("cx", "50");
                 outerCircle.setAttribute("cy", "50");
-                outerCircle.setAttribute("r", Rmax.toFixed(3));
+                outerCircle.setAttribute("r", outerR.toFixed(3));
                 outerCircle.setAttribute("fill", "none");
                 outerCircle.setAttribute("stroke", strokeColor);
                 outerCircle.setAttribute("stroke-width", "0.6");
