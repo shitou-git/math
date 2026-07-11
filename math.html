@@ -3870,23 +3870,80 @@
                 const rowStep = 1.5 * s;
                 const ox = 50 - (cols - 1) * colStep / 2 - colStep / 4;
                 const oy = 50 - (rows - 1) * rowStep / 2;
+                
+                const getHexPoints = (r, c) => {
+                    const offsetX = (r % 2 === 1) ? colStep * 0.5 : 0;
+                    const cx = ox + c * colStep + offsetX;
+                    const cy = oy + r * rowStep;
+                    const points = [];
+                    for (let k = 0; k < 6; k++) {
+                        const angle = Math.PI / 3 * k - Math.PI / 2;
+                        points.push({ x: cx + s * 0.5 * Math.cos(angle), y: cy + s * 0.5 * Math.sin(angle) });
+                    }
+                    return points;
+                };
+                
+                const hasNeighbor = (r, c) => {
+                    return r >= 0 && r < rows && c >= 0 && c < cols;
+                };
+                
+                const neighbors = (r, c) => {
+                    const n = [];
+                    if (r % 2 === 1) {
+                        n.push([r-1, c-1], [r-1, c]);
+                        n.push([r, c-1], [r, c+1]);
+                        n.push([r+1, c-1], [r+1, c]);
+                    } else {
+                        n.push([r-1, c], [r-1, c+1]);
+                        n.push([r, c-1], [r, c+1]);
+                        n.push([r+1, c], [r+1, c+1]);
+                    }
+                    return n;
+                };
+                
                 for (let r = 0; r < rows; r++) {
                     for (let c = 0; c < cols; c++) {
-                        const offsetX = (r % 2 === 1) ? colStep * 0.5 : 0;
-                        const cx = ox + c * colStep + offsetX;
-                        const cy = oy + r * rowStep;
-                        const points = [];
-                        for (let k = 0; k < 6; k++) {
-                            const angle = Math.PI / 3 * k - Math.PI / 2;
-                            points.push((cx + s * 0.95 * Math.cos(angle)).toFixed(3) + "," + (cy + s * 0.95 * Math.sin(angle)).toFixed(3));
-                        }
+                        const points = getHexPoints(r, c);
+                        const polyPoints = points.map(p => p.x.toFixed(3) + "," + p.y.toFixed(3)).join(" ");
                         const poly = document.createElementNS(ns, "polygon");
-                        poly.setAttribute("points", points.join(" "));
+                        poly.setAttribute("points", polyPoints);
                         poly.setAttribute("fill", "#ffffff");
-                        poly.setAttribute("stroke", "#6b9080");
-                        poly.setAttribute("stroke-width", "1.2");
-                        poly.setAttribute("stroke-linejoin", "round");
+                        poly.setAttribute("stroke", "none");
                         svg.appendChild(poly);
+                    }
+                }
+                
+                const edges = new Set();
+                
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        const points = getHexPoints(r, c);
+                        const nbs = neighbors(r, c);
+                        for (let k = 0; k < 6; k++) {
+                            const nb = nbs[k];
+                            if (!hasNeighbor(nb[0], nb[1])) {
+                                const p1 = points[k];
+                                const p2 = points[(k + 1) % 6];
+                                const key = [
+                                    Math.round(p1.x * 100) / 100,
+                                    Math.round(p1.y * 100) / 100,
+                                    Math.round(p2.x * 100) / 100,
+                                    Math.round(p2.y * 100) / 100
+                                ].sort().join(",");
+                                if (!edges.has(key)) {
+                                    edges.add(key);
+                                    const line = document.createElementNS(ns, "line");
+                                    line.setAttribute("x1", p1.x.toFixed(3));
+                                    line.setAttribute("y1", p1.y.toFixed(3));
+                                    line.setAttribute("x2", p2.x.toFixed(3));
+                                    line.setAttribute("y2", p2.y.toFixed(3));
+                                    line.setAttribute("stroke", "#6b9080");
+                                    line.setAttribute("stroke-width", "1.2");
+                                    line.setAttribute("stroke-linecap", "round");
+                                    svg.appendChild(line);
+                                }
+                            }
+                        }
                     }
                 }
             } else if (layout === "circle") {
