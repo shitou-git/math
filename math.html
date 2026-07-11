@@ -2303,11 +2303,8 @@
                         <div class="schulte-seg" id="schulteLayoutSeg">
                             <button class="schulte-seg-btn active" data-layout="grid">方形</button>
                             <button class="schulte-seg-btn" data-layout="circle">圆形</button>
-                            <button class="schulte-seg-btn" data-layout="triangle">三角</button>
-                            <button class="schulte-seg-btn" data-layout="nested">嵌套</button>
                             <button class="schulte-seg-btn" data-layout="hexagon">蜂巢</button>
                             <button class="schulte-seg-btn" data-layout="radial">圆盘</button>
-                            <button class="schulte-seg-btn" data-layout="irregular">变式</button>
                         </div>
                     </div>
 
@@ -2350,7 +2347,7 @@
                             <label class="schulte-check">
                                 <input type="checkbox" id="schulteInterfRotation" />
                                 <span class="schulte-check-box"></span>
-                                <span class="schulte-check-text">旋转干扰<small>面板整体缓慢旋转</small></span>
+                                <span class="schulte-check-text">旋转干扰<small>仅圆形/圆盘模式生效</small></span>
                             </label>
                         </div>
                     </div>
@@ -3543,7 +3540,7 @@
 
         // ========== 舒尔特方格游戏 ==========
         const SCHULTE_STORE_KEY = "schulte_records_v2";
-        const SCHULTE_LAYOUT_LABEL = { grid: "方形", circle: "圆形", triangle: "三角", nested: "嵌套", hexagon: "蜂巢", radial: "圆盘", irregular: "变式" };
+        const SCHULTE_LAYOUT_LABEL = { grid: "方形", circle: "圆形", hexagon: "蜂巢", radial: "圆盘" };
         const SCHULTE_ORDER_LABEL = { asc: "正序", desc: "倒序" };
 
         const schulteState = {
@@ -3679,16 +3676,6 @@
                 const cellByRingWidth = ringWidth * 0.6;
                 cell = Math.min(cellByInnerArc, cellByRingWidth, 11);
                 cell = Math.max(cell, 5);
-            } else if (layout === "triangle") {
-                const rows = size;
-                count = (rows * (rows + 1)) / 2;
-                const sp = 80 / rows;
-                coords = [];
-                for (let r = 0; r < rows; r++) {
-                    const y = ((r + 0.5) / rows) * 100;
-                    for (let j = 0; j <= r; j++) coords.push({ x: 50 + (j - r / 2) * sp, y });
-                }
-                cell = Math.min(sp * 0.85, 18);
             } else if (layout === "hexagon") {
                 const rows = size, cols = size;
                 count = rows * cols;
@@ -3742,38 +3729,6 @@
                 const cellByRing = (Rmax / rings) * 0.7;
                 cell = Math.min(cellByOuter, cellByRing, 13);
                 cell = Math.max(cell, 5);
-            } else if (layout === "irregular") {
-                count = size * size;
-                coords = Array.from({ length: count }, (_, i) => ({
-                    x: ((i % size) + 0.5) / size * 100,
-                    y: (Math.floor(i / size) + 0.5) / size * 100,
-                }));
-                cell = (86 / size);
-            } else {
-                count = size * size;
-                const Rmax = 44;
-                const R = Math.max(2, Math.round(Math.sqrt(count) / 2));
-                const weights = Array.from({ length: R }, (_, k) => k + 1);
-                const wsum = weights.reduce((a, b) => a + b, 0);
-                let counts = weights.map((w) => Math.max(1, Math.round((count * w) / wsum)));
-                let guard = 0;
-                let diff = count - counts.reduce((a, b) => a + b, 0);
-                while (diff !== 0 && guard++ < 2000) {
-                    const i = diff > 0 ? R - 1 : 0;
-                    counts[i] += Math.sign(diff);
-                    diff = count - counts.reduce((a, b) => a + b, 0);
-                }
-                coords = [];
-                for (let k = 0; k < R; k++) {
-                    const cr = counts[k];
-                    const radius = ((k + 0.5) / R) * Rmax;
-                    const offset = (k % 2) * (Math.PI / cr);
-                    for (let j = 0; j < cr; j++) {
-                        const a = offset + (j * 2 * Math.PI) / cr;
-                        coords.push({ x: 50 + radius * Math.cos(a), y: 50 + radius * Math.sin(a), ring: k });
-                    }
-                }
-                cell = Math.min((2 * Math.PI * Rmax) / counts[R - 1] * 0.8, 16);
             }
             return { count, coords, cell: Math.max(cell, 6) };
         }
@@ -3846,15 +3801,6 @@
                     el.style.border = "none";
                     el.style.borderRadius = "0";
                     el.style.clipPath = "";
-                } else if (schulteState.layout === "irregular") {
-                    el.style.background = "";
-                    el.style.border = "";
-                    el.style.borderRadius = "";
-                    const pts = [
-                        [rndSchulte(0, 12), rndSchulte(0, 12)], [rndSchulte(88, 100), rndSchulte(0, 12)],
-                        [rndSchulte(88, 100), rndSchulte(88, 100)], [rndSchulte(0, 12), rndSchulte(88, 100)],
-                    ];
-                    el.style.clipPath = `polygon(${pts.map(([x, y]) => x + "% " + y + "%").join(", ")})`;
                 } else {
                     el.style.background = "";
                     el.style.border = "";
@@ -3873,7 +3819,8 @@
             schulteState.count = count;
             board.className = "schulte-board layout-" + schulteState.layout;
             if (schulteState.interf.jitter) board.classList.add("jitter");
-            if (schulteState.interf.rotation) board.classList.add("rotate");
+            const isRingLayout = schulteState.layout === "circle" || schulteState.layout === "radial";
+            if (schulteState.interf.rotation && isRingLayout) board.classList.add("rotate");
         }
 
         function drawSchulteBoardSvg() {
@@ -3982,10 +3929,6 @@
             }
         }
 
-        function rndSchulte(min, max) {
-            return Math.random() * (max - min) + min;
-        }
-
         function styleSchulteCell(el, num, i) {
             const span = el.querySelector(".num");
             if (schulteState.interf.color) span.style.color = SCHULTE_COLORS[num % SCHULTE_COLORS.length];
@@ -4006,10 +3949,6 @@
                 const row = Math.floor(i / schulteState.size), col = i % schulteState.size;
                 return (row < schulteState.size / 2 ? 0 : 2) + (col < schulteState.size / 2 ? 0 : 1);
             }
-            if (schulteState.layout === "triangle") {
-                const row = Math.floor((Math.sqrt(8 * i + 1) - 1) / 2);
-                return row;
-            }
             if (schulteState.layout === "hexagon") return Math.floor(i / schulteState.size);
             return Math.floor((i / count) * 4) % 4;
         }
@@ -4024,7 +3963,8 @@
             schulteCellEls.forEach((el, i) => styleSchulteCell(el, parseInt(el.dataset.num, 10), i));
             const board = document.getElementById("schulteBoard");
             board.classList.toggle("jitter", schulteState.interf.jitter);
-            board.classList.toggle("rotate", schulteState.interf.rotation);
+            const isRingLayout = schulteState.layout === "circle" || schulteState.layout === "radial";
+            board.classList.toggle("rotate", schulteState.interf.rotation && isRingLayout);
         }
 
         function updateSchulteProgress() {
