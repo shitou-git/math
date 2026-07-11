@@ -3989,6 +3989,56 @@
                     }
                     svg.appendChild(g);
                 }
+            } else if (layout === "radial") {
+                const count = size * size;
+                const Rmax = 44;
+                let ringCounts;
+                if (count === 25) {
+                    ringCounts = [1, 8, 8, 8];
+                } else if (count === 36) {
+                    ringCounts = [1, 8, 12, 15];
+                } else if (count === 49) {
+                    ringCounts = [1, 8, 12, 14, 14];
+                } else if (count < 25) {
+                    ringCounts = [1, count - 1];
+                } else {
+                    const remaining = count - 1;
+                    const rings = Math.min(5, Math.max(3, Math.round(Math.sqrt(count) / 1.5)));
+                    const base = Math.floor(remaining / rings);
+                    ringCounts = [1];
+                    for (let k = 0; k < rings; k++) ringCounts.push(base);
+                    let diff = remaining - base * rings;
+                    let idx = rings;
+                    while (diff !== 0) {
+                        ringCounts[idx] += Math.sign(diff);
+                        if (idx > 1) idx--;
+                        else idx = rings;
+                        diff -= Math.sign(diff);
+                    }
+                }
+                const rings = ringCounts.length;
+                // 绘制轨道线：每个环一条同心圆
+                for (let k = 1; k < rings; k++) {
+                    const radius = 8 + ((k - 0.5) / (rings - 1)) * (Rmax - 8);
+                    const circle = document.createElementNS(ns, "circle");
+                    circle.setAttribute("cx", "50");
+                    circle.setAttribute("cy", "50");
+                    circle.setAttribute("r", radius.toFixed(3));
+                    circle.setAttribute("fill", "none");
+                    circle.setAttribute("stroke", strokeColor);
+                    circle.setAttribute("stroke-width", "0.5");
+                    circle.setAttribute("stroke-dasharray", "2 2");
+                    svg.appendChild(circle);
+                }
+                // 外边界圆
+                const outerCircle = document.createElementNS(ns, "circle");
+                outerCircle.setAttribute("cx", "50");
+                outerCircle.setAttribute("cy", "50");
+                outerCircle.setAttribute("r", Rmax.toFixed(3));
+                outerCircle.setAttribute("fill", "none");
+                outerCircle.setAttribute("stroke", strokeColor);
+                outerCircle.setAttribute("stroke-width", "0.6");
+                svg.appendChild(outerCircle);
             }
         }
 
