@@ -874,13 +874,73 @@
 
         /* 旋转干扰 */
         .schulte-board.rotate {
-            animation: schulte-board-rotate 45s linear infinite;
-            transform-origin: center;
+            animation: none;
         }
 
-        @keyframes schulte-board-rotate {
-            from { transform: rotate(0deg) scale(0.92); }
-            to { transform: rotate(360deg) scale(0.92); }
+        .schulte-board.rotate .schulte-ring.ring-0 {
+            animation: schulte-ring-rotate-cw 20s linear infinite;
+        }
+        .schulte-board.rotate .schulte-ring.ring-1 {
+            animation: schulte-ring-rotate-ccw 30s linear infinite;
+        }
+        .schulte-board.rotate .schulte-ring.ring-2 {
+            animation: schulte-ring-rotate-cw 40s linear infinite;
+        }
+        .schulte-board.rotate .schulte-ring.ring-3 {
+            animation: schulte-ring-rotate-ccw 50s linear infinite;
+        }
+        .schulte-board.rotate .schulte-ring.ring-4 {
+            animation: schulte-ring-rotate-cw 60s linear infinite;
+        }
+
+        .schulte-board.rotate .schulte-svg-ring.ring-0 {
+            animation: schulte-svg-ring-rotate-cw 20s linear infinite;
+            transform-origin: 50px 50px;
+        }
+        .schulte-board.rotate .schulte-svg-ring.ring-1 {
+            animation: schulte-svg-ring-rotate-ccw 30s linear infinite;
+            transform-origin: 50px 50px;
+        }
+        .schulte-board.rotate .schulte-svg-ring.ring-2 {
+            animation: schulte-svg-ring-rotate-cw 40s linear infinite;
+            transform-origin: 50px 50px;
+        }
+        .schulte-board.rotate .schulte-svg-ring.ring-3 {
+            animation: schulte-svg-ring-rotate-ccw 50s linear infinite;
+            transform-origin: 50px 50px;
+        }
+        .schulte-board.rotate .schulte-svg-ring.ring-4 {
+            animation: schulte-svg-ring-rotate-cw 60s linear infinite;
+            transform-origin: 50px 50px;
+        }
+
+        .schulte-ring {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        .schulte-ring .schulte-cell {
+            pointer-events: auto;
+        }
+
+        @keyframes schulte-ring-rotate-cw {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes schulte-ring-rotate-ccw {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(-360deg); }
+        }
+        @keyframes schulte-svg-ring-rotate-cw {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes schulte-svg-ring-rotate-ccw {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(-360deg); }
         }
 
         /* 镜像干扰 */
@@ -3577,7 +3637,7 @@
                     const offset = (k % 2) * (Math.PI / cr);
                     for (let j = 0; j < cr; j++) {
                         const a = -Math.PI / 2 + offset + (j * 2 * Math.PI) / cr;
-                        coords.push({ x: 50 + r * Math.cos(a), y: 50 + r * Math.sin(a) });
+                        coords.push({ x: 50 + r * Math.cos(a), y: 50 + r * Math.sin(a), ring: k });
                     }
                 }
                 const innermostCount = ringCounts[0];
@@ -3643,7 +3703,7 @@
                     const offset = (k % 2) * (Math.PI / cr);
                     for (let j = 0; j < cr; j++) {
                         const a = offset + (j * 2 * Math.PI) / cr;
-                        coords.push({ x: 50 + radius * Math.cos(a), y: 50 + radius * Math.sin(a) });
+                        coords.push({ x: 50 + radius * Math.cos(a), y: 50 + radius * Math.sin(a), ring: k });
                     }
                 }
                 const outerRingCount = ringCounts[ringCounts.length - 1];
@@ -3680,7 +3740,7 @@
                     const offset = (k % 2) * (Math.PI / cr);
                     for (let j = 0; j < cr; j++) {
                         const a = offset + (j * 2 * Math.PI) / cr;
-                        coords.push({ x: 50 + radius * Math.cos(a), y: 50 + radius * Math.sin(a) });
+                        coords.push({ x: 50 + radius * Math.cos(a), y: 50 + radius * Math.sin(a), ring: k });
                     }
                 }
                 cell = Math.min((2 * Math.PI * Rmax) / counts[R - 1] * 0.8, 16);
@@ -3692,6 +3752,26 @@
             const board = document.getElementById("schulteBoard");
             const svg = document.getElementById("schulteBoardSvg");
             const { count, coords, cell } = computeSchulteLayout(schulteState.layout, schulteState.size);
+            
+            // 检查是否需要分层
+            const hasRings = coords.length > 0 && coords[0].ring !== undefined;
+            
+            // 清理旧的ring容器
+            const oldRings = board.querySelectorAll(".schulte-ring");
+            oldRings.forEach(r => r.remove());
+            
+            // 创建ring容器（如果需要）
+            const ringContainers = [];
+            if (hasRings) {
+                const maxRing = Math.max(...coords.map(c => c.ring));
+                for (let k = 0; k <= maxRing; k++) {
+                    const ring = document.createElement("div");
+                    ring.className = "schulte-ring ring-" + k;
+                    board.appendChild(ring);
+                    ringContainers.push(ring);
+                }
+            }
+            
             while (schulteCellEls.length < count) {
                 const el = document.createElement("div");
                 el.className = "schulte-cell";
@@ -3699,7 +3779,6 @@
                 span.className = "num";
                 el.appendChild(span);
                 el.addEventListener("click", () => onSchulteCellClick(parseInt(el.dataset.num, 10), el));
-                board.appendChild(el);
                 schulteCellEls.push(el);
             }
             while (schulteCellEls.length > count) {
@@ -3724,6 +3803,8 @@
                 el.style.opacity = "1";
                 el.style.pointerEvents = "auto";
                 el.classList.remove("correct", "wrong");
+                el.classList.remove("ring-0", "ring-1", "ring-2", "ring-3", "ring-4", "ring-5");
+                if (p.ring !== undefined) el.classList.add("ring-" + p.ring);
                 styleSchulteCell(el, num, i);
                 if (schulteState.layout === "hexagon") {
                     el.style.background = "transparent";
@@ -3749,6 +3830,13 @@
                     el.style.border = "";
                     el.style.borderRadius = "";
                     el.style.clipPath = "";
+                }
+                
+                // 把格子放到对应的ring容器中
+                if (hasRings && p.ring !== undefined && ringContainers[p.ring]) {
+                    ringContainers[p.ring].appendChild(el);
+                } else {
+                    board.appendChild(el);
                 }
             }
             drawSchulteBoardSvg();
@@ -3834,6 +3922,8 @@
                 centerCircle.setAttribute("stroke-width", "0.6");
                 svg.appendChild(centerCircle);
                 for (let k = 0; k < rings; k++) {
+                    const g = document.createElementNS(ns, "g");
+                    g.setAttribute("class", "schulte-svg-ring ring-" + k);
                     const rInner = ringRadiiInner[k];
                     const rOuter = ringRadiiOuter[k];
                     const cr = ringCounts[k];
@@ -3857,8 +3947,9 @@
                         path.setAttribute("stroke", strokeColor);
                         path.setAttribute("stroke-width", "0.6");
                         path.setAttribute("stroke-linejoin", "round");
-                        svg.appendChild(path);
+                        g.appendChild(path);
                     }
+                    svg.appendChild(g);
                 }
             }
         }
