@@ -3883,21 +3883,6 @@
                     return points;
                 };
                 
-                const defs = document.createElementNS(ns, "defs");
-                const clipPath = document.createElementNS(ns, "clipPath");
-                clipPath.setAttribute("id", "hex-clip");
-                for (let r = 0; r < rows; r++) {
-                    for (let c = 0; c < cols; c++) {
-                        const points = getHexPoints(r, c);
-                        const polyPoints = points.map(p => p.x.toFixed(3) + "," + p.y.toFixed(3)).join(" ");
-                        const poly = document.createElementNS(ns, "polygon");
-                        poly.setAttribute("points", polyPoints);
-                        clipPath.appendChild(poly);
-                    }
-                }
-                defs.appendChild(clipPath);
-                svg.appendChild(defs);
-                
                 for (let r = 0; r < rows; r++) {
                     for (let c = 0; c < cols; c++) {
                         const points = getHexPoints(r, c);
@@ -3911,8 +3896,6 @@
                 }
                 
                 const edges = new Set();
-                const lineGroup = document.createElementNS(ns, "g");
-                lineGroup.setAttribute("clip-path", "url(#hex-clip)");
                 for (let r = 0; r < rows; r++) {
                     for (let c = 0; c < cols; c++) {
                         const points = getHexPoints(r, c);
@@ -3933,14 +3916,13 @@
                                 line.setAttribute("x2", p2.x.toFixed(3));
                                 line.setAttribute("y2", p2.y.toFixed(3));
                                 line.setAttribute("stroke", "#6b9080");
-                                line.setAttribute("stroke-width", "1.2");
+                                line.setAttribute("stroke-width", "0.6");
                                 line.setAttribute("stroke-linecap", "round");
-                                lineGroup.appendChild(line);
+                                svg.appendChild(line);
                             }
                         }
                     }
                 }
-                svg.appendChild(lineGroup);
             } else if (layout === "circle") {
                 const count = size * size;
                 const Rmax = 46;
