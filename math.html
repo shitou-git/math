@@ -986,20 +986,29 @@
             border: none !important;
             border-radius: 0 !important;
             box-shadow: none !important;
+            width: 100% !important;
+            height: 100% !important;
+            font-weight: 800;
+            color: #1a1a1a;
         }
 
         .schulte-board.layout-hexagon .schulte-cell:hover {
-            background: transparent !important;
+            background: rgba(107, 144, 128, 0.1) !important;
             transform: translate(-50%, -50%) scale(1.06);
         }
 
         .schulte-board.layout-hexagon .schulte-cell.correct {
             background: transparent !important;
-            color: #16a34a;
+            color: #dc2626;
         }
 
         .schulte-board.layout-hexagon .schulte-cell.wrong {
             background: transparent !important;
+        }
+
+        .schulte-board.layout-hexagon .schulte-cell .num {
+            font-family: "Helvetica Neue", Helvetica, Arial, "PingFang SC", sans-serif;
+            font-weight: 800;
         }
 
         /* 圆形布局专用 */
@@ -3692,10 +3701,10 @@
                 const rows = size, cols = size;
                 count = rows * cols;
                 const s = Math.min(
-                    100 / (cols * 1.5 + 1),
-                    100 / (rows * Math.sqrt(3) * 0.5 + Math.sqrt(3) * 0.5 + 1)
+                    100 / (cols * 0.75 + 0.25),
+                    100 / (rows * Math.sqrt(3) * 0.5 + Math.sqrt(3) * 0.25)
                 );
-                const colStep = 1.5 * s;
+                const colStep = s * 0.75;
                 const rowStep = Math.sqrt(3) * s * 0.5;
                 const totalW = (cols - 1) * colStep + s;
                 const totalH = (rows - 1) * rowStep + Math.sqrt(3) * s * 0.5;
@@ -3711,7 +3720,7 @@
                         });
                     }
                 }
-                cell = s * 0.95;
+                cell = s * 0.85;
             } else if (layout === "radial") {
                 count = size * size;
                 const Rmax = 44;
@@ -3829,7 +3838,7 @@
                 el.style.height = cell + "%";
                 let fontSizeRatio = 0.34;
                 if (schulteState.layout === "circle") fontSizeRatio = 0.42;
-                if (schulteState.layout === "hexagon") fontSizeRatio = 0.38;
+                if (schulteState.layout === "hexagon") fontSizeRatio = 0.48;
                 el.style.fontSize = (cell * fontSizeRatio) + "vmin";
                 el.style.opacity = "1";
                 el.style.pointerEvents = "auto";
@@ -3890,10 +3899,10 @@
             if (layout === "hexagon") {
                 const rows = size, cols = size;
                 const s = Math.min(
-                    100 / (cols * 1.5 + 1),
-                    100 / (rows * Math.sqrt(3) * 0.5 + Math.sqrt(3) * 0.5 + 1)
+                    100 / (cols * 0.75 + 0.25),
+                    100 / (rows * Math.sqrt(3) * 0.5 + Math.sqrt(3) * 0.25)
                 );
-                const colStep = 1.5 * s;
+                const colStep = s * 0.75;
                 const rowStep = Math.sqrt(3) * s * 0.5;
                 const totalW = (cols - 1) * colStep + s;
                 const totalH = (rows - 1) * rowStep + Math.sqrt(3) * s * 0.5;
@@ -3906,14 +3915,14 @@
                         const cy = oy + r * rowStep;
                         const points = [];
                         for (let k = 0; k < 6; k++) {
-                            const angle = Math.PI / 3 * k;
-                            points.push((cx + s * 0.5 * Math.cos(angle)).toFixed(3) + "," + (cy + s * 0.5 * Math.sin(angle)).toFixed(3));
+                            const angle = Math.PI / 3 * k - Math.PI / 2;
+                            points.push((cx + s * 0.46 * Math.cos(angle)).toFixed(3) + "," + (cy + s * 0.46 * Math.sin(angle)).toFixed(3));
                         }
                         const poly = document.createElementNS(ns, "polygon");
                         poly.setAttribute("points", points.join(" "));
-                        poly.setAttribute("fill", fillColor);
-                        poly.setAttribute("stroke", strokeColor);
-                        poly.setAttribute("stroke-width", "0.5");
+                        poly.setAttribute("fill", "#ffffff");
+                        poly.setAttribute("stroke", "#6b9080");
+                        poly.setAttribute("stroke-width", "1.2");
                         poly.setAttribute("stroke-linejoin", "round");
                         svg.appendChild(poly);
                     }
