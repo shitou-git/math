@@ -3883,23 +3883,7 @@
                     return points;
                 };
                 
-                const hasNeighbor = (r, c) => {
-                    return r >= 0 && r < rows && c >= 0 && c < cols;
-                };
-                
-                const neighbors = (r, c) => {
-                    const n = [];
-                    if (r % 2 === 1) {
-                        n.push([r-1, c-1], [r-1, c]);
-                        n.push([r, c-1], [r, c+1]);
-                        n.push([r+1, c-1], [r+1, c]);
-                    } else {
-                        n.push([r-1, c], [r-1, c+1]);
-                        n.push([r, c-1], [r, c+1]);
-                        n.push([r+1, c], [r+1, c+1]);
-                    }
-                    return n;
-                };
+                svg.setAttribute("shape-rendering", "crispEdges");
                 
                 for (let r = 0; r < rows; r++) {
                     for (let c = 0; c < cols; c++) {
@@ -3908,38 +3892,10 @@
                         const poly = document.createElementNS(ns, "polygon");
                         poly.setAttribute("points", polyPoints);
                         poly.setAttribute("fill", "#ffffff");
-                        poly.setAttribute("stroke", "none");
+                        poly.setAttribute("stroke", "#6b9080");
+                        poly.setAttribute("stroke-width", "0.6");
+                        poly.setAttribute("stroke-linejoin", "miter");
                         svg.appendChild(poly);
-                    }
-                }
-                
-                const edges = new Set();
-                
-                for (let r = 0; r < rows; r++) {
-                    for (let c = 0; c < cols; c++) {
-                        const points = getHexPoints(r, c);
-                        for (let k = 0; k < 6; k++) {
-                            const p1 = points[k];
-                            const p2 = points[(k + 1) % 6];
-                            const key = [
-                                Math.round(p1.x * 100) / 100,
-                                Math.round(p1.y * 100) / 100,
-                                Math.round(p2.x * 100) / 100,
-                                Math.round(p2.y * 100) / 100
-                            ].sort().join(",");
-                            if (!edges.has(key)) {
-                                edges.add(key);
-                                const line = document.createElementNS(ns, "line");
-                                line.setAttribute("x1", p1.x.toFixed(3));
-                                line.setAttribute("y1", p1.y.toFixed(3));
-                                line.setAttribute("x2", p2.x.toFixed(3));
-                                line.setAttribute("y2", p2.y.toFixed(3));
-                                line.setAttribute("stroke", "#6b9080");
-                                line.setAttribute("stroke-width", "0.6");
-                                line.setAttribute("stroke-linecap", "round");
-                                svg.appendChild(line);
-                            }
-                        }
                     }
                 }
             } else if (layout === "circle") {
