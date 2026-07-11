@@ -3810,7 +3810,8 @@
                 el.style.width = cell + "%";
                 el.style.height = cell + "%";
                 let fontSizeRatio = 0.34;
-                if (schulteState.layout === "circle" || schulteState.layout === "radial") fontSizeRatio = 0.42;
+                if (schulteState.layout === "circle") fontSizeRatio = 0.55;
+                if (schulteState.layout === "radial") fontSizeRatio = 0.42;
                 if (schulteState.layout === "hexagon") fontSizeRatio = 0.33;
                 el.style.fontSize = (cell * fontSizeRatio) + "vmin";
                 el.style.opacity = "1";
