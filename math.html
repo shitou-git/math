@@ -3878,7 +3878,7 @@
                     const points = [];
                     for (let k = 0; k < 6; k++) {
                         const angle = Math.PI / 3 * k - Math.PI / 2;
-                        points.push({ x: cx + s * 0.5 * Math.cos(angle), y: cy + s * 0.5 * Math.sin(angle) });
+                        points.push({ x: cx + s * Math.cos(angle), y: cy + s * Math.sin(angle) });
                     }
                     return points;
                 };
