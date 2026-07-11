@@ -564,11 +564,14 @@
 
         /* 舒尔特方格新样式 */
         .schulte-app {
-            display: grid;
-            grid-template-columns: 260px minmax(0, 1fr) 280px;
+            display: flex;
+            flex-direction: column;
             gap: 16px;
-            align-items: start;
+            align-items: center;
             margin-top: 15px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .schulte-panel {
@@ -576,6 +579,15 @@
             border-radius: 18px;
             padding: 18px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            width: 100%;
+        }
+
+        .schulte-stage {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            order: -1;
         }
 
         .schulte-panel-title {
@@ -713,6 +725,8 @@
             display: flex;
             flex-direction: column;
             gap: 14px;
+            width: 100%;
+            order: -1;
         }
 
         .schulte-hud {
@@ -3569,10 +3583,10 @@
                 const innermostCount = ringCounts[0];
                 const innermostRadius = ringRadii[0];
                 const innerArc = (2 * Math.PI * innermostRadius) / innermostCount;
-                const cellByInnerArc = innerArc * 0.35;
-                const cellByRingWidth = ringWidth * 0.45;
-                cell = Math.min(cellByInnerArc, cellByRingWidth, 8);
-                cell = Math.max(cell, 3.5);
+                const cellByInnerArc = innerArc * 0.5;
+                const cellByRingWidth = ringWidth * 0.6;
+                cell = Math.min(cellByInnerArc, cellByRingWidth, 11);
+                cell = Math.max(cell, 5);
             } else if (layout === "triangle") {
                 const rows = size;
                 count = (rows * (rows + 1)) / 2;
@@ -3606,7 +3620,7 @@
                         });
                     }
                 }
-                cell = s * 0.8;
+                cell = s * 0.95;
             } else if (layout === "radial") {
                 count = size * size;
                 const Rmax = 44;
@@ -3704,8 +3718,8 @@
                 el.style.width = cell + "%";
                 el.style.height = cell + "%";
                 let fontSizeRatio = 0.34;
-                if (schulteState.layout === "circle") fontSizeRatio = 0.24;
-                if (schulteState.layout === "hexagon") fontSizeRatio = 0.28;
+                if (schulteState.layout === "circle") fontSizeRatio = 0.42;
+                if (schulteState.layout === "hexagon") fontSizeRatio = 0.38;
                 el.style.fontSize = (cell * fontSizeRatio) + "vmin";
                 el.style.opacity = "1";
                 el.style.pointerEvents = "auto";
@@ -3774,13 +3788,13 @@
                         const points = [];
                         for (let k = 0; k < 6; k++) {
                             const angle = Math.PI / 3 * k;
-                            points.push((cx + s * 0.47 * Math.cos(angle)).toFixed(3) + "," + (cy + s * 0.47 * Math.sin(angle)).toFixed(3));
+                            points.push((cx + s * 0.5 * Math.cos(angle)).toFixed(3) + "," + (cy + s * 0.5 * Math.sin(angle)).toFixed(3));
                         }
                         const poly = document.createElementNS(ns, "polygon");
                         poly.setAttribute("points", points.join(" "));
                         poly.setAttribute("fill", fillColor);
                         poly.setAttribute("stroke", strokeColor);
-                        poly.setAttribute("stroke-width", "0.8");
+                        poly.setAttribute("stroke-width", "0.5");
                         poly.setAttribute("stroke-linejoin", "round");
                         svg.appendChild(poly);
                     }
