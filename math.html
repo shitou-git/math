@@ -3878,7 +3878,7 @@
                         const points = [];
                         for (let k = 0; k < 6; k++) {
                             const angle = Math.PI / 3 * k - Math.PI / 2;
-                            points.push((cx + s * 0.97 * Math.cos(angle)).toFixed(3) + "," + (cy + s * 0.97 * Math.sin(angle)).toFixed(3));
+                            points.push((cx + s * 0.95 * Math.cos(angle)).toFixed(3) + "," + (cy + s * 0.95 * Math.sin(angle)).toFixed(3));
                         }
                         const poly = document.createElementNS(ns, "polygon");
                         poly.setAttribute("points", points.join(" "));
