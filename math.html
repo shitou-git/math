@@ -755,7 +755,7 @@
 
         .schulte-board-wrap {
             position: relative;
-            background: white;
+            background: linear-gradient(180deg, #eef4ed 0%, #d8e2dc 100%);
             border-radius: 18px;
             padding: 20px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
@@ -770,6 +770,16 @@
             width: 100%;
             max-width: min(65vh, 100%);
             aspect-ratio: 1 / 1;
+        }
+
+        .schulte-board-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
         }
 
         .schulte-cell {
@@ -863,6 +873,50 @@
         .schulte-cell.mirror .num {
             display: inline-block;
             transform: scaleX(-1);
+        }
+
+        /* 蜂窝布局专用 */
+        .schulte-board.layout-hexagon .schulte-cell {
+            background: transparent !important;
+            border: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+        }
+
+        .schulte-board.layout-hexagon .schulte-cell:hover {
+            background: transparent !important;
+            transform: translate(-50%, -50%) scale(1.06);
+        }
+
+        .schulte-board.layout-hexagon .schulte-cell.correct {
+            background: transparent !important;
+            color: #16a34a;
+        }
+
+        .schulte-board.layout-hexagon .schulte-cell.wrong {
+            background: transparent !important;
+        }
+
+        /* 圆形布局专用 */
+        .schulte-board.layout-circle .schulte-cell {
+            background: transparent !important;
+            border: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+        }
+
+        .schulte-board.layout-circle .schulte-cell:hover {
+            background: transparent !important;
+            transform: translate(-50%, -50%) scale(1.06);
+        }
+
+        .schulte-board.layout-circle .schulte-cell.correct {
+            background: transparent !important;
+            color: #16a34a;
+        }
+
+        .schulte-board.layout-circle .schulte-cell.wrong {
+            background: transparent !important;
         }
 
         /* 字体干扰 */
@@ -2214,7 +2268,9 @@
                     </div>
 
                     <div class="schulte-board-wrap">
-                        <div class="schulte-board" id="schulteBoard" aria-label="舒尔特方格"></div>
+                        <div class="schulte-board" id="schulteBoard" aria-label="舒尔特方格">
+                            <svg class="schulte-board-svg" id="schulteBoardSvg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet"></svg>
+                        </div>
                         <div class="schulte-overlay" id="schulteOverlay">
                             <div class="schulte-overlay-card">
                                 <div class="schulte-overlay-emoji" id="schulteOverlayEmoji">🎯</div>
@@ -3478,31 +3534,43 @@
                 cell = (86 / size);
             } else if (layout === "circle") {
                 count = size * size;
-                const Rmax = 44;
+                const Rmax = 46;
+                const centerR = 6;
+                let rings, ringCounts;
                 if (count <= 25) {
-                    const R = Rmax * 0.85;
-                    coords = Array.from({ length: count }, (_, i) => {
-                        const a = -Math.PI / 2 + (i * 2 * Math.PI) / count;
-                        return { x: 50 + R * Math.cos(a), y: 50 + R * Math.sin(a) };
-                    });
-                    cell = Math.min((2 * Math.PI * R) / count * 0.82, 16);
+                    rings = 2;
+                    const inner = Math.max(8, Math.round(count * 0.38));
+                    ringCounts = [inner, count - inner];
+                } else if (count <= 36) {
+                    rings = 3;
+                    const r1 = 8, r2 = 12;
+                    ringCounts = [r1, r2, count - r1 - r2];
                 } else {
-                    const innerCount = Math.round(count * 0.4);
-                    const outerCount = count - innerCount;
-                    const innerR = Rmax * 0.5;
-                    const outerR = Rmax * 0.92;
-                    for (let i = 0; i < innerCount; i++) {
-                        const a = -Math.PI / 2 + (i * 2 * Math.PI) / innerCount;
-                        coords.push({ x: 50 + innerR * Math.cos(a), y: 50 + innerR * Math.sin(a) });
-                    }
-                    for (let i = 0; i < outerCount; i++) {
-                        const a = -Math.PI / 2 + Math.PI / outerCount + (i * 2 * Math.PI) / outerCount;
-                        coords.push({ x: 50 + outerR * Math.cos(a), y: 50 + outerR * Math.sin(a) });
-                    }
-                    const outerCell = (2 * Math.PI * outerR) / outerCount * 0.8;
-                    const innerCell = (2 * Math.PI * innerR) / innerCount * 0.8;
-                    cell = Math.min(outerCell, innerCell, 14);
+                    rings = 4;
+                    const r1 = 7, r2 = 11, r3 = 15;
+                    ringCounts = [r1, r2, r3, count - r1 - r2 - r3];
                 }
+                const usableR = Rmax - centerR;
+                const ringWidth = usableR / rings;
+                const ringRadii = [];
+                for (let k = 0; k < rings; k++) {
+                    ringRadii.push(centerR + (k + 0.5) * ringWidth);
+                }
+                coords = [];
+                for (let k = 0; k < rings; k++) {
+                    const r = ringRadii[k];
+                    const cr = ringCounts[k];
+                    const offset = (k % 2) * (Math.PI / cr);
+                    for (let j = 0; j < cr; j++) {
+                        const a = -Math.PI / 2 + offset + (j * 2 * Math.PI) / cr;
+                        coords.push({ x: 50 + r * Math.cos(a), y: 50 + r * Math.sin(a) });
+                    }
+                }
+                const outerCount = ringCounts[ringCounts.length - 1];
+                const outerCell = (2 * Math.PI * Rmax) / outerCount * 0.6;
+                const ringCell = ringWidth * 0.7;
+                cell = Math.min(outerCell, ringCell, 12);
+                cell = Math.max(cell, 5);
             } else if (layout === "triangle") {
                 const rows = size;
                 count = (rows * (rows + 1)) / 2;
@@ -3516,16 +3584,27 @@
             } else if (layout === "hexagon") {
                 const rows = size, cols = size;
                 count = rows * cols;
-                const s = Math.min(100 / (cols * 1.5 + 0.5), 100 / (rows * 1.732 + 0.866));
-                const dx = 1.5 * s, dy = Math.sqrt(3) * s;
-                const ox = (100 - (cols - 1) * dx) / 2, oy = (100 - (rows - 1) * dy) / 2;
+                const s = Math.min(
+                    100 / (cols * 1.5 + 0.5),
+                    100 / (rows * Math.sqrt(3) * 0.5 + Math.sqrt(3) * 0.5)
+                );
+                const colStep = 1.5 * s;
+                const rowStep = Math.sqrt(3) * s * 0.5;
+                const totalW = (cols - 1) * colStep + s;
+                const totalH = (rows - 1) * rowStep + Math.sqrt(3) * s * 0.5;
+                const ox = (100 - totalW) / 2 + s * 0.5;
+                const oy = (100 - totalH) / 2 + Math.sqrt(3) * s * 0.25;
                 coords = [];
                 for (let r = 0; r < rows; r++) {
                     for (let c = 0; c < cols; c++) {
-                        coords.push({ x: ox + c * dx + (r % 2) * dx * 0.5, y: oy + r * dy });
+                        const offsetX = (r % 2 === 1) ? colStep * 0.5 : 0;
+                        coords.push({
+                            x: ox + c * colStep + offsetX,
+                            y: oy + r * rowStep
+                        });
                     }
                 }
-                cell = s * 1.1;
+                cell = s * 0.85;
             } else if (layout === "radial") {
                 count = size * size;
                 const Rmax = 44;
@@ -3595,6 +3674,7 @@
 
         function applySchulteLayout() {
             const board = document.getElementById("schulteBoard");
+            const svg = document.getElementById("schulteBoardSvg");
             const { count, coords, cell } = computeSchulteLayout(schulteState.layout, schulteState.size);
             while (schulteCellEls.length < count) {
                 const el = document.createElement("div");
@@ -3627,21 +3707,141 @@
                 el.classList.remove("correct", "wrong");
                 styleSchulteCell(el, num, i);
                 if (schulteState.layout === "hexagon") {
-                    el.style.clipPath = "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)";
+                    el.style.background = "transparent";
+                    el.style.border = "none";
+                    el.style.borderRadius = "0";
+                    el.style.clipPath = "";
+                } else if (schulteState.layout === "circle") {
+                    el.style.background = "transparent";
+                    el.style.border = "none";
+                    el.style.borderRadius = "0";
+                    el.style.clipPath = "";
                 } else if (schulteState.layout === "irregular") {
+                    el.style.background = "";
+                    el.style.border = "";
+                    el.style.borderRadius = "";
                     const pts = [
                         [rndSchulte(0, 12), rndSchulte(0, 12)], [rndSchulte(88, 100), rndSchulte(0, 12)],
                         [rndSchulte(88, 100), rndSchulte(88, 100)], [rndSchulte(0, 12), rndSchulte(88, 100)],
                     ];
                     el.style.clipPath = `polygon(${pts.map(([x, y]) => x + "% " + y + "%").join(", ")})`;
                 } else {
+                    el.style.background = "";
+                    el.style.border = "";
+                    el.style.borderRadius = "";
                     el.style.clipPath = "";
                 }
             }
+            drawSchulteBoardSvg();
             schulteState.count = count;
-            board.className = "schulte-board";
+            board.className = "schulte-board layout-" + schulteState.layout;
             if (schulteState.interf.jitter) board.classList.add("jitter");
             if (schulteState.interf.rotation) board.classList.add("rotate");
+        }
+
+        function drawSchulteBoardSvg() {
+            const svg = document.getElementById("schulteBoardSvg");
+            const layout = schulteState.layout;
+            const size = schulteState.size;
+            svg.innerHTML = "";
+            const ns = "http://www.w3.org/2000/svg";
+            const strokeColor = "#6b9080";
+            const fillColor = "#ffffff";
+            const bgColor = "#eef4ed";
+
+            if (layout === "hexagon") {
+                const rows = size, cols = size;
+                const s = Math.min(
+                    100 / (cols * 1.5 + 0.5),
+                    100 / (rows * Math.sqrt(3) * 0.5 + Math.sqrt(3) * 0.5)
+                );
+                const colStep = 1.5 * s;
+                const rowStep = Math.sqrt(3) * s * 0.5;
+                const totalW = (cols - 1) * colStep + s;
+                const totalH = (rows - 1) * rowStep + Math.sqrt(3) * s * 0.5;
+                const ox = (100 - totalW) / 2 + s * 0.5;
+                const oy = (100 - totalH) / 2 + Math.sqrt(3) * s * 0.25;
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        const offsetX = (r % 2 === 1) ? colStep * 0.5 : 0;
+                        const cx = ox + c * colStep + offsetX;
+                        const cy = oy + r * rowStep;
+                        const points = [];
+                        for (let k = 0; k < 6; k++) {
+                            const angle = Math.PI / 3 * k;
+                            points.push((cx + s * 0.5 * Math.cos(angle)).toFixed(3) + "," + (cy + s * 0.5 * Math.sin(angle)).toFixed(3));
+                        }
+                        const poly = document.createElementNS(ns, "polygon");
+                        poly.setAttribute("points", points.join(" "));
+                        poly.setAttribute("fill", fillColor);
+                        poly.setAttribute("stroke", strokeColor);
+                        poly.setAttribute("stroke-width", "0.8");
+                        poly.setAttribute("stroke-linejoin", "round");
+                        svg.appendChild(poly);
+                    }
+                }
+            } else if (layout === "circle") {
+                const count = size * size;
+                const Rmax = 46;
+                const centerR = 6;
+                let rings, ringCounts;
+                if (count <= 25) {
+                    rings = 2;
+                    const inner = Math.max(8, Math.round(count * 0.38));
+                    ringCounts = [inner, count - inner];
+                } else if (count <= 36) {
+                    rings = 3;
+                    const r1 = 8, r2 = 12;
+                    ringCounts = [r1, r2, count - r1 - r2];
+                } else {
+                    rings = 4;
+                    const r1 = 7, r2 = 11, r3 = 15;
+                    ringCounts = [r1, r2, r3, count - r1 - r2 - r3];
+                }
+                const usableR = Rmax - centerR;
+                const ringWidth = usableR / rings;
+                const ringRadiiInner = [];
+                const ringRadiiOuter = [];
+                for (let k = 0; k < rings; k++) {
+                    ringRadiiInner.push(centerR + k * ringWidth);
+                    ringRadiiOuter.push(centerR + (k + 1) * ringWidth);
+                }
+                const centerCircle = document.createElementNS(ns, "circle");
+                centerCircle.setAttribute("cx", "50");
+                centerCircle.setAttribute("cy", "50");
+                centerCircle.setAttribute("r", centerR);
+                centerCircle.setAttribute("fill", "#f5f2e9");
+                centerCircle.setAttribute("stroke", strokeColor);
+                centerCircle.setAttribute("stroke-width", "0.6");
+                svg.appendChild(centerCircle);
+                for (let k = 0; k < rings; k++) {
+                    const rInner = ringRadiiInner[k];
+                    const rOuter = ringRadiiOuter[k];
+                    const cr = ringCounts[k];
+                    const offset = (k % 2) * (Math.PI / cr);
+                    for (let j = 0; j < cr; j++) {
+                        const a1 = -Math.PI / 2 + offset + (j - 0.5) * 2 * Math.PI / cr;
+                        const a2 = -Math.PI / 2 + offset + (j + 0.5) * 2 * Math.PI / cr;
+                        const path = document.createElementNS(ns, "path");
+                        const x1 = 50 + rInner * Math.cos(a1);
+                        const y1 = 50 + rInner * Math.sin(a1);
+                        const x2 = 50 + rOuter * Math.cos(a1);
+                        const y2 = 50 + rOuter * Math.sin(a1);
+                        const x3 = 50 + rOuter * Math.cos(a2);
+                        const y3 = 50 + rOuter * Math.sin(a2);
+                        const x4 = 50 + rInner * Math.cos(a2);
+                        const y4 = 50 + rInner * Math.sin(a2);
+                        const largeArc = (2 * Math.PI / cr) > Math.PI ? 1 : 0;
+                        const d = `M ${x1.toFixed(3)} ${y1.toFixed(3)} L ${x2.toFixed(3)} ${y2.toFixed(3)} A ${rOuter.toFixed(3)} ${rOuter.toFixed(3)} 0 ${largeArc} 1 ${x3.toFixed(3)} ${y3.toFixed(3)} L ${x4.toFixed(3)} ${y4.toFixed(3)} A ${rInner.toFixed(3)} ${rInner.toFixed(3)} 0 ${largeArc} 0 ${x1.toFixed(3)} ${y1.toFixed(3)} Z`;
+                        path.setAttribute("d", d);
+                        path.setAttribute("fill", fillColor);
+                        path.setAttribute("stroke", strokeColor);
+                        path.setAttribute("stroke-width", "0.6");
+                        path.setAttribute("stroke-linejoin", "round");
+                        svg.appendChild(path);
+                    }
+                }
+            }
         }
 
         function rndSchulte(min, max) {
