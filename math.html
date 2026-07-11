@@ -3554,6 +3554,7 @@
             paused: false,
             finished: false,
             numbers: [],
+            zoneColors: [],
             count: 0,
             next: 1,
             step: 1,
@@ -3997,8 +3998,8 @@
             SCHULTE_FONT_CLASSES.forEach((f) => span.classList.remove(f));
             if (schulteState.interf.font) span.classList.add(SCHULTE_FONT_CLASSES[num % SCHULTE_FONT_CLASSES.length]);
             el.classList.toggle("mirror", schulteState.interf.mirror && num % 2 === 0);
-            if (schulteState.interf.zoneColor) {
-                el.style.backgroundColor = SCHULTE_ZONE_COLORS[schulteZoneFor(i) % SCHULTE_ZONE_COLORS.length];
+            if (schulteState.interf.zoneColor && schulteState.zoneColors && schulteState.zoneColors[i]) {
+                el.style.backgroundColor = schulteState.zoneColors[i];
             } else {
                 el.style.backgroundColor = "";
             }
@@ -4017,7 +4018,9 @@
         function buildSchulteBoard() {
             const { count } = computeSchulteLayout(schulteState.layout, schulteState.size);
             schulteState.numbers = shuffleArray(Array.from({ length: count }, (_, i) => 1 + i));
+            schulteState.zoneColors = Array.from({ length: count }, () => SCHULTE_ZONE_COLORS[Math.floor(Math.random() * SCHULTE_ZONE_COLORS.length)]);
             applySchulteLayout();
+            updateSchulteAllInterferences();
         }
 
         function updateSchulteAllInterferences() {
