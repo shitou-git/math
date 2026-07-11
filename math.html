@@ -3883,7 +3883,20 @@
                     return points;
                 };
                 
-                svg.setAttribute("shape-rendering", "crispEdges");
+                const defs = document.createElementNS(ns, "defs");
+                const clipPath = document.createElementNS(ns, "clipPath");
+                clipPath.setAttribute("id", "hex-clip");
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        const points = getHexPoints(r, c);
+                        const polyPoints = points.map(p => p.x.toFixed(3) + "," + p.y.toFixed(3)).join(" ");
+                        const poly = document.createElementNS(ns, "polygon");
+                        poly.setAttribute("points", polyPoints);
+                        clipPath.appendChild(poly);
+                    }
+                }
+                defs.appendChild(clipPath);
+                svg.appendChild(defs);
                 
                 for (let r = 0; r < rows; r++) {
                     for (let c = 0; c < cols; c++) {
@@ -3892,12 +3905,42 @@
                         const poly = document.createElementNS(ns, "polygon");
                         poly.setAttribute("points", polyPoints);
                         poly.setAttribute("fill", "#ffffff");
-                        poly.setAttribute("stroke", "#6b9080");
-                        poly.setAttribute("stroke-width", "0.6");
-                        poly.setAttribute("stroke-linejoin", "miter");
+                        poly.setAttribute("stroke", "none");
                         svg.appendChild(poly);
                     }
                 }
+                
+                const edges = new Set();
+                const lineGroup = document.createElementNS(ns, "g");
+                lineGroup.setAttribute("clip-path", "url(#hex-clip)");
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        const points = getHexPoints(r, c);
+                        for (let k = 0; k < 6; k++) {
+                            const p1 = points[k];
+                            const p2 = points[(k + 1) % 6];
+                            const key = [
+                                Math.round(p1.x * 100) / 100,
+                                Math.round(p1.y * 100) / 100,
+                                Math.round(p2.x * 100) / 100,
+                                Math.round(p2.y * 100) / 100
+                            ].sort().join(",");
+                            if (!edges.has(key)) {
+                                edges.add(key);
+                                const line = document.createElementNS(ns, "line");
+                                line.setAttribute("x1", p1.x.toFixed(3));
+                                line.setAttribute("y1", p1.y.toFixed(3));
+                                line.setAttribute("x2", p2.x.toFixed(3));
+                                line.setAttribute("y2", p2.y.toFixed(3));
+                                line.setAttribute("stroke", "#6b9080");
+                                line.setAttribute("stroke-width", "1.2");
+                                line.setAttribute("stroke-linecap", "round");
+                                lineGroup.appendChild(line);
+                            }
+                        }
+                    }
+                }
+                svg.appendChild(lineGroup);
             } else if (layout === "circle") {
                 const count = size * size;
                 const Rmax = 46;
