@@ -656,11 +656,13 @@
 
         .schulte-checks {
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap;
             gap: 8px;
         }
 
         .schulte-check {
+            flex: 1 1 calc(33.33% - 6px);
+            min-width: 110px;
             display: flex;
             align-items: center;
             gap: 11px;
