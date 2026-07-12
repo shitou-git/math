@@ -1,17 +1,7 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#FF9A9E">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="英语乐园">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="xue.png">
-<title>英语单词大冒险 · 小学英语学习游戏</title>
-<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Baloo+2:wght@400;500;600;700;800&family=Comic+Neue:wght@400;700&family=Quicksand:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
+// 快乐学英语 ES Module
+// 从 dc.html 提取
+
+const DC_CSS = `
 /* ====================== 基础与变量 ====================== */
 :root{
   --bg:#FFF8F0;
@@ -624,9 +614,9 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
   .learn-word{font-size:42px}
   .page-title{font-size:26px}
 }
-</style>
-</head>
-<body>
+`;
+
+const DC_HTML = `
 
 <!-- 背景装饰 -->
 <div class="bg-deco" id="bg-deco"></div>
@@ -642,7 +632,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
     </div>
     <!-- 积分栏 -->
     <div class="home-stats-bar">
-      <button class="back-btn home-back-btn" onclick="parent.location.href='index.html'">← 返回首页</button>
+      <button class="back-btn home-back-btn" onclick="goHome()">← 返回首页</button>
       <div class="stat-card">
         <span class="ico">⭐</span>
         <span class="val" id="home-stars">0</span>
@@ -1091,7 +1081,21 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<script>
+`;
+
+// 动态加载 Google Fonts
+let fontsLoaded = false;
+function loadFonts() {
+    if (fontsLoaded) return;
+    if (document.querySelector('link[href*="fonts.googleapis"]')) { fontsLoaded = true; return; }
+    const link = document.createElement('link');
+    link.href = 'https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Baloo+2:wght@400;500;600;700;800&family=Comic+Neue:wght@400;700&family=Quicksand:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&family=Fredoka:wght@400;500;600;700&display=swap';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+    fontsLoaded = true;
+}
+
+// ===== 提取的 JS 函数与变量定义（保持函数名/变量名不变） =====
 /* ====================== 数据加载 ====================== */
 var wordDatabase = {};
 var schoolWords = {};
@@ -1111,7 +1115,13 @@ async function loadAllData(){
   await Promise.all(files.map(f => 
     fetch(`${base}/${f.file}`)
       .then(r => r.json())
-      .then(d => { window[f.key] = d; })
+      .then(d => {
+        if(f.key === "wordDatabase") wordDatabase = d;
+        else if(f.key === "schoolWords") schoolWords = d;
+        else if(f.key === "dialogDatabase") dialogDatabase = d;
+        else if(f.key === "ipaData") ipaData = d;
+        else if(f.key === "wordIpaDict") wordIpaDict = d;
+      })
       .catch(e => console.error("加载失败:", f.file, e))
   ));
 }
@@ -1265,9 +1275,6 @@ function loadState(){
 function applyFont(){
   document.body.classList.remove("font-cartoon","font-system","font-round","font-clean","font-serif");
   document.body.classList.add("font-" + (state.fontStyle || "cartoon"));
-}
-function applyReduceMotion(){
-  document.body.classList.toggle("reduce-motion", state.reduceMotion);
 }
 
 /* ====================== 视图切换 ====================== */
@@ -2995,17 +3002,65 @@ async function initApp(){
   renderHomeStats();
   setTimeout(preloadIpaAudio, 1500);
 }
-initApp();
 
-// 点击页面其他地方关闭下拉菜单
-document.addEventListener("click", (e)=>{
+
+// 点击页面其他地方关闭下拉菜单（命名函数，避免重复绑定）
+function _dcDocClickHandler(e){
   const themeDd = document.getElementById("theme-dropdown");
   const dialogDd = document.getElementById("dialog-theme-dropdown");
   const nbDd = document.getElementById("nb-theme-dropdown");
   if(themeDd && !themeDd.contains(e.target)) themeDd.classList.remove("open");
   if(dialogDd && !dialogDd.contains(e.target)) dialogDd.classList.remove("open");
   if(nbDd && !nbDd.contains(e.target)) nbDd.classList.remove("open");
-});
-</script>
-</body>
-</html>
+}
+
+export function injectDcStyle() {
+    if (document.getElementById('dc-style')) return;
+    const style = document.createElement('style');
+    style.id = 'dc-style';
+    style.textContent = DC_CSS;
+    document.head.appendChild(style);
+}
+
+export function renderDcHTML() {
+    return DC_HTML;
+}
+
+let dcInited = false;
+export function initDc() {
+    injectDcStyle();
+    loadFonts();
+    if (!dcInited) {
+        dcInited = true;
+        initApp();
+        document.addEventListener("click", _dcDocClickHandler);
+    } else {
+        try { renderHomeStats(); } catch(e) {}
+    }
+}
+
+// ===== 挂载到 window（所有 onclick 调用的函数） =====
+// goHome 由 modules/main.js 提供并挂载到 window，此处不重复定义
+window.go = go;
+window.speakCurrent = speakCurrent;
+window.nextWord = nextWord;
+window.prevWord = prevWord;
+window.exitGame = exitGame;
+window.restartGame = restartGame;
+window.toggleNbPlay = toggleNbPlay;
+window.stopNbPlay = stopNbPlay;
+window.resetProgress = resetProgress;
+window.switchSchoolTab = switchSchoolTab;
+window.toggleSchoolPlay = toggleSchoolPlay;
+window.stopSchoolPlay = stopSchoolPlay;
+window.doLookup = doLookup;
+window.toggleDialogThemeDropdown = toggleDialogThemeDropdown;
+window.nextDialog = nextDialog;
+window.speak = speak;
+window.nextLevel = nextLevel;
+window.closeModal = closeModal;
+window.continueAfterQuiz = continueAfterQuiz;
+window.toggleThemeDropdown = toggleThemeDropdown;
+window.toggleNbThemeDropdown = toggleNbThemeDropdown;
+window.nbCardClick = nbCardClick;
+window.closeConfirm = closeConfirm;

@@ -1,5 +1,5 @@
 // ========== 主入口路由模块（懒加载版） ==========
-// 只在用户首次进入某游戏时才动态加载对应模块、注入样式、渲染HTML
+// 所有游戏和页面都是懒加载：只在用户首次点击时才动态加载对应模块
 
 let currentGame = 'home';
 let timerInterval = null;
@@ -11,6 +11,9 @@ const moduleCache = {
     magic: null,
     arithmetic: null,
     schulte: null,
+    aoshu: null,
+    silu: null,
+    dc: null,
 };
 
 // ========== 通用计时器函数 ==========
@@ -56,6 +59,16 @@ async function ensureGame(game) {
         mod = await import('./schulte.js');
         mod.injectSchulteStyle();
         document.getElementById('schultePage').innerHTML = mod.renderSchulteHTML();
+    } else if (game === 'aoshu') {
+        mod = await import('./aoshu.js');
+        mod.injectAoshuStyle();
+        document.getElementById('aoshuPage').innerHTML = mod.renderAoshuHTML();
+    } else if (game === 'silu') {
+        mod = await import('./silu.js');
+        document.getElementById('siluPage').innerHTML = mod.renderSiluHTML();
+    } else if (game === 'dc') {
+        mod = await import('./dc.js');
+        document.getElementById('dcPage').innerHTML = mod.renderDcHTML();
     }
     moduleCache[game] = { mod, inited: false };
     return mod;
@@ -66,18 +79,6 @@ async function showGame(game) {
     document.getElementById('homePage').style.display = 'none';
     const pages = ['magicPage', 'arithmeticPage', 'schultePage', 'sudokuPage', 'dcPage', 'aoshuPage', 'siluPage'];
     pages.forEach(id => document.getElementById(id).classList.remove('active'));
-
-    // iframe 页面：直接显示，首次点击时才加载 src
-    if (game === 'dc' || game === 'aoshu' || game === 'silu') {
-        const pageEl = document.getElementById(game + 'Page');
-        const iframe = pageEl.querySelector('iframe');
-        if (iframe && !iframe.src) {
-            iframe.src = iframe.dataset.src;
-        }
-        pageEl.classList.add('active');
-        currentGame = game;
-        return;
-    }
 
     // 游戏页面：懒加载模块
     const pageId = game + 'Page';
@@ -94,6 +95,9 @@ async function showGame(game) {
     else if (game === 'magic') mod.initMagic();
     else if (game === 'arithmetic') mod.initArithmetic();
     else if (game === 'schulte') mod.initSchulte();
+    else if (game === 'aoshu') mod.initAoshu();
+    else if (game === 'silu') await mod.initSilu();
+    else if (game === 'dc') mod.initDc();
 }
 
 function goHome() {

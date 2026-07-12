@@ -97,7 +97,7 @@
             display: block;
         }
 
-        .iframe-page {
+        .full-page {
             position: fixed;
             top: 0;
             left: 0;
@@ -105,18 +105,12 @@
             bottom: 0;
             background: #fff;
             z-index: 1000;
+            overflow-y: auto;
             display: none;
         }
 
-        .iframe-page.active {
+        .full-page.active {
             display: block;
-        }
-
-        .iframe-page iframe {
-            display: block;
-            width: 100%;
-            height: 100%;
-            border: none;
         }
 
         .back-btn {
@@ -514,16 +508,10 @@
         <div id="schultePage" class="game-page"></div>
         <div id="sudokuPage" class="game-page"></div>
 
-        <!-- iframe 页面（懒加载：data-src 在点击时才赋值给 src） -->
-        <div id="dcPage" class="game-page iframe-page">
-            <iframe data-src="dc.html"></iframe>
-        </div>
-        <div id="aoshuPage" class="game-page iframe-page">
-            <iframe data-src="aoshu.html"></iframe>
-        </div>
-        <div id="siluPage" class="game-page iframe-page">
-            <iframe data-src="silu.html"></iframe>
-        </div>
+        <!-- 已模块化的页面（由ES Module动态填充内容，全屏显示） -->
+        <div id="dcPage" class="game-page full-page"></div>
+        <div id="aoshuPage" class="game-page full-page"></div>
+        <div id="siluPage" class="game-page full-page"></div>
     </div>
 
     <div class="footer">
