@@ -144,6 +144,193 @@
             box-shadow: 0 10px 30px rgba(124, 58, 237, 0.2);
         }
 
+        .gradient-header {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899, #f59e0b);
+            color: #fff;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 12px 32px rgba(139, 92, 246, 0.25);
+        }
+
+        .gradient-header h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.12);
+        }
+
+        .gradient-header p {
+            font-size: 16px;
+            opacity: 0.95;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .difficulty-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .diff-btn {
+            padding: 12px 30px;
+            border: 2px solid #e2e8f0;
+            border-radius: 30px;
+            background: white;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            color: #475569;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        .diff-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .diff-btn:hover:not(.active) {
+            border-color: #667eea;
+            color: #667eea;
+            background: #f0f5ff;
+        }
+
+        .diff-btn:active {
+            transform: translateY(1px);
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .action-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .action-btn.check {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .action-btn.check:hover {
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+        }
+
+        .action-btn.solve {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
+        }
+
+        .action-btn.solve:hover {
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.4);
+        }
+
+        .result-panel {
+            text-align: center;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .result-panel.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .result-panel.success {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border: 2px solid #86efac;
+        }
+
+        .result-panel.error {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border: 2px solid #fca5a5;
+        }
+
+        .result-panel h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .result-panel.success h3 {
+            color: #16a34a;
+        }
+
+        .result-panel.error h3 {
+            color: #dc2626;
+        }
+
+        .result-panel p {
+            font-size: 14px;
+            color: #4b5563;
+        }
+
+        .game-rules {
+            background: rgba(255,255,255,0.9);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+            color: #1a1a1a;
+        }
+
+        .game-rules h4 {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            color: #1a1a1a;
+        }
+
+        .game-rules p {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .footer {
             text-align: center;
             padding: 20px;
@@ -189,6 +376,37 @@
                 margin-bottom: 15px;
             }
 
+            .gradient-header {
+                padding: 20px 15px;
+            }
+
+            .gradient-header h1 {
+                font-size: 24px;
+            }
+
+            .gradient-header p {
+                font-size: 14px;
+            }
+
+            .game-container {
+                padding: 20px;
+            }
+
+            .difficulty-selector {
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+
+            .diff-btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+
+            .action-btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+
             .footer {
                 padding: 15px;
                 font-size: 12px;
@@ -220,6 +438,28 @@
             }
 
             .game-card p {
+                font-size: 13px;
+            }
+
+            .gradient-header {
+                padding: 15px 10px;
+            }
+
+            .gradient-header h1 {
+                font-size: 20px;
+            }
+
+            .game-container {
+                padding: 15px;
+            }
+
+            .diff-btn {
+                padding: 8px 15px;
+                font-size: 13px;
+            }
+
+            .action-btn {
+                padding: 8px 15px;
                 font-size: 13px;
             }
         }
