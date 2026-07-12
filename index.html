@@ -103,53 +103,28 @@
 
         .iframe-page {
             position: fixed;
-            top: 60px;
+            top: 0;
             left: 0;
             right: 0;
             bottom: 0;
             background: #fff;
             z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+        }
+
+        .iframe-page .back-btn {
+            flex-shrink: 0;
+            margin-bottom: 10px;
         }
 
         .iframe-page iframe {
             display: block;
             width: 100%;
-            height: 100%;
+            flex: 1;
             border: none;
-        }
-
-        .iframe-back-btn {
-            position: fixed !important;
-            top: 15px !important;
-            left: 15px !important;
-            z-index: 1001 !important;
-            display: inline-flex !important;
-            align-items: center !important;
-            gap: 6px !important;
-            background: #fff !important;
-            color: #7c3aed !important;
-            border: 2px solid #ede9fe !important;
-            padding: 12px 22px !important;
-            border-radius: 999px !important;
-            font-size: 16px !important;
-            font-weight: 600 !important;
-            cursor: pointer !important;
-            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.12) !important;
-            -webkit-user-select: none !important;
-            user-select: none !important;
-            touch-action: manipulation !important;
-            transition: all 0.2s ease !important;
-            margin-bottom: 0 !important;
-        }
-
-        .iframe-back-btn:hover {
-            transform: translateY(-2px) !important;
-            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.2) !important;
-        }
-
-        .iframe-back-btn:active {
-            transform: translateY(1px) !important;
-            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15) !important;
+            border-radius: 12px;
         }
 
         .back-btn {
@@ -2532,22 +2507,22 @@
 
         <!-- 英语单词页面（iframe 内嵌） -->
         <div id="dcPage" class="game-page iframe-page">
+            <button class="back-btn" onclick="goHome()">← 返回首页</button>
             <iframe src="dc.html"></iframe>
         </div>
 
         <!-- 奥数页面（iframe 内嵌） -->
         <div id="aoshuPage" class="game-page iframe-page">
+            <button class="back-btn" onclick="goHome()">← 返回首页</button>
             <iframe src="aoshu.html"></iframe>
         </div>
 
         <!-- 解题思路页面（iframe 内嵌） -->
         <div id="siluPage" class="game-page iframe-page">
+            <button class="back-btn" onclick="goHome()">← 返回首页</button>
             <iframe src="silu.html"></iframe>
         </div>
     </div>
-
-    <!-- iframe 返回按钮（独立于页面，固定在视口） -->
-    <button id="iframeBackBtn" class="back-btn iframe-back-btn" onclick="goHome()" style="display: none;">← 返回首页</button>
 
     <script>
         // ========== 通用函数 ==========
@@ -2564,7 +2539,6 @@
             document.getElementById('dcPage').classList.remove('active');
             document.getElementById('aoshuPage').classList.remove('active');
             document.getElementById('siluPage').classList.remove('active');
-            document.getElementById('iframeBackBtn').style.display = 'none';
 
             if (game === 'sudoku') {
                 document.getElementById('sudokuPage').classList.add('active');
@@ -2580,13 +2554,10 @@
                 initSchulte();
             } else if (game === 'dc') {
                 document.getElementById('dcPage').classList.add('active');
-                document.getElementById('iframeBackBtn').style.display = 'inline-flex';
             } else if (game === 'aoshu') {
                 document.getElementById('aoshuPage').classList.add('active');
-                document.getElementById('iframeBackBtn').style.display = 'inline-flex';
             } else if (game === 'silu') {
                 document.getElementById('siluPage').classList.add('active');
-                document.getElementById('iframeBackBtn').style.display = 'inline-flex';
             }
             currentGame = game;
         }
@@ -2600,7 +2571,6 @@
             document.getElementById('dcPage').classList.remove('active');
             document.getElementById('aoshuPage').classList.remove('active');
             document.getElementById('siluPage').classList.remove('active');
-            document.getElementById('iframeBackBtn').style.display = 'none';
             stopTimer();
             // 清除舒尔特方格计时器
             if (typeof stopSchulteClock === 'function') {
