@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#667eea">
+    <link rel="icon" type="image/webp" href="xue-64.webp">
+    <link rel="apple-touch-icon" href="xue-192.webp">
+    <link rel="manifest" href="manifest-math.json">
+    <title>快乐学习</title>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Baloo+2:wght@400;500;600;700;800&family=Comic+Neue:wght@400;700&family=Quicksand:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 15px;
+            font-size: 16px;
+            -webkit-text-size-adjust: 100%;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .iframe-back-btn {
+            position: fixed !important;
+            top: 15px !important;
+            left: 15px !important;
+            z-index: 1001 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: #000 !important;
+            border: none !important;
+            padding: 12px 22px !important;
+            border-radius: 28px !important;
+            font-size: 16px !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            box-shadow: 0 6px 16px rgba(102,126,234,0.4) !important;
+            -webkit-user-select: none !important;
+            user-select: none !important;
+            touch-action: manipulation !important;
+            transition: all 0.2s ease !important;
+            margin-bottom: 0 !important;
+        }
+
+        .iframe-back-btn:active {
+            transform: translateY(2px) !important;
+            box-shadow: 0 3px 8px rgba(102,126,234,0.3) !important;
+        }
+
+        #home h1 {
+            text-align: center;
+            color: white;
+            font-size: 36px;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .game-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+        }
+
+        .game-card:active {
+            transform: translateY(-2px);
+        }
+
+        .game-icon {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        .game-card h2 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .game-card p {
+            color: #666;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="home" class="page active">
+            <h1>🎯 趣味学习</h1>
+            <div class="game-cards">
+                <div class="game-card" onclick="app.navigate('sudoku')">
+                    <div class="game-icon">📊</div>
+                    <h2>数独</h2>
+                    <p>锻炼逻辑思维的经典数字游戏</p>
+                </div>
+                <div class="game-card" onclick="app.navigate('magic')">
+                    <div class="game-icon">✨</div>
+                    <h2>幻方</h2>
+                    <p>每行每列对角线和相等的神奇方格</p>
+                </div>
+                <div class="game-card" onclick="app.navigate('arithmetic')">
+                    <div class="game-icon">🧮</div>
+                    <h2>四则运算</h2>
+                    <p>练习加减乘除，提升运算能力</p>
+                </div>
+                <div class="game-card" onclick="app.navigate('schulte')">
+                    <div class="game-icon">🎯</div>
+                    <h2>舒尔特方格</h2>
+                    <p>练习注意力，提升专注力</p>
+                </div>
+                <div class="game-card" onclick="app.navigate('aoshu')">
+                    <div class="game-icon">🧮</div>
+                    <h2>奥数</h2>
+                    <p>拓展思维，挑战奥数难题</p>
+                </div>
+                <div class="game-card" onclick="app.navigate('dc')">
+                    <div class="game-icon">📚</div>
+                    <h2>快乐学英语</h2>
+                    <p>趣味英语学习乐园</p>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 30px;">
+                <div style="display: inline-flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;" onclick="window.open('https://shitou-git.github.io/chat/index', '_blank')"><img src="Z.webp" style="width: 64px; height: 64px; border-radius: 10px;"><span style="font-size: 14px; font-weight: 600;">灵知</span></div>
+            </div>
+            <div style="text-align: center; margin-top: 20px; color: rgba(255,255,255,0.6); font-size: 12px;">v1.2.0</div>
+        </div>
+
+        <div id="sudoku" class="page">
+            <button class="back-btn" onclick="app.navigate('home')">← 返回首页</button>
+            <div id="sudoku-container"></div>
+        </div>
+
+        <div id="magic" class="page">
+            <button class="back-btn" onclick="app.navigate('home')">← 返回首页</button>
+            <div id="magic-container"></div>
+        </div>
+
+        <div id="arithmetic" class="page">
+            <button class="back-btn" onclick="app.navigate('home')">← 返回首页</button>
+            <div id="arithmetic-container"></div>
+        </div>
+
+        <div id="schulte" class="page">
+            <button class="back-btn" onclick="app.navigate('home')">← 返回首页</button>
+            <div id="schulte-container"></div>
+        </div>
+
+        <div id="aoshu" class="page">
+            <button class="back-btn" onclick="app.navigate('home')">← 返回首页</button>
+            <div id="aoshu-container"></div>
+        </div>
+
+        <div id="dc" class="page">
+            <button class="back-btn" onclick="app.navigate('home')">← 返回首页</button>
+            <div id="dc-container"></div>
+        </div>
+
+        <div id="silu" class="page">
+            <button class="back-btn" onclick="app.navigate('aoshu')">← 返回题库</button>
+            <div id="silu-container"></div>
+        </div>
+    </div>
+
+    <button id="iframeBackBtn" class="back-btn iframe-back-btn" onclick="app.navigate('home')" style="display: none;">← 返回首页</button>
+
+    <script type="module">
+        import { app } from './modules/main.js';
+        window.app = app;
+    </script>
+</body>
+</html>
