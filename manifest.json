@@ -2,7 +2,7 @@
   "name": "学习乐园 · 小学一站式学习平台",
   "short_name": "学习乐园",
   "description": "小学一站式学习平台 · 奥数题库、公式速查、数学游戏、英语单词",
-  "start_url": "./math.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#faf5ff",
