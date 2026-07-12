@@ -1,12 +1,12 @@
 {
-  "name": "小学英语学习乐园",
-  "short_name": "英语乐园",
-  "description": "小学生英语单词学习游戏，配对游戏、对话学习、单词本、国际音标",
-  "start_url": "./dc.html",
+  "name": "学习乐园 · 小学一站式学习平台",
+  "short_name": "学习乐园",
+  "description": "小学一站式学习平台 · 奥数题库、公式速查、数学游戏、英语单词",
+  "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#FFF7ED",
-  "theme_color": "#FF9A9E",
+  "background_color": "#faf5ff",
+  "theme_color": "#8b5cf6",
   "lang": "zh-CN",
   "prefer_related_applications": false,
   "icons": [
