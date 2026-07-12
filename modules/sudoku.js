@@ -411,7 +411,8 @@ class Sudoku {
             const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
             const mins = Math.floor(elapsed / 60).toString().padStart(2, '0');
             const secs = (elapsed % 60).toString().padStart(2, '0');
-            document.getElementById('sudokuTimer')?.textContent = `${mins}:${secs}`;
+            const timerEl = document.getElementById('sudokuTimer');
+            if (timerEl) timerEl.textContent = `${mins}:${secs}`;
         }, 1000);
     }
     
@@ -444,7 +445,8 @@ class Sudoku {
             
             document.getElementById('sudokuNewGame')?.addEventListener('click', () => {
                 this.initGame();
-                document.getElementById('sudokuMessage')?.textContent = '';
+                const msgEl = document.getElementById('sudokuMessage');
+                if (msgEl) msgEl.textContent = '';
             });
             
             document.getElementById('sudokuCheck')?.addEventListener('click', () => {

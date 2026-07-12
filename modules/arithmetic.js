@@ -168,7 +168,8 @@ class Arithmetic {
         }
         
         this.currentProblem = { num1, num2, op, answer };
-        document.getElementById('arithExpression')?.textContent = `${num1} ${op} ${num2} = ?`;
+        const exprEl = document.getElementById('arithExpression');
+        if (exprEl) exprEl.textContent = `${num1} ${op} ${num2} = ?`;
     }
     
     input(val) {
@@ -240,6 +241,7 @@ class Arithmetic {
 }
 
 const arithmetic = new Arithmetic();
+window.arithmetic = arithmetic;
 
 export function initArithmetic() {
     arithmetic.generateProblem();

@@ -281,7 +281,8 @@ class SchulteGrid {
             const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
             const mins = Math.floor(elapsed / 60).toString().padStart(2, '0');
             const secs = (elapsed % 60).toString().padStart(2, '0');
-            document.getElementById('schulteTimer')?.textContent = `${mins}:${secs}`;
+            const timerEl = document.getElementById('schulteTimer');
+            if (timerEl) timerEl.textContent = `${mins}:${secs}`;
         }, 1000);
     }
     
@@ -299,7 +300,8 @@ class SchulteGrid {
             const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
             const mins = Math.floor(elapsed / 60).toString().padStart(2, '0');
             const secs = (elapsed % 60).toString().padStart(2, '0');
-            document.getElementById('schulteTimer')?.textContent = `${mins}:${secs}`;
+            const timerEl = document.getElementById('schulteTimer');
+            if (timerEl) timerEl.textContent = `${mins}:${secs}`;
         }, 1000);
         
         document.getElementById('schultePauseBtn')?.removeAttribute('disabled');
@@ -405,7 +407,8 @@ class SchulteGrid {
             document.getElementById('schulteResumeBtn')?.addEventListener('click', () => this.resume());
             document.getElementById('schulteResetBtn')?.addEventListener('click', () => this.reset());
             document.getElementById('schulteOverlayStart')?.addEventListener('click', () => {
-                document.getElementById('schulteOverlay')?.style.display = 'none';
+                const overlayEl = document.getElementById('schulteOverlay');
+                if (overlayEl) overlayEl.style.display = 'none';
                 this.start();
             });
         }, 100);

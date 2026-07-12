@@ -687,6 +687,9 @@ function loadAndRender() {
         });
 }
 
+window.toggleCategoryMenu = toggleCategoryMenu;
+window.selectCategory = selectCategory;
+
 export function initAoshu() {
     injectStyle();
     render();

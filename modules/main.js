@@ -27,7 +27,7 @@ export const app = {
     },
     
     async init() {
-        await Promise.all([
+        const modules = await Promise.all([
             import('./sudoku.js'),
             import('./magic.js'),
             import('./arithmetic.js'),
@@ -36,6 +36,13 @@ export const app = {
             import('./silu.js'),
             import('./dc.js')
         ]);
+        window.initSudoku = modules[0].initSudoku;
+        window.initMagic = modules[1].initMagic;
+        window.initArithmetic = modules[2].initArithmetic;
+        window.initSchulte = modules[3].initSchulte;
+        window.initAoshu = modules[4].initAoshu;
+        window.initSilu = modules[5].initSilu;
+        window.initDc = modules[6].initDc;
     }
 };
 

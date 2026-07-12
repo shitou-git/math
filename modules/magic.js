@@ -400,6 +400,32 @@ class MagicSquare {
         btns.forEach(btn => btn.classList.add('used'));
     }
     
+    checkMagicAnswer() {
+        let hasError = false;
+        let filled = true;
+        
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                if (this.grid[i][j] === 0) {
+                    filled = false;
+                } else if (this.grid[i][j] !== this.solution[i][j]) {
+                    hasError = true;
+                }
+            }
+        }
+        
+        const msg = document.getElementById('magicResult');
+        if (msg) {
+            if (!filled) {
+                msg.innerHTML = '<h3>📝 还有空格未填</h3><p>请填完所有格子再检查</p>';
+            } else if (hasError) {
+                msg.innerHTML = '<h3>❌ 有错误</h3><p>再仔细看看吧！</p>';
+            } else {
+                msg.innerHTML = '<h3>🎉 全部正确！</h3><p>幻和：' + (this.size * (this.size * this.size + 1) / 2) + '</p>';
+            }
+        }
+    }
+    
     bindEvents() {
         setTimeout(() => {
             document.querySelectorAll('.diff-btn').forEach(btn => {
@@ -415,6 +441,7 @@ class MagicSquare {
 }
 
 const magic = new MagicSquare();
+window.magic = magic;
 
 export function initMagic() {
     magic.resetMagicGame();
