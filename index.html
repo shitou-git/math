@@ -514,15 +514,15 @@
         <div id="schultePage" class="game-page"></div>
         <div id="sudokuPage" class="game-page"></div>
 
-        <!-- iframe 页面 -->
+        <!-- iframe 页面（懒加载：data-src 在点击时才赋值给 src） -->
         <div id="dcPage" class="game-page iframe-page">
-            <iframe src="dc.html"></iframe>
+            <iframe data-src="dc.html"></iframe>
         </div>
         <div id="aoshuPage" class="game-page iframe-page">
-            <iframe src="aoshu.html"></iframe>
+            <iframe data-src="aoshu.html"></iframe>
         </div>
         <div id="siluPage" class="game-page iframe-page">
-            <iframe src="silu.html"></iframe>
+            <iframe data-src="silu.html"></iframe>
         </div>
     </div>
 

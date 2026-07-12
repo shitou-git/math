@@ -1,18 +1,23 @@
-// ========== 主入口路由模块 ==========
-import { injectSudokuStyle, renderSudokuHTML, initSudoku } from './sudoku.js';
-import { injectMagicStyle, renderMagicHTML, initMagic, resetMagicGame } from './magic.js';
-import { injectArithmeticStyle, renderArithmeticHTML, initArithmetic, switchArithmeticMode } from './arithmetic.js';
-import { injectSchulteStyle, renderSchulteHTML, initSchulte, stopSchulteClock } from './schulte.js';
+// ========== 主入口路由模块（懒加载版） ==========
+// 只在用户首次进入某游戏时才动态加载对应模块、注入样式、渲染HTML
 
-// ========== 通用状态 ==========
 let currentGame = 'home';
 let timerInterval = null;
 let startTime = 0;
+
+// 各游戏模块的缓存：{ mod, inited }
+const moduleCache = {
+    sudoku: null,
+    magic: null,
+    arithmetic: null,
+    schulte: null,
+};
 
 // ========== 通用计时器函数 ==========
 function startTimer(timerId) {
     stopTimer();
     startTime = Date.now();
+    // 不再更新显示，只在游戏完成时计算用时
     timerInterval = setInterval(() => {}, 1000);
 }
 
@@ -31,48 +36,64 @@ function updateTimer(timerId) {
     if (el) el.textContent = `${minutes}:${seconds}`;
 }
 
-// ========== 注入所有样式 ==========
-function injectAllStyles() {
-    injectSudokuStyle();
-    injectMagicStyle();
-    injectArithmeticStyle();
-    injectSchulteStyle();
-}
-
-// ========== 渲染所有游戏页面 ==========
-function renderAllPages() {
-    document.getElementById('magicPage').innerHTML = renderMagicHTML();
-    document.getElementById('arithmeticPage').innerHTML = renderArithmeticHTML();
-    document.getElementById('schultePage').innerHTML = renderSchulteHTML();
-    document.getElementById('sudokuPage').innerHTML = renderSudokuHTML();
+// ========== 懒加载游戏模块 ==========
+async function ensureGame(game) {
+    if (moduleCache[game]) return moduleCache[game].mod;
+    let mod;
+    if (game === 'sudoku') {
+        mod = await import('./sudoku.js');
+        mod.injectSudokuStyle();
+        document.getElementById('sudokuPage').innerHTML = mod.renderSudokuHTML();
+    } else if (game === 'magic') {
+        mod = await import('./magic.js');
+        mod.injectMagicStyle();
+        document.getElementById('magicPage').innerHTML = mod.renderMagicHTML();
+    } else if (game === 'arithmetic') {
+        mod = await import('./arithmetic.js');
+        mod.injectArithmeticStyle();
+        document.getElementById('arithmeticPage').innerHTML = mod.renderArithmeticHTML();
+    } else if (game === 'schulte') {
+        mod = await import('./schulte.js');
+        mod.injectSchulteStyle();
+        document.getElementById('schultePage').innerHTML = mod.renderSchulteHTML();
+    }
+    moduleCache[game] = { mod, inited: false };
+    return mod;
 }
 
 // ========== 页面导航 ==========
-function showGame(game) {
+async function showGame(game) {
     document.getElementById('homePage').style.display = 'none';
     const pages = ['magicPage', 'arithmeticPage', 'schultePage', 'sudokuPage', 'dcPage', 'aoshuPage', 'siluPage'];
     pages.forEach(id => document.getElementById(id).classList.remove('active'));
 
-    if (game === 'sudoku') {
-        document.getElementById('sudokuPage').classList.add('active');
-        initSudoku();
-    } else if (game === 'magic') {
-        document.getElementById('magicPage').classList.add('active');
-        initMagic();
-    } else if (game === 'arithmetic') {
-        document.getElementById('arithmeticPage').classList.add('active');
-        initArithmetic();
-    } else if (game === 'schulte') {
-        document.getElementById('schultePage').classList.add('active');
-        initSchulte();
-    } else if (game === 'dc') {
-        document.getElementById('dcPage').classList.add('active');
-    } else if (game === 'aoshu') {
-        document.getElementById('aoshuPage').classList.add('active');
-    } else if (game === 'silu') {
-        document.getElementById('siluPage').classList.add('active');
+    // iframe 页面：直接显示，首次点击时才加载 src
+    if (game === 'dc' || game === 'aoshu' || game === 'silu') {
+        const pageEl = document.getElementById(game + 'Page');
+        const iframe = pageEl.querySelector('iframe');
+        if (iframe && !iframe.src) {
+            iframe.src = iframe.dataset.src;
+        }
+        pageEl.classList.add('active');
+        currentGame = game;
+        return;
     }
+
+    // 游戏页面：懒加载模块
+    const pageId = game + 'Page';
+    const pageEl = document.getElementById(pageId);
+    // 先显示页面（即使内容还在加载，用户也能看到反馈）
+    pageEl.classList.add('active');
     currentGame = game;
+
+    const mod = await ensureGame(game);
+    // 防止用户在加载期间已切换到其他页面
+    if (currentGame !== game) return;
+
+    if (game === 'sudoku') mod.initSudoku();
+    else if (game === 'magic') mod.initMagic();
+    else if (game === 'arithmetic') mod.initArithmetic();
+    else if (game === 'schulte') mod.initSchulte();
 }
 
 function goHome() {
@@ -80,7 +101,10 @@ function goHome() {
     const pages = ['magicPage', 'arithmeticPage', 'schultePage', 'sudokuPage', 'dcPage', 'aoshuPage', 'siluPage'];
     pages.forEach(id => document.getElementById(id).classList.remove('active'));
     stopTimer();
-    stopSchulteClock();
+    // 停止舒尔特计时（若已加载）
+    if (moduleCache.schulte && moduleCache.schulte.mod.stopSchulteClock) {
+        moduleCache.schulte.mod.stopSchulteClock();
+    }
     currentGame = 'home';
 }
 
@@ -90,11 +114,3 @@ window.goHome = goHome;
 window.startTimer = startTimer;
 window.stopTimer = stopTimer;
 window.updateTimer = updateTimer;
-
-// ========== 初始化 ==========
-function init() {
-    injectAllStyles();
-    renderAllPages();
-}
-
-init();
