@@ -101,6 +101,14 @@
             text-align: center;
         }
 
+        .iframe-page {
+            padding: 15px;
+        }
+
+        .iframe-page iframe {
+            display: block;
+        }
+
         .back-btn {
             display: inline-flex;
             align-items: center;
@@ -2077,12 +2085,12 @@
                     <h2>舒尔特方格</h2>
                     <p>练习注意力，提升专注力</p>
                 </div>
-                <div class="game-card" onclick="window.open('aoshu.html', '_blank')">
+                <div class="game-card" onclick="showGame('aoshu')">
                     <div class="game-icon">🧮</div>
                     <h2>奥数</h2>
                     <p>拓展思维，挑战奥数难题</p>
                 </div>
-                <div class="game-card" onclick="window.open('dc.html', '_blank')">
+                <div class="game-card" onclick="showGame('dc')">
                     <div class="game-icon">📚</div>
                     <h2>快乐学英语</h2>
                     <p>趣味英语学习乐园</p>
@@ -2449,6 +2457,18 @@
                 </div>
             </div>
         </div>
+
+        <!-- 英语单词页面（iframe 内嵌） -->
+        <div id="dcPage" class="game-page iframe-page">
+            <button class="back-btn" onclick="goHome()">← 返回首页</button>
+            <iframe src="dc.html" frameborder="0" style="width:100%;height:calc(100vh - 100px);border-radius:16px;background:#fff;"></iframe>
+        </div>
+
+        <!-- 奥数页面（iframe 内嵌） -->
+        <div id="aoshuPage" class="game-page iframe-page">
+            <button class="back-btn" onclick="goHome()">← 返回首页</button>
+            <iframe src="aoshu.html" frameborder="0" style="width:100%;height:calc(100vh - 100px);border-radius:16px;background:#fff;"></iframe>
+        </div>
     </div>
 
     <script>
@@ -2463,6 +2483,8 @@
             document.getElementById('arithmeticPage').classList.remove('active');
             document.getElementById('schultePage').classList.remove('active');
             document.getElementById('sudokuPage').classList.remove('active');
+            document.getElementById('dcPage').classList.remove('active');
+            document.getElementById('aoshuPage').classList.remove('active');
 
             if (game === 'sudoku') {
                 document.getElementById('sudokuPage').classList.add('active');
@@ -2476,6 +2498,10 @@
             } else if (game === 'schulte') {
                 document.getElementById('schultePage').classList.add('active');
                 initSchulte();
+            } else if (game === 'dc') {
+                document.getElementById('dcPage').classList.add('active');
+            } else if (game === 'aoshu') {
+                document.getElementById('aoshuPage').classList.add('active');
             }
             currentGame = game;
         }
@@ -2486,6 +2512,8 @@
             document.getElementById('arithmeticPage').classList.remove('active');
             document.getElementById('schultePage').classList.remove('active');
             document.getElementById('sudokuPage').classList.remove('active');
+            document.getElementById('dcPage').classList.remove('active');
+            document.getElementById('aoshuPage').classList.remove('active');
             stopTimer();
             // 清除舒尔特方格计时器
             if (typeof stopSchulteClock === 'function') {
