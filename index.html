@@ -110,25 +110,17 @@
             background: #fff;
             z-index: 1000;
             display: none;
-            flex-direction: column;
-            padding: 15px;
         }
 
         .iframe-page.active {
-            display: flex;
-        }
-
-        .iframe-page .back-btn {
-            flex-shrink: 0;
-            margin-bottom: 10px;
+            display: block;
         }
 
         .iframe-page iframe {
             display: block;
             width: 100%;
-            flex: 1;
+            height: 100%;
             border: none;
-            border-radius: 12px;
         }
 
         .back-btn {
@@ -2506,7 +2498,6 @@
 
         <!-- 英语单词页面（iframe 内嵌） -->
         <div id="dcPage" class="game-page iframe-page">
-            <button class="back-btn" onclick="goHome()">← 返回首页</button>
             <iframe src="dc.html"></iframe>
         </div>
 

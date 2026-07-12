@@ -283,6 +283,14 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
   display:flex;justify-content:center;gap:12px;margin-bottom:20px;
   flex-wrap:nowrap;
 }
+.home-back-btn{
+  font-family:inherit;cursor:pointer;border:none;
+  background:var(--card);border-radius:999px;padding:12px 20px;
+  box-shadow:0 4px 0 #e6d8c6;display:flex;align-items:center;gap:6px;
+  color:var(--primary);font-size:16px;font-weight:600;
+  transition:transform .12s;flex-shrink:0;
+}
+.home-back-btn:active{transform:translateY(3px);box-shadow:0 1px 0 #e6d8c6}
 .stat-card{
   background:var(--card);border-radius:999px;padding:12px 20px;
   box-shadow:0 4px 0 #e6d8c6;display:flex;align-items:center;gap:8px;
@@ -634,6 +642,7 @@ body.reduce-motion *{animation-duration:.01ms !important;animation-iteration-cou
     </div>
     <!-- 积分栏 -->
     <div class="home-stats-bar">
+      <button class="back-btn home-back-btn" onclick="location.href='index.html'">← 返回首页</button>
       <div class="stat-card">
         <span class="ico">⭐</span>
         <span class="val" id="home-stars">0</span>
