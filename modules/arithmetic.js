@@ -745,6 +745,29 @@ export function renderArithmeticHTML() {
     return ARITHMETIC_HTML;
 }
 
+// ===================== 乘法口诀表生成 =====================
+function generateMultiplicationTable() {
+    const table = document.getElementById('multiplicationTable');
+    if (!table) return;
+
+    let html = '<thead><tr><th>×</th>';
+    for (let i = 1; i <= 19; i++) {
+        html += `<th>${i}</th>`;
+    }
+    html += '</tr></thead><tbody>';
+
+    for (let row = 1; row <= 19; row++) {
+        html += `<tr><td>${row}</td>`;
+        for (let col = 1; col <= 19; col++) {
+            html += `<td>${row * col}</td>`;
+        }
+        html += '</tr>';
+    }
+    html += '</tbody>';
+
+    table.innerHTML = html;
+}
+
 // ===================== 初始化 =====================
 let arithmeticListenersSetup = false;
 export function initArithmetic() {
@@ -758,6 +781,8 @@ export function initArithmetic() {
     renderCounter('multdiv');
     // 默认进入加减法模式
     switchArithmeticMode('addsub');
+    // 生成乘法口诀表
+    generateMultiplicationTable();
 }
 
 // ===================== 挂载到 window（供 onclick 调用）=====================
@@ -779,6 +804,127 @@ if (typeof window !== 'undefined') {
 
 // ===================== CSS 文本 =====================
 const ARITHMETIC_CSS = `
+        /* 四则运算数字键盘样式 */
+        .magic-num-pad {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .num-btn {
+            width: 70px;
+            height: 70px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 12px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        .num-btn:hover {
+            border-color: #667eea;
+            background: #f0f5ff;
+        }
+
+        .num-btn:active {
+            background: #e0e8ff;
+            border-color: #667eea;
+            transform: translateY(1px);
+        }
+
+        .clear-btn {
+            background: #fee2e2;
+            border-color: #fecaca;
+            color: #dc2626;
+        }
+
+        .clear-btn:hover {
+            background: #fecaca;
+            border-color: #f87171;
+        }
+
+        .clear-btn:active {
+            background: #fecaca;
+            transform: translateY(1px);
+        }
+
+        /* 乘法口诀表样式 */
+        .multiplication-table-wrapper {
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 500px;
+            padding: 10px;
+            background: #faf5ff;
+            border-radius: 12px;
+        }
+
+        .multiplication-table {
+            border-collapse: collapse;
+            margin: 0 auto;
+            font-size: 12px;
+        }
+
+        .multiplication-table th,
+        .multiplication-table td {
+            width: 45px;
+            height: 35px;
+            text-align: center;
+            vertical-align: middle;
+            border: 1px solid #e2e8f0;
+            font-weight: 500;
+        }
+
+        .multiplication-table th {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .multiplication-table td:first-child {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            position: sticky;
+            left: 0;
+            z-index: 1;
+        }
+
+        .multiplication-table th:first-child {
+            background: #7c3aed;
+            font-size: 16px;
+        }
+
+        .multiplication-table td {
+            background: white;
+            color: #333;
+        }
+
+        .multiplication-table td:nth-child(odd):not(:first-child) {
+            background: #faf5ff;
+        }
+
+        .multiplication-table tr:nth-child(odd) td:not(:first-child) {
+            background: #faf5ff;
+        }
+
+        .multiplication-table td:hover:not(:first-child) {
+            background: #ede9fe;
+            color: #7c3aed;
+            font-weight: 600;
+        }
+
         /* 24点游戏样式 */
         .point-24-numbers {
             display: flex;
@@ -1062,5 +1208,14 @@ const ARITHMETIC_HTML = `
                     </div>
                 </div>
             </div>
+            </div>
+
+            <!-- 乘法口诀表区块 -->
+            <div class="game-container" id="multiplicationTableSection">
+                <h3 style="text-align: center; color: #7c3aed; margin-bottom: 20px; font-size: 24px;">📐 19×19乘法口诀表</h3>
+                <div class="multiplication-table-wrapper">
+                    <table class="multiplication-table" id="multiplicationTable">
+                    </table>
+                </div>
             </div>
 `;
