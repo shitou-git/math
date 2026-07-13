@@ -427,53 +427,67 @@
             gap: 10px;
             margin: 20px 0;
             flex-wrap: wrap;
+            padding: 10px;
         }
 
         .num-btn {
-            width: 50px;
-            height: 50px;
-            border: 2px solid #e2e8f0;
+            width: 60px;
+            height: 60px;
+            border: 2px solid #667eea;
             background: white;
-            border-radius: 10px;
-            font-size: 22px;
+            border-radius: 15px;
+            font-size: 28px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.2s ease;
             -webkit-user-select: none;
             user-select: none;
             touch-action: manipulation;
+            color: #333;
+            box-shadow: 0 4px 6px rgba(102, 126, 234, 0.1);
         }
 
         .num-btn:hover {
-            border-color: #667eea;
-            background: #f0f5ff;
+            border-color: #764ba2;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(102, 126, 234, 0.3);
         }
 
         .num-btn:active {
-            background: #e0e8ff;
-            border-color: #667eea;
-            transform: translateY(1px);
+            background: linear-gradient(135deg, #5a6fd6 0%, #6b449a 100%);
+            border-color: #764ba2;
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
         }
 
         .num-btn.operator {
-            font-size: 26px;
+            font-size: 28px;
             color: #667eea;
         }
 
+        .num-btn.operator:hover,
+        .num-btn.operator:active {
+            color: white;
+        }
+
         .clear-btn {
-            background: #fee2e2;
-            border-color: #fecaca;
+            background: #fff5f5;
+            border-color: #fca5a5;
             color: #dc2626;
         }
 
         .clear-btn:hover {
-            background: #fecaca;
-            border-color: #f87171;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border-color: #dc2626;
+            color: white;
         }
 
         .clear-btn:active {
-            background: #fecaca;
-            transform: translateY(1px);
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            border-color: #dc2626;
+            color: white;
         }
 
         /* 24点游戏样式 */
