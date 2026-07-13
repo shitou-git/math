@@ -745,20 +745,37 @@ export function renderArithmeticHTML() {
     return ARITHMETIC_HTML;
 }
 
-// ===================== 乘法口诀表生成 =====================
-function generateMultiplicationTable() {
-    const table = document.getElementById('multiplicationTable');
+// ===================== 九九乘法表生成 =====================
+function generateNineNineTable() {
+    const container = document.getElementById('nineNineTable');
+    if (!container) return;
+
+    let html = '';
+    for (let i = 1; i <= 9; i++) {
+        html += `<div class="nine-nine-group">`;
+        html += `<div class="nine-nine-group-header nine-nine-color-${i}">${i}</div>`;
+        for (let j = i; j <= 9; j++) {
+            html += `<div class="nine-nine-item nine-nine-bg-${i}">${i}×${j}=${i*j}</div>`;
+        }
+        html += `</div>`;
+    }
+    container.innerHTML = html;
+}
+
+// ===================== 10-19扩展乘法表生成 =====================
+function generateExtendedTable() {
+    const table = document.getElementById('extendedTable');
     if (!table) return;
 
     let html = '<thead><tr><th>×</th>';
-    for (let i = 1; i <= 19; i++) {
+    for (let i = 10; i <= 19; i++) {
         html += `<th>${i}</th>`;
     }
     html += '</tr></thead><tbody>';
 
-    for (let row = 1; row <= 19; row++) {
+    for (let row = 10; row <= 19; row++) {
         html += `<tr><td>${row}</td>`;
-        for (let col = 1; col <= 19; col++) {
+        for (let col = 10; col <= 19; col++) {
             html += `<td>${row * col}</td>`;
         }
         html += '</tr>';
@@ -781,8 +798,9 @@ export function initArithmetic() {
     renderCounter('multdiv');
     // 默认进入加减法模式
     switchArithmeticMode('addsub');
-    // 生成乘法口诀表
-    generateMultiplicationTable();
+    // 生成九九乘法表和扩展乘法表
+    generateNineNineTable();
+    generateExtendedTable();
 }
 
 // ===================== 挂载到 window（供 onclick 调用）=====================
@@ -855,34 +873,117 @@ const ARITHMETIC_CSS = `
             transform: translateY(1px);
         }
 
-        /* 乘法口诀表样式 */
-        .multiplication-table-wrapper {
-            overflow-x: auto;
-            overflow-y: auto;
-            max-height: 500px;
-            padding: 10px;
+        /* 九九乘法表样式 - 彩色阶梯 */
+        .nine-nine-table-wrapper {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 15px;
             background: #faf5ff;
             border-radius: 12px;
         }
 
-        .multiplication-table {
+        .nine-nine-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: white;
+            border-radius: 10px;
+            padding: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            min-width: 60px;
+        }
+
+        .nine-nine-group-header {
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            position: relative;
+        }
+
+        .nine-nine-group-header::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 50%;
+            top: 5px;
+            right: 5px;
+        }
+
+        .nine-nine-item {
+            font-size: 12px;
+            padding: 4px 8px;
+            margin: 2px 0;
+            border-radius: 6px;
+            text-align: center;
+            min-width: 50px;
+            font-weight: 500;
+        }
+
+        .nine-nine-item:hover {
+            transform: scale(1.1);
+            z-index: 10;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        .nine-nine-color-1 { background: linear-gradient(135deg, #10b981, #059669); }
+        .nine-nine-color-2 { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .nine-nine-color-3 { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .nine-nine-color-4 { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .nine-nine-color-5 { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .nine-nine-color-6 { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+        .nine-nine-color-7 { background: linear-gradient(135deg, #84cc16, #65a30d); }
+        .nine-nine-color-8 { background: linear-gradient(135deg, #f472b6, #ec4899); }
+        .nine-nine-color-9 { background: linear-gradient(135deg, #6b7280, #4b5563); }
+
+        .nine-nine-bg-1 { background: rgba(16, 185, 129, 0.1); color: #059669; }
+        .nine-nine-bg-2 { background: rgba(59, 130, 246, 0.1); color: #2563eb; }
+        .nine-nine-bg-3 { background: rgba(245, 158, 11, 0.1); color: #d97706; }
+        .nine-nine-bg-4 { background: rgba(139, 92, 246, 0.1); color: #7c3aed; }
+        .nine-nine-bg-5 { background: rgba(239, 68, 68, 0.1); color: #dc2626; }
+        .nine-nine-bg-6 { background: rgba(6, 182, 212, 0.1); color: #0891b2; }
+        .nine-nine-bg-7 { background: rgba(132, 204, 22, 0.1); color: #65a30d; }
+        .nine-nine-bg-8 { background: rgba(244, 114, 182, 0.1); color: #ec4899; }
+        .nine-nine-bg-9 { background: rgba(107, 114, 128, 0.1); color: #4b5563; }
+
+        /* 10-19扩展乘法表样式 */
+        .extended-table-wrapper {
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 300px;
+            padding: 10px;
+            background: #f0fdf4;
+            border-radius: 12px;
+        }
+
+        .extended-table {
             border-collapse: collapse;
             margin: 0 auto;
             font-size: 12px;
         }
 
-        .multiplication-table th,
-        .multiplication-table td {
-            width: 45px;
-            height: 35px;
+        .extended-table th,
+        .extended-table td {
+            width: 50px;
+            height: 38px;
             text-align: center;
             vertical-align: middle;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #dcfce7;
             font-weight: 500;
         }
 
-        .multiplication-table th {
-            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+        .extended-table th {
+            background: linear-gradient(135deg, #10b981, #059669);
             color: white;
             font-weight: 600;
             font-size: 14px;
@@ -891,8 +992,8 @@ const ARITHMETIC_CSS = `
             z-index: 1;
         }
 
-        .multiplication-table td:first-child {
-            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+        .extended-table td:first-child {
+            background: linear-gradient(135deg, #10b981, #059669);
             color: white;
             font-weight: 600;
             font-size: 14px;
@@ -901,27 +1002,27 @@ const ARITHMETIC_CSS = `
             z-index: 1;
         }
 
-        .multiplication-table th:first-child {
-            background: #7c3aed;
+        .extended-table th:first-child {
+            background: #047857;
             font-size: 16px;
         }
 
-        .multiplication-table td {
+        .extended-table td {
             background: white;
             color: #333;
         }
 
-        .multiplication-table td:nth-child(odd):not(:first-child) {
-            background: #faf5ff;
+        .extended-table td:nth-child(even):not(:first-child) {
+            background: #f0fdf4;
         }
 
-        .multiplication-table tr:nth-child(odd) td:not(:first-child) {
-            background: #faf5ff;
+        .extended-table tr:nth-child(even) td:not(:first-child) {
+            background: #f0fdf4;
         }
 
-        .multiplication-table td:hover:not(:first-child) {
-            background: #ede9fe;
-            color: #7c3aed;
+        .extended-table td:hover:not(:first-child) {
+            background: #dcfce7;
+            color: #059669;
             font-weight: 600;
         }
 
@@ -1210,11 +1311,20 @@ const ARITHMETIC_HTML = `
             </div>
             </div>
 
-            <!-- 乘法口诀表区块 -->
+            <!-- 九九乘法表区块 -->
             <div class="game-container" id="multiplicationTableSection">
-                <h3 style="text-align: center; color: #7c3aed; margin-bottom: 20px; font-size: 24px;">📐 19×19乘法口诀表</h3>
-                <div class="multiplication-table-wrapper">
-                    <table class="multiplication-table" id="multiplicationTable">
+                <h3 style="text-align: center; color: #7c3aed; margin-bottom: 20px; font-size: 24px;">📐 九九乘法口诀表</h3>
+                <div class="nine-nine-table-wrapper">
+                    <div class="nine-nine-table" id="nineNineTable">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 10-19扩展乘法表区块 -->
+            <div class="game-container" id="extendedTableSection">
+                <h3 style="text-align: center; color: #7c3aed; margin-bottom: 20px; font-size: 24px;">🔢 10-19扩展乘法口诀表</h3>
+                <div class="extended-table-wrapper">
+                    <table class="extended-table" id="extendedTable">
                     </table>
                 </div>
             </div>
