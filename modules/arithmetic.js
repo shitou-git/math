@@ -754,8 +754,8 @@ function generateNineNineTable() {
     for (let i = 1; i <= 9; i++) {
         html += `<div class="nine-nine-group">`;
         html += `<div class="nine-nine-group-header nine-nine-color-${i}">${i}</div>`;
-        for (let j = 1; j <= i; j++) {
-            html += `<div class="nine-nine-item nine-nine-bg-${i}">${j}×${i}=${j*i}</div>`;
+        for (let j = i; j <= 9; j++) {
+            html += `<div class="nine-nine-item nine-nine-bg-${i}">${i}×${j}=${i*j}</div>`;
         }
         html += `</div>`;
     }
@@ -771,8 +771,8 @@ function generateExtendedTable() {
     for (let i = 10; i <= 19; i++) {
         html += `<div class="extended-group">`;
         html += `<div class="extended-group-header ext-color-${i}">${i}</div>`;
-        for (let j = 10; j <= i; j++) {
-            html += `<div class="extended-item ext-bg-${i}">${j}×${i}=${j*i}</div>`;
+        for (let j = i; j <= 19; j++) {
+            html += `<div class="extended-item ext-bg-${i}">${i}×${j}=${i*j}</div>`;
         }
         html += `</div>`;
     }
@@ -883,6 +883,8 @@ const ARITHMETIC_CSS = `
             flex-direction: column;
             align-items: center;
             gap: 5px;
+            justify-content: flex-end;
+            height: 100%;
         }
 
         .nine-nine-group-header {
@@ -967,6 +969,8 @@ const ARITHMETIC_CSS = `
             flex-direction: column;
             align-items: center;
             gap: 4px;
+            justify-content: flex-end;
+            height: 100%;
         }
 
         .extended-group-header {
