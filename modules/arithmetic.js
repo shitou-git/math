@@ -869,22 +869,25 @@ const ARITHMETIC_CSS = `
 
         /* 九九乘法表样式 - 彩色阶梯九列 */
         .nine-nine-table-wrapper {
-            display: grid;
-            grid-template-columns: repeat(9, 1fr);
-            gap: 6px;
+            overflow-x: auto;
             padding: 15px;
             background: #faf5ff;
             border-radius: 12px;
-            align-items: start;
+        }
+
+        .nine-nine-table {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 5px;
+            align-items: end;
+            min-width: 500px;
         }
 
         .nine-nine-group {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 5px;
-            justify-content: flex-end;
-            height: 100%;
+            gap: 4px;
         }
 
         .nine-nine-group-header {
@@ -960,7 +963,7 @@ const ARITHMETIC_CSS = `
             display: grid;
             grid-template-columns: repeat(10, 1fr);
             gap: 5px;
-            align-items: start;
+            align-items: end;
             min-width: 800px;
         }
 
