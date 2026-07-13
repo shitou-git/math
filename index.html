@@ -2321,6 +2321,39 @@
                         <p style="margin-left: 15px; color: #666;">例：0.25 = 1/4，0.5 = 1/2，0.75 = 3/4</p>
                     </div>
                 </div>
+                <div class="game-rules" style="margin-top: 20px;">
+                    <h4>📐 19×19乘法口诀表</h4>
+                    <div style="overflow-x: auto; margin-top: 10px;">
+                        <table style="border-collapse: collapse; width: 100%; font-size: 11px; min-width: 600px;">
+                            <thead>
+                                <tr>
+                                    <th style="border: 1px solid #ddd; padding: 3px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: bold; text-align: center; min-width: 35px; position: sticky; left: 0; z-index: 1;">×</th>
+                                    <script>
+                                        for(var i=1; i<=19; i++) {
+                                            document.write('<th style="border: 1px solid #ddd; padding: 3px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: bold; text-align: center; min-width: 35px;">' + i + '</th>');
+                                        }
+                                    </script>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <script>
+                                    for(var i=1; i<=19; i++) {
+                                        document.write('<tr>');
+                                        document.write('<td style="border: 1px solid #ddd; padding: 3px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: bold; text-align: center; position: sticky; left: 0; z-index: 1;">' + i + '</td>');
+                                        for(var j=1; j<=19; j++) {
+                                            var result = i * j;
+                                            var bgColor = (i === j) ? '#f0e68c' : '#ffffff';
+                                            var fontColor = (i === j) ? '#8b4513' : '#333';
+                                            document.write('<td style="border: 1px solid #ddd; padding: 3px; text-align: center; background-color: ' + bgColor + '; color: ' + fontColor + '; font-weight: ' + (i === j ? 'bold' : 'normal') + ';">' + result + '</td>');
+                                        }
+                                        document.write('</tr>');
+                                    }
+                                </script>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p style="font-size: 12px; color: #666; margin-top: 8px; text-align: center;">💡 黄色高亮显示的是平方数</p>
+                </div>
             </div>
             </div>
         </div>
