@@ -754,8 +754,8 @@ function generateNineNineTable() {
     for (let i = 1; i <= 9; i++) {
         html += `<div class="nine-nine-group">`;
         html += `<div class="nine-nine-group-header nine-nine-color-${i}">${i}</div>`;
-        for (let j = i; j <= 9; j++) {
-            html += `<div class="nine-nine-item nine-nine-bg-${i}">${i}×${j}=${i*j}</div>`;
+        for (let j = 1; j <= i; j++) {
+            html += `<div class="nine-nine-item nine-nine-bg-${i}">${j}×${i}=${j*i}</div>`;
         }
         html += `</div>`;
     }
@@ -764,25 +764,19 @@ function generateNineNineTable() {
 
 // ===================== 10-19扩展乘法表生成 =====================
 function generateExtendedTable() {
-    const table = document.getElementById('extendedTable');
-    if (!table) return;
+    const container = document.getElementById('extendedTable');
+    if (!container) return;
 
-    let html = '<thead><tr><th>×</th>';
+    let html = '';
     for (let i = 10; i <= 19; i++) {
-        html += `<th>${i}</th>`;
-    }
-    html += '</tr></thead><tbody>';
-
-    for (let row = 10; row <= 19; row++) {
-        html += `<tr><td>${row}</td>`;
-        for (let col = 10; col <= 19; col++) {
-            html += `<td>${row * col}</td>`;
+        html += `<div class="extended-group">`;
+        html += `<div class="extended-group-header ext-color-${i}">${i}</div>`;
+        for (let j = 10; j <= i; j++) {
+            html += `<div class="extended-item ext-bg-${i}">${j}×${i}=${j*i}</div>`;
         }
-        html += '</tr>';
+        html += `</div>`;
     }
-    html += '</tbody>';
-
-    table.innerHTML = html;
+    container.innerHTML = html;
 }
 
 // ===================== 初始化 =====================
@@ -873,65 +867,61 @@ const ARITHMETIC_CSS = `
             transform: translateY(1px);
         }
 
-        /* 九九乘法表样式 - 彩色阶梯 */
+        /* 九九乘法表样式 - 彩色阶梯九列 */
         .nine-nine-table-wrapper {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 8px;
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 6px;
             padding: 15px;
             background: #faf5ff;
             border-radius: 12px;
+            align-items: start;
         }
 
         .nine-nine-group {
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: white;
-            border-radius: 10px;
-            padding: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-            min-width: 60px;
+            gap: 5px;
         }
 
         .nine-nine-group-header {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: bold;
             color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+            width: 100%;
+            height: 44px;
+            border-radius: 10px 10px 4px 4px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 8px;
             position: relative;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .nine-nine-group-header::after {
             content: '';
             position: absolute;
-            width: 16px;
-            height: 16px;
-            background: rgba(255,255,255,0.4);
+            width: 18px;
+            height: 18px;
+            background: rgba(255,255,255,0.45);
             border-radius: 50%;
-            top: 5px;
-            right: 5px;
+            top: 6px;
+            right: 8px;
         }
 
         .nine-nine-item {
-            font-size: 12px;
-            padding: 4px 8px;
-            margin: 2px 0;
+            font-size: 11px;
+            padding: 5px 4px;
             border-radius: 6px;
             text-align: center;
-            min-width: 50px;
+            width: 100%;
             font-weight: 500;
+            box-sizing: border-box;
         }
 
         .nine-nine-item:hover {
-            transform: scale(1.1);
+            transform: scale(1.08);
             z-index: 10;
             box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
@@ -946,85 +936,101 @@ const ARITHMETIC_CSS = `
         .nine-nine-color-8 { background: linear-gradient(135deg, #f472b6, #ec4899); }
         .nine-nine-color-9 { background: linear-gradient(135deg, #6b7280, #4b5563); }
 
-        .nine-nine-bg-1 { background: rgba(16, 185, 129, 0.1); color: #059669; }
-        .nine-nine-bg-2 { background: rgba(59, 130, 246, 0.1); color: #2563eb; }
-        .nine-nine-bg-3 { background: rgba(245, 158, 11, 0.1); color: #d97706; }
-        .nine-nine-bg-4 { background: rgba(139, 92, 246, 0.1); color: #7c3aed; }
-        .nine-nine-bg-5 { background: rgba(239, 68, 68, 0.1); color: #dc2626; }
-        .nine-nine-bg-6 { background: rgba(6, 182, 212, 0.1); color: #0891b2; }
-        .nine-nine-bg-7 { background: rgba(132, 204, 22, 0.1); color: #65a30d; }
-        .nine-nine-bg-8 { background: rgba(244, 114, 182, 0.1); color: #ec4899; }
-        .nine-nine-bg-9 { background: rgba(107, 114, 128, 0.1); color: #4b5563; }
+        .nine-nine-bg-1 { background: rgba(16, 185, 129, 0.12); color: #047857; }
+        .nine-nine-bg-2 { background: rgba(59, 130, 246, 0.12); color: #1d4ed8; }
+        .nine-nine-bg-3 { background: rgba(245, 158, 11, 0.12); color: #b45309; }
+        .nine-nine-bg-4 { background: rgba(139, 92, 246, 0.12); color: #6d28d9; }
+        .nine-nine-bg-5 { background: rgba(239, 68, 68, 0.12); color: #b91c1c; }
+        .nine-nine-bg-6 { background: rgba(6, 182, 212, 0.12); color: #0e7490; }
+        .nine-nine-bg-7 { background: rgba(132, 204, 22, 0.12); color: #4d7c0f; }
+        .nine-nine-bg-8 { background: rgba(244, 114, 182, 0.12); color: #be185d; }
+        .nine-nine-bg-9 { background: rgba(107, 114, 128, 0.12); color: #374151; }
 
-        /* 10-19扩展乘法表样式 */
+        /* 10-19扩展乘法表样式 - 阶梯 */
         .extended-table-wrapper {
             overflow-x: auto;
-            overflow-y: auto;
-            max-height: 300px;
-            padding: 10px;
+            padding: 15px;
             background: #f0fdf4;
             border-radius: 12px;
         }
 
         .extended-table {
-            border-collapse: collapse;
-            margin: 0 auto;
-            font-size: 12px;
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 5px;
+            align-items: start;
+            min-width: 800px;
         }
 
-        .extended-table th,
-        .extended-table td {
-            width: 50px;
-            height: 38px;
+        .extended-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .extended-group-header {
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            width: 100%;
+            height: 40px;
+            border-radius: 8px 8px 4px 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .extended-group-header::after {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: rgba(255,255,255,0.45);
+            border-radius: 50%;
+            top: 5px;
+            right: 6px;
+        }
+
+        .extended-item {
+            font-size: 10px;
+            padding: 4px 3px;
+            border-radius: 5px;
             text-align: center;
-            vertical-align: middle;
-            border: 1px solid #dcfce7;
+            width: 100%;
             font-weight: 500;
+            box-sizing: border-box;
         }
 
-        .extended-table th {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            font-weight: 600;
-            font-size: 14px;
-            position: sticky;
-            top: 0;
-            z-index: 1;
+        .extended-item:hover {
+            transform: scale(1.08);
+            z-index: 10;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
 
-        .extended-table td:first-child {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            font-weight: 600;
-            font-size: 14px;
-            position: sticky;
-            left: 0;
-            z-index: 1;
-        }
+        .ext-color-10 { background: linear-gradient(135deg, #059669, #047857); }
+        .ext-color-11 { background: linear-gradient(135deg, #0891b2, #0e7490); }
+        .ext-color-12 { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+        .ext-color-13 { background: linear-gradient(135deg, #7c3aed, #6d28d9); }
+        .ext-color-14 { background: linear-gradient(135deg, #db2777, #be185d); }
+        .ext-color-15 { background: linear-gradient(135deg, #dc2626, #b91c1c); }
+        .ext-color-16 { background: linear-gradient(135deg, #ea580c, #c2410c); }
+        .ext-color-17 { background: linear-gradient(135deg, #ca8a04, #a16207); }
+        .ext-color-18 { background: linear-gradient(135deg, #16a34a, #15803d); }
+        .ext-color-19 { background: linear-gradient(135deg, #475569, #334155); }
 
-        .extended-table th:first-child {
-            background: #047857;
-            font-size: 16px;
-        }
-
-        .extended-table td {
-            background: white;
-            color: #333;
-        }
-
-        .extended-table td:nth-child(even):not(:first-child) {
-            background: #f0fdf4;
-        }
-
-        .extended-table tr:nth-child(even) td:not(:first-child) {
-            background: #f0fdf4;
-        }
-
-        .extended-table td:hover:not(:first-child) {
-            background: #dcfce7;
-            color: #059669;
-            font-weight: 600;
-        }
+        .ext-bg-10 { background: rgba(5, 150, 105, 0.12); color: #047857; }
+        .ext-bg-11 { background: rgba(8, 145, 178, 0.12); color: #0e7490; }
+        .ext-bg-12 { background: rgba(37, 99, 235, 0.12); color: #1d4ed8; }
+        .ext-bg-13 { background: rgba(124, 58, 237, 0.12); color: #6d28d9; }
+        .ext-bg-14 { background: rgba(219, 39, 119, 0.12); color: #be185d; }
+        .ext-bg-15 { background: rgba(220, 38, 38, 0.12); color: #b91c1c; }
+        .ext-bg-16 { background: rgba(234, 88, 12, 0.12); color: #c2410c; }
+        .ext-bg-17 { background: rgba(202, 138, 4, 0.12); color: #a16207; }
+        .ext-bg-18 { background: rgba(22, 163, 74, 0.12); color: #15803d; }
+        .ext-bg-19 { background: rgba(71, 85, 105, 0.12); color: #334155; }
 
         /* 24点游戏样式 */
         .point-24-numbers {
@@ -1322,10 +1328,10 @@ const ARITHMETIC_HTML = `
 
             <!-- 10-19扩展乘法表区块 -->
             <div class="game-container" id="extendedTableSection">
-                <h3 style="text-align: center; color: #7c3aed; margin-bottom: 20px; font-size: 24px;">🔢 10-19扩展乘法口诀表</h3>
+                <h3 style="text-align: center; color: #059669; margin-bottom: 20px; font-size: 24px;">🔢 10-19扩展乘法口诀表</h3>
                 <div class="extended-table-wrapper">
-                    <table class="extended-table" id="extendedTable">
-                    </table>
+                    <div class="extended-table" id="extendedTable">
+                    </div>
                 </div>
             </div>
 `;
