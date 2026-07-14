@@ -1180,10 +1180,11 @@ const ARITHMETIC_HTML = `
                 <h1>🧮 四则运算</h1>
                 <p>练习加减乘除，使用数字按钮输入答案</p>
             </div>
-            <!-- 模式切换：加减法 / 乘除法 -->
+            <!-- 模式切换：加减法 / 乘除法 / 奥数 -->
             <div class="difficulty-selector" id="arithmeticModeSelector" style="margin-bottom: 20px;">
                 <button class="diff-btn active" data-mode="addsub" onclick="switchArithmeticMode('addsub')">➕➖ 加减法</button>
                 <button class="diff-btn" data-mode="multdiv" onclick="switchArithmeticMode('multdiv')">✖️➗ 乘除法</button>
+                <button class="diff-btn" data-mode="aoshu" onclick="window.showGame('aoshu')" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">🧠 奥数</button>
             </div>
             <!-- 加减法区块 -->
             <div id="addsubSection">
