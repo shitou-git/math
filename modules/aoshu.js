@@ -547,7 +547,7 @@ const AOSHU_CSS = `
 `;
 
 const AOSHU_HTML = `
-<button class="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})"><span>↑</span><span>顶</span><span>部</span></button>
+<button class="back-to-top" onclick="document.getElementById('aoshuPage').scrollTo({top:0,behavior:'smooth'})"><span>↑</span><span>顶</span><span>部</span></button>
 <button class="random-btn" onclick="jumpToRandom()"><span>🎲</span><span>随</span><span>机</span></button>
 <div class="container">
 
@@ -1072,14 +1072,14 @@ export function initAoshu() {
                 document.querySelectorAll("#aoshuPage .level-section").forEach(s => s.classList.remove("active"));
                 tab.classList.add("active");
                 document.getElementById("section-" + tab.dataset.level).classList.add("active");
-                window.scrollTo({ top: 0, behavior: "smooth" });
+                document.getElementById('aoshuPage').scrollTo({ top: 0, behavior: "smooth" });
             });
         });
 
         /* 每次打开/刷新自动回到顶部（关闭浏览器的滚动位置恢复） */
         if ("scrollRestoration" in history) history.scrollRestoration = "manual";
         window.addEventListener("beforeunload", () => { window.scrollTo(0, 0); });
-        window.addEventListener("load", () => { window.scrollTo(0, 0); });
+        window.addEventListener("load", () => { document.getElementById('aoshuPage').scrollTo(0, 0); });
     }
 
     // 只加载一次题库

@@ -723,7 +723,7 @@ function setupTopBtn() {
   const btn = document.getElementById("topBtn");
   if (!btn) return;
   btn.addEventListener("click", function() {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    document.getElementById('siluPage').scrollTo({ top: 0, behavior: "smooth" });
   });
 }
 
