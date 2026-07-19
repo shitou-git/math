@@ -73,11 +73,24 @@ jobs:
         run: npm run build
         working-directory: chem-lab
 
-      - name: Move build output to chem/
+      - name: Assemble Pages artifact
         run: |
-          rm -rf chem
-          mkdir -p chem
-          cp -r chem-lab/dist/* chem/
+          mkdir -p _site/chem
+          cp -r chem-lab/dist/* _site/chem/
+          cp index.html _site/ 2>/dev/null || true
+          cp -r modules _site/ 2>/dev/null || true
+          cp -r assets _site/ 2>/dev/null || true
+          cp xue*.png _site/ 2>/dev/null || true
+          cp xue*.webp _site/ 2>/dev/null || true
+          cp Z.webp _site/ 2>/dev/null || true
+          cp formulas.json _site/ 2>/dev/null || true
+          cp problems.json _site/ 2>/dev/null || true
+          cp manifest.json _site/ 2>/dev/null || true
+          cp manifest-math.json _site/ 2>/dev/null || true
+          cp .nojekyll _site/ 2>/dev/null || true
+          cp yin.mp4 _site/ 2>/dev/null || true
+          cp -r ipa-audio _site/ 2>/dev/null || true
+          cp -r data _site/ 2>/dev/null || true
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -85,7 +98,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: chem
+          path: _site
 
       - name: Deploy to GitHub Pages
         id: deployment
