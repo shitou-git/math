@@ -16,40 +16,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: chem-lab
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: chem-lab/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: TypeScript check
-        run: npm run check
-
-      - name: ESLint
-        run: npm run lint
-
-      - name: Run tests
-        run: npm run test
-
-      - name: Build
-        run: npm run build
-
   deploy:
     if: github.ref == 'refs/heads/module'
-    needs: build-and-test
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -58,25 +26,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: chem-lab/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-        working-directory: chem-lab
-
-      - name: Build
-        run: npm run build
-        working-directory: chem-lab
-
       - name: Assemble Pages artifact
         run: |
-          mkdir -p _site/chem
-          cp -r chem-lab/dist/* _site/chem/
+          mkdir -p _site
           cp index.html _site/ 2>/dev/null || true
           cp -r modules _site/ 2>/dev/null || true
           cp -r assets _site/ 2>/dev/null || true
