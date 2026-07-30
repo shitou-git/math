@@ -25,16 +25,32 @@ const SCHULTE_ZONE_COLORS = [
     "rgba(118, 75, 162, 0.18)", "rgba(8, 145, 178, 0.18)", "rgba(234, 88, 12, 0.18)", "rgba(101, 163, 13, 0.18)",
 ];
 
+const STROOP_WORDS = ["红", "黄", "蓝", "绿", "黑", "白", "紫"];
+const STROOP_COLOR_MAP = {
+    "红": "#dc2626",
+    "黄": "#eab308",
+    "蓝": "#2563eb",
+    "绿": "#16a34a",
+    "黑": "#1e293b",
+    "白": "#f8fafc",
+    "紫": "#7c3aed",
+};
+const STROOP_TARGET_LABEL = { color: "按颜色", word: "按文字" };
+const SCHULTE_MODE_LABEL = { number: "数字模式", stroop: "STROOP" };
+
 // ===================== 状态 =====================
 const schulteState = {
     size: 5,
     layout: "grid",
+    mode: "number",
     order: "asc",
+    stroopTarget: "color",
     interf: { color: false, font: false, jitter: false, mirror: false, zoneColor: false, rotation: false },
     running: false,
     paused: false,
     finished: false,
     numbers: [],
+    stroopData: [],
     zoneColors: [],
     count: 0,
     next: 1,
@@ -109,6 +125,11 @@ function bindSchulteSeg(segId, attr, cb) {
 }
 
 function schulteIdleDesc() {
+    if (schulteState.mode === "stroop") {
+        const targetTxt = STROOP_TARGET_LABEL[schulteState.stroopTarget];
+        const orderTxt = schulteState.order === "asc" ? "正序" : "倒序";
+        return `STROOP训练：${targetTxt}${orderTxt}依次点击所有格子（${SCHULTE_LAYOUT_LABEL[schulteState.layout]}布局）。注意：文字颜色与文字含义不一致！`;
+    }
     const start = 1;
     const end = schulteState.count;
     const range = schulteState.order === "asc" ? `${start} 到 ${end}` : `${end} 到 ${start}`;
@@ -287,9 +308,19 @@ function applySchulteLayout() {
     }
     for (let i = 0; i < count; i++) {
         const el = schulteCellEls[i];
-        const num = schulteState.numbers[i];
-        el.dataset.num = num;
-        el.querySelector(".num").textContent = num;
+        let cellValue;
+        if (schulteState.mode === "stroop") {
+            const sd = schulteState.stroopData[i];
+            cellValue = getStroopCellValue(sd);
+            el.dataset.num = cellValue;
+            el.dataset.stroopWord = sd.word;
+            el.dataset.stroopDisplay = sd.displayColor;
+            el.querySelector(".num").textContent = sd.word;
+        } else {
+            cellValue = schulteState.numbers[i];
+            el.dataset.num = cellValue;
+            el.querySelector(".num").textContent = cellValue;
+        }
         const p = coords[i];
         el.style.left = p.x + "%";
         el.style.top = p.y + "%";
@@ -299,13 +330,14 @@ function applySchulteLayout() {
         if (schulteState.layout === "circle") fontSizeRatio = 0.55;
         if (schulteState.layout === "radial") fontSizeRatio = 0.42;
         if (schulteState.layout === "hexagon") fontSizeRatio = 0.33;
+        if (schulteState.mode === "stroop") fontSizeRatio *= 1.3;
         el.style.fontSize = (cell * fontSizeRatio) + "vmin";
         el.style.opacity = "1";
         el.style.pointerEvents = "auto";
         el.classList.remove("correct", "wrong");
         el.classList.remove("ring-0", "ring-1", "ring-2", "ring-3", "ring-4", "ring-5");
         if (p.ring !== undefined) el.classList.add("ring-" + p.ring);
-        styleSchulteCell(el, num, i);
+        styleSchulteCell(el, cellValue, i);
         if (schulteState.layout === "hexagon") {
             el.style.background = "transparent";
             el.style.border = "none";
@@ -333,6 +365,7 @@ function applySchulteLayout() {
     drawSchulteBoardSvg();
     schulteState.count = count;
     board.className = "schulte-board layout-" + schulteState.layout;
+    if (schulteState.mode === "stroop") board.classList.add("mode-stroop");
     if (schulteState.interf.jitter) board.classList.add("jitter");
     const isRingLayout = schulteState.layout === "circle" || schulteState.layout === "radial";
     if (schulteState.interf.rotation && isRingLayout) board.classList.add("rotate");
@@ -530,11 +563,20 @@ function drawSchulteBoardSvg() {
 
 function styleSchulteCell(el, num, i) {
     const span = el.querySelector(".num");
-    if (schulteState.interf.color) span.style.color = SCHULTE_COLORS[num % SCHULTE_COLORS.length];
-    else span.style.color = "";
-    SCHULTE_FONT_CLASSES.forEach((f) => span.classList.remove(f));
-    if (schulteState.interf.font) span.classList.add(SCHULTE_FONT_CLASSES[num % SCHULTE_FONT_CLASSES.length]);
-    el.classList.toggle("mirror", schulteState.interf.mirror && num % 2 === 0);
+    if (schulteState.mode === "stroop") {
+        const sd = schulteState.stroopData[i];
+        if (sd) {
+            span.style.color = STROOP_COLOR_MAP[sd.displayColor];
+        }
+        SCHULTE_FONT_CLASSES.forEach((f) => span.classList.remove(f));
+        el.classList.remove("mirror");
+    } else {
+        if (schulteState.interf.color) span.style.color = SCHULTE_COLORS[num % SCHULTE_COLORS.length];
+        else span.style.color = "";
+        SCHULTE_FONT_CLASSES.forEach((f) => span.classList.remove(f));
+        if (schulteState.interf.font) span.classList.add(SCHULTE_FONT_CLASSES[num % SCHULTE_FONT_CLASSES.length]);
+        el.classList.toggle("mirror", schulteState.interf.mirror && num % 2 === 0);
+    }
     if (schulteState.interf.zoneColor && schulteState.zoneColors && schulteState.zoneColors[i]) {
         el.style.backgroundColor = schulteState.zoneColors[i];
     } else {
@@ -554,10 +596,46 @@ function schulteZoneFor(i) {
 
 function buildSchulteBoard() {
     const { count } = computeSchulteLayout(schulteState.layout, schulteState.size);
-    schulteState.numbers = shuffleArray(Array.from({ length: count }, (_, i) => 1 + i));
+    if (schulteState.mode === "stroop") {
+        schulteState.stroopData = generateStroopData(count);
+    } else {
+        schulteState.numbers = shuffleArray(Array.from({ length: count }, (_, i) => 1 + i));
+    }
     schulteState.zoneColors = Array.from({ length: count }, () => SCHULTE_ZONE_COLORS[Math.floor(Math.random() * SCHULTE_ZONE_COLORS.length)]);
     applySchulteLayout();
     updateSchulteAllInterferences();
+}
+
+function generateStroopData(count) {
+    const data = [];
+    const availableColors = Object.keys(STROOP_COLOR_MAP);
+    // For each cell, pick a word and a display color that DIFFERS from the word's meaning
+    for (let i = 0; i < count; i++) {
+        const wordIdx = Math.floor(Math.random() * availableColors.length);
+        const word = availableColors[wordIdx];
+        // Pick a display color different from the word's meaning
+        let displayIdx;
+        do {
+            displayIdx = Math.floor(Math.random() * availableColors.length);
+        } while (displayIdx === wordIdx);
+        const displayColor = availableColors[displayIdx];
+        data.push({ word, displayColor, wordIdx, displayIdx });
+    }
+    return data;
+}
+
+function getStroopCellValue(stroopItem) {
+    if (schulteState.stroopTarget === "color") {
+        return stroopItem.displayIdx + 1;
+    }
+    return stroopItem.wordIdx + 1;
+}
+
+function getStroopTargetLabel(value) {
+    const idx = (value - 1 + STROOP_WORDS.length) % STROOP_WORDS.length;
+    const word = STROOP_WORDS[idx];
+    const color = STROOP_COLOR_MAP[word];
+    return { word, color };
 }
 
 function updateSchulteAllInterferences() {
@@ -569,31 +647,70 @@ function updateSchulteAllInterferences() {
 }
 
 function updateSchulteProgress() {
-    const total = schulteState.count;
-    let done, t;
-    if (schulteState.order === "asc") {
-        done = schulteState.next - 1;
-        t = schulteState.next;
-        if (schulteState.next > total) t = "✓";
+    if (schulteState.mode === "stroop") {
+        const total = STROOP_WORDS.length;
+        let done, t;
+        if (schulteState.order === "asc") {
+            done = Math.min(schulteState.next - 1, total);
+            t = schulteState.next <= total ? schulteState.next : "✓";
+        } else {
+            done = Math.min(total - schulteState.next + 1, total);
+            t = schulteState.next >= 1 ? schulteState.next : "✓";
+        }
+        const targetEl = document.getElementById("schulteTargetNum");
+        if (t === "✓") {
+            targetEl.textContent = "✓";
+            targetEl.style.color = "#16a34a";
+        } else {
+            const { word, color } = getStroopTargetLabel(t);
+            targetEl.textContent = word;
+            targetEl.style.color = color;
+        }
+        document.getElementById("schulteProgressValue").textContent = `${Math.max(0, done)} / ${total}`;
     } else {
-        done = total - schulteState.next + 1;
-        t = schulteState.next;
-        if (schulteState.next < 1) t = "✓";
+        const total = schulteState.count;
+        let done, t;
+        if (schulteState.order === "asc") {
+            done = schulteState.next - 1;
+            t = schulteState.next;
+            if (schulteState.next > total) t = "✓";
+        } else {
+            done = total - schulteState.next + 1;
+            t = schulteState.next;
+            if (schulteState.next < 1) t = "✓";
+        }
+        document.getElementById("schulteProgressValue").textContent = `${Math.max(0, done)} / ${total}`;
+        const targetEl = document.getElementById("schulteTargetNum");
+        targetEl.textContent = t;
+        targetEl.style.color = "";
     }
-    document.getElementById("schulteProgressValue").textContent = `${Math.max(0, done)} / ${total}`;
-    document.getElementById("schulteTargetNum").textContent = t;
 }
 
 function onSchulteCellClick(num, cell) {
     if (!schulteState.running || schulteState.paused || schulteState.finished) return;
     if (cell.classList.contains("correct")) return;
     if (num === schulteState.next) {
+        let wasLast = false;
+        if (schulteState.mode === "stroop") {
+            wasLast = countStroopRemaining(schulteState.next) <= 1;
+        }
         cell.classList.remove("wrong");
         cell.classList.add("correct");
         cell.style.pointerEvents = "none";
-        schulteState.next += schulteState.step;
+        if (schulteState.mode === "stroop") {
+            if (wasLast) {
+                schulteState.next += schulteState.step;
+            }
+        } else {
+            schulteState.next += schulteState.step;
+        }
         updateSchulteProgress();
-        const finished = schulteState.order === "asc" ? schulteState.next > schulteState.count : schulteState.next < 1;
+        let finished;
+        if (schulteState.mode === "stroop") {
+            finished = schulteState.order === "asc" ? schulteState.next > STROOP_WORDS.length : schulteState.next < 1;
+        } else {
+            finished = schulteState.order === "asc" ? schulteState.next > schulteState.count : schulteState.next < 1;
+        }
         if (finished) finishSchulteGame("success");
     } else {
         cell.classList.remove("wrong");
@@ -601,6 +718,17 @@ function onSchulteCellClick(num, cell) {
         cell.classList.add("wrong");
         setTimeout(() => cell.classList.remove("wrong"), 350);
     }
+}
+
+function countStroopRemaining(value) {
+    let remaining = 0;
+    for (let i = 0; i < schulteCellEls.length; i++) {
+        const el = schulteCellEls[i];
+        if (!el.classList.contains("correct") && parseInt(el.dataset.num, 10) === value) {
+            remaining++;
+        }
+    }
+    return remaining;
 }
 
 function schulteTick(now) {
@@ -636,7 +764,11 @@ function startSchulteGame() {
     schulteState.paused = false;
     schulteState.finished = false;
     schulteState.step = schulteState.order === "asc" ? 1 : -1;
-    schulteState.next = schulteState.order === "asc" ? 1 : schulteState.count;
+    if (schulteState.mode === "stroop") {
+        schulteState.next = schulteState.order === "asc" ? 1 : STROOP_WORDS.length;
+    } else {
+        schulteState.next = schulteState.order === "asc" ? 1 : schulteState.count;
+    }
     schulteState.elapsed = 0;
     document.getElementById("schulteTimeValue").textContent = "0.0s";
     document.getElementById("schulteOverlay").classList.add("hidden");
@@ -689,17 +821,26 @@ function finishSchulteGame(reason) {
     const total = schulteState.count;
     const success = reason === "success";
     const usedMs = schulteState.elapsed;
-    const found = schulteState.order === "asc" ? schulteState.next - 1 : total - schulteState.next + 1;
+    let found;
+    if (schulteState.mode === "stroop") {
+        const totalColors = STROOP_WORDS.length;
+        found = schulteState.order === "asc" ? Math.max(0, schulteState.next - 1) : Math.max(0, totalColors - schulteState.next + 1);
+    } else {
+        found = schulteState.order === "asc" ? schulteState.next - 1 : total - schulteState.next + 1;
+    }
     if (success) {
         document.getElementById("schulteBoard").classList.add("solved");
-        const desc = `你完成了全部 ${total} 个方格，用时 ${fmtSchulteTime(usedMs)}。`;
+        const desc = schulteState.mode === "stroop"
+            ? `你完成了全部 ${STROOP_WORDS.length} 组颜色，用时 ${fmtSchulteTime(usedMs)}。`
+            : `你完成了全部 ${total} 个方格，用时 ${fmtSchulteTime(usedMs)}。`;
         showSchulteOverlay("🎉", "全部完成！", desc, "再来一局", true);
     } else {
-        const desc = `本局未完成。已找到 ${Math.max(0, found)} / ${total} 个数字，用时 ${fmtSchulteTime(usedMs)}。`;
+        const desc = `本局未完成。已找到 ${Math.max(0, found)} / ${schulteState.mode === "stroop" ? STROOP_WORDS.length : total} 个目标，用时 ${fmtSchulteTime(usedMs)}。`;
         showSchulteOverlay("🏁", "已结束本轮", desc, "再来一局", true);
     }
     saveSchulteRecord({
         size: schulteState.size, count: total, layout: schulteState.layout, order: schulteState.order,
+        mode: schulteState.mode, stroopTarget: schulteState.stroopTarget,
         success, timeMs: Math.round(usedMs), found: Math.max(0, found),
         interf: { ...schulteState.interf }, date: Date.now(),
     });
@@ -718,12 +859,15 @@ function refreshSchulteIdle() {
     if (schulteState.running) return;
     schulteState.count = computeSchulteLayout(schulteState.layout, schulteState.size).count;
     schulteState.step = schulteState.order === "asc" ? 1 : -1;
-    schulteState.next = schulteState.order === "asc" ? 1 : schulteState.count;
+    if (schulteState.mode === "stroop") {
+        schulteState.next = schulteState.order === "asc" ? 1 : STROOP_WORDS.length;
+    } else {
+        schulteState.next = schulteState.order === "asc" ? 1 : schulteState.count;
+    }
     document.getElementById("schulteTimeValue").textContent = "0.0s";
     buildSchulteBoard();
     schulteCellEls.forEach((c) => (c.style.pointerEvents = "none"));
     updateSchulteProgress();
-    // 更新覆盖层描述
     if (!document.getElementById("schulteOverlay").classList.contains("hidden")) {
         document.getElementById("schulteOverlayDesc").textContent = schulteIdleDesc();
     }
@@ -767,10 +911,12 @@ function renderSchulteHistory() {
         const resCls = r.success ? "res-ok" : "res-fail";
         const d = new Date(r.date);
         const dateStr = `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+        const modeTxt = r.mode === "stroop" ? "STROOP" : "数字";
+        const targetTxt = r.mode === "stroop" && r.stroopTarget ? (r.stroopTarget === "color" ? "色" : "字") : "";
         li.innerHTML = `
                     <div class="row1">
                         <span><span class="mode-badge">${orderTxt}</span>
-                            &nbsp;${r.size}×${r.size}·${SCHULTE_LAYOUT_LABEL[r.layout] || "方"}${interfTxt(r) ? "·" + interfTxt(r) : ""}</span>
+                            &nbsp;${modeTxt}${targetTxt ? "·" + targetTxt : ""}·${r.size}×${r.size}·${SCHULTE_LAYOUT_LABEL[r.layout] || "方"}${interfTxt(r) ? "·" + interfTxt(r) : ""}</span>
                         <span class="${resCls}">${resTxt}</span>
                     </div>
                     <div class="meta">⏱ ${fmtSchulteTime(r.timeMs)}</div>
@@ -795,6 +941,12 @@ export function renderSchulteHTML() {
 
 // ===================== 初始化 =====================
 export function initSchulte() {
+    bindSchulteSeg("schulteModeSeg", "mode", (v) => {
+        schulteState.mode = v;
+        const stroopField = document.getElementById("schulteStroopTargetField");
+        stroopField.style.display = v === "stroop" ? "block" : "none";
+        refreshSchulteIdle();
+    });
     bindSchulteSeg("schulteSizeSeg", "size", (v) => {
         schulteState.size = parseInt(v, 10);
         refreshSchulteIdle();
@@ -805,6 +957,10 @@ export function initSchulte() {
     });
     bindSchulteSeg("schulteOrderSeg", "order", (v) => {
         schulteState.order = v;
+        refreshSchulteIdle();
+    });
+    bindSchulteSeg("schulteStroopTargetSeg", "target", (v) => {
+        schulteState.stroopTarget = v;
         refreshSchulteIdle();
     });
 
@@ -1125,6 +1281,30 @@ const SCHULTE_CSS = `
         .schulte-cell .num {
             position: relative;
             z-index: 2;
+        }
+
+        /* STROOP 模式样式 */
+        .schulte-board.mode-stroop .schulte-cell {
+            font-family: "PingFang SC", "Microsoft YaHei", "Heiti SC", sans-serif;
+            font-weight: 900;
+        }
+
+        .schulte-board.mode-stroop .schulte-cell .num {
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.15);
+            -webkit-text-stroke: 0.5px rgba(0, 0, 0, 0.12);
+            paint-order: stroke fill;
+        }
+
+        .schulte-board.mode-stroop .schulte-cell.correct .num {
+            opacity: 0.5;
+        }
+
+        .schulte-board.mode-stroop .schulte-cell.wrong {
+            animation: schulte-shake 0.32s;
+        }
+
+        .schulte-board.mode-stroop .schulte-cell:hover {
+            background: rgba(102, 126, 234, 0.12);
         }
 
         /* 抖动干扰 */
@@ -1553,6 +1733,14 @@ const SCHULTE_HTML = `
                     <h3 class="schulte-panel-title">训练设置</h3>
 
                     <div class="schulte-field">
+                        <label class="schulte-field-label">训练模式</label>
+                        <div class="schulte-seg" id="schulteModeSeg">
+                            <button class="schulte-seg-btn active" data-mode="number">数字模式</button>
+                            <button class="schulte-seg-btn" data-mode="stroop">STROOP</button>
+                        </div>
+                    </div>
+
+                    <div class="schulte-field">
                         <label class="schulte-field-label">方格规模</label>
                         <div class="schulte-seg" id="schulteSizeSeg">
                             <button class="schulte-seg-btn active" data-size="5">25 (5×5)</button>
@@ -1576,6 +1764,14 @@ const SCHULTE_HTML = `
                         <div class="schulte-seg" id="schulteOrderSeg">
                             <button class="schulte-seg-btn active" data-order="asc">正序 ↑</button>
                             <button class="schulte-seg-btn" data-order="desc">倒序 ↓</button>
+                        </div>
+                    </div>
+
+                    <div class="schulte-field" id="schulteStroopTargetField" style="display:none;">
+                        <label class="schulte-field-label">STROOP 目标</label>
+                        <div class="schulte-seg" id="schulteStroopTargetSeg">
+                            <button class="schulte-seg-btn active" data-target="color">按颜色</button>
+                            <button class="schulte-seg-btn" data-target="word">按文字</button>
                         </div>
                     </div>
 
