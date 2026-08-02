@@ -14,6 +14,7 @@ const moduleCache = {
     aoshu: null,
     silu: null,
     dc: null,
+    history: null,
 };
 
 // ========== 通用计时器函数 ==========
@@ -69,6 +70,10 @@ async function ensureGame(game) {
     } else if (game === 'dc') {
         mod = await import('./dc.js');
         document.getElementById('dcPage').innerHTML = mod.renderDcHTML();
+    } else if (game === 'history') {
+        mod = await import('./history.js');
+        mod.injectHistoryStyle();
+        document.getElementById('historyPage').innerHTML = mod.renderHistoryHTML();
     }
     moduleCache[game] = { mod, inited: false };
     return mod;
@@ -77,7 +82,7 @@ async function ensureGame(game) {
 // ========== 页面导航 ==========
 async function showGame(game) {
     document.getElementById('homePage').style.display = 'none';
-    const pages = ['magicPage', 'arithmeticPage', 'schultePage', 'sudokuPage', 'dcPage', 'aoshuPage', 'siluPage'];
+    const pages = ['magicPage', 'arithmeticPage', 'schultePage', 'sudokuPage', 'dcPage', 'aoshuPage', 'siluPage', 'historyPage'];
     pages.forEach(id => document.getElementById(id).classList.remove('active'));
 
     // 游戏页面：懒加载模块
@@ -98,11 +103,12 @@ async function showGame(game) {
     else if (game === 'aoshu') mod.initAoshu();
     else if (game === 'silu') await mod.initSilu();
     else if (game === 'dc') mod.initDc();
+    else if (game === 'history') mod.initHistory();
 }
 
 function goHome() {
     document.getElementById('homePage').style.display = 'block';
-    const pages = ['magicPage', 'arithmeticPage', 'schultePage', 'sudokuPage', 'dcPage', 'aoshuPage', 'siluPage'];
+    const pages = ['magicPage', 'arithmeticPage', 'schultePage', 'sudokuPage', 'dcPage', 'aoshuPage', 'siluPage', 'historyPage'];
     pages.forEach(id => document.getElementById(id).classList.remove('active'));
     stopTimer();
     // 停止舒尔特计时（若已加载）
