@@ -429,6 +429,9 @@ export function renderHistoryHTML() {
             <div class="htl-dynasty htl-${side}">
                 <div class="htl-dot" style="background:${d.color}"></div>
                 <div class="htl-line" style="background:${d.color}"></div>
+                <div class="htl-rulers-axis" style="background:${d.color}">
+                    <span class="htl-rulers-text">${d.rulers}</span>
+                </div>
                 <div class="htl-card" style="border-color:${d.color}">
                     <div class="htl-card-header" style="background:${d.color}">
                         <span class="htl-emoji">${d.emoji}</span>
@@ -440,10 +443,6 @@ export function renderHistoryHTML() {
                             <span class="htl-period-val">${d.period}</span>
                         </div>
                         <div class="htl-duration">${d.duration}</div>
-                        <div class="htl-rulers">
-                            <span class="htl-rulers-label">统治者</span>
-                            <span class="htl-rulers-val">${d.rulers}</span>
-                        </div>
                         <div class="htl-summary">${d.summary}</div>
                         <div class="htl-events">
                             ${d.events.map(e => `
@@ -618,6 +617,7 @@ export function injectHistoryStyle() {
             box-shadow: 0 8px 24px rgba(0,0,0,0.08);
             border: 2px solid;
             transition: all 0.3s ease;
+            margin-top: 78px;
         }
 
         .htl-card:hover {
@@ -688,33 +688,35 @@ export function injectHistoryStyle() {
             text-align: right;
         }
 
-        .htl-rulers {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-            margin-bottom: 8px;
-            flex-wrap: wrap;
+        .htl-rulers-axis {
+            position: absolute;
+            top: 56px;
+            width: 260px;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+            z-index: 3;
+            line-height: 1.5;
+            text-align: center;
+            word-break: break-all;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
-        .htl-left .htl-rulers {
-            flex-direction: row-reverse;
+        .htl-left .htl-rulers-axis {
+            right: -130px;
         }
 
-        .htl-rulers-label {
-            font-size: 12px;
-            color: #8b5cf6;
-            background: #ede9fe;
-            padding: 2px 8px;
-            border-radius: 4px;
-            white-space: nowrap;
-            flex-shrink: 0;
+        .htl-right .htl-rulers-axis {
+            left: -130px;
         }
 
-        .htl-rulers-val {
-            font-size: 13px;
-            color: #6366f1;
-            font-weight: 500;
-            line-height: 1.6;
+        .htl-rulers-text {
+            color: #fff;
+            display: block;
         }
 
         .htl-summary {
@@ -830,9 +832,19 @@ export function injectHistoryStyle() {
                 text-align: left;
             }
 
-            .htl-left .htl-rulers {
-                flex-direction: row;
-                justify-content: flex-start;
+            .htl-rulers-axis {
+                position: relative !important;
+                top: auto !important;
+                left: auto !important;
+                right: auto !important;
+                width: calc(100% - 30px) !important;
+                margin: 0 0 10px 30px;
+                text-align: left;
+                -webkit-line-clamp: 2;
+            }
+
+            .htl-card {
+                margin-top: 0;
             }
 
             .htl-hero-title {
@@ -861,8 +873,8 @@ export function injectHistoryStyle() {
                 padding: 12px;
             }
 
-            .htl-rulers-val {
-                font-size: 12px;
+            .htl-rulers-text {
+                font-size: 10px;
             }
         }
     `;
