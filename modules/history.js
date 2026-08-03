@@ -11,7 +11,6 @@ const HISTORY_DYNASTIES = [
         color: "#78716c",
         emoji: "🪨",
         summary: "华夏文明的源头，三皇五帝传说",
-        rulers: "盘古 → 女娲 → 伏羲 → 神农 → 黄帝 → 尧 → 舜",
         events: [
             { date: "前4300—前2500年", title: "大汶口文化", desc: "大汶口文化中晚期，处于父系氏族公社时期" },
             { date: "约前3000年", title: "黄帝战蚩尤", desc: "黄帝于涿鹿之战击败蚩尤，被尊为华夏始祖" },
@@ -27,7 +26,6 @@ const HISTORY_DYNASTIES = [
         color: "#d97706",
         emoji: "👑",
         summary: "中国历史上第一个王朝，开启家天下时代",
-        rulers: "禹 → 启 → 太康 → 中康 → 相 → 少康 → 杼 → 槐 → 芒 → 泄 → 不降 → 扃 → 廑 → 孔甲 → 皋 → 发 → 桀(亡)",
         events: [
             { date: "约前2070年", title: "夏朝建立", desc: "禹将部落联盟首领之位传子启，夏朝建立" },
             { date: "约前2061年", title: "世袭制开始", desc: "启继承父业，家天下取代公天下" },
@@ -45,7 +43,6 @@ const HISTORY_DYNASTIES = [
         color: "#b45309",
         emoji: "🏺",
         summary: "甲骨文、青铜器鼎盛，华夏文字形成",
-        rulers: "成汤 → 太甲 → 沃丁 → 太庚 → 小甲 → 雍己 → 太戊 → 中丁 → 外壬 → 河亶甲 → 祖乙 → 祖辛 → 沃甲 → 祖丁 → 南庚 → 阳甲 → 盘庚 → 小辛 → 小乙 → 武丁 → 祖庚 → 祖甲 → 廪辛 → 康丁 → 武乙 → 文丁 → 帝乙 → 帝辛(纣,亡)",
         events: [
             { date: "约前1600年", title: "商汤灭夏", desc: "成汤于鸣条之战击败夏桀，建立商朝" },
             { date: "约前1580年", title: "伊尹放太甲", desc: "伊尹废太甲，三年后迎回复位" },
@@ -64,7 +61,6 @@ const HISTORY_DYNASTIES = [
         color: "#0891b2",
         emoji: "🎭",
         summary: "分封制、礼乐制奠基",
-        rulers: "武王 → 成王 → 康王 → 昭王 → 穆王 → 共王 → 懿王 → 孝王 → 夷王 → 厉王 → 宣王 → 幽王(亡)",
         events: [
             { date: "前1046年", title: "武王伐纣", desc: "牧野之战，周武王灭商，建立周朝" },
             { date: "前1042年", title: "周公摄政", desc: "周公旦制礼作乐，辅佐成王，奠定周制" },
@@ -84,7 +80,6 @@ const HISTORY_DYNASTIES = [
         color: "#0e7490",
         emoji: "📜",
         summary: "春秋争霸，战国七雄，百家争鸣",
-        rulers: "平王 → 桓王 → 庄王 → 釐王 → 惠王 → 襄王 → 顷王 → 匡王 → 定王 → 简王 → 灵王 → 景王 → 悼王 → 敬王 → 元王 → 贞定王 → 哀王 → 思王 → 考王 → 威烈王 → 安王 → 烈王 → 显王 → 慎靓王 → 赧王(亡)",
         events: [
             { date: "前770年", title: "平王东迁", desc: "周平王自镐京东迁洛邑，东周开始" },
             { date: "前722年", title: "《春秋》记事始", desc: "史书《春秋》记事从本年开始" },
@@ -109,7 +104,6 @@ const HISTORY_DYNASTIES = [
         color: "#9333ea",
         emoji: "⚔️",
         summary: "中国第一个大一统王朝，制度奠基",
-        rulers: "秦始皇嬴政 → 秦二世胡亥 → 子婴(亡)",
         events: [
             { date: "前221年", title: "秦朝建立", desc: "秦王嬴政灭六国，建立中国历史上第一个统一王朝" },
             { date: "前220年", title: "书同文车同轨", desc: "统一文字为小篆，统一度量衡、货币" },
@@ -128,7 +122,6 @@ const HISTORY_DYNASTIES = [
         color: "#dc2626",
         emoji: "🐉",
         summary: "丝绸之路开通，汉文化定型",
-        rulers: "高祖刘邦 → 惠帝 → 前少帝 → 后少帝 → 文帝 → 景帝 → 武帝 → 昭帝 → 宣帝 → 元帝 → 成帝 → 哀帝 → 平帝 → 孺子婴(亡)",
         events: [
             { date: "前202年", title: "西汉建立", desc: "刘邦称帝，建立汉朝，定都长安" },
             { date: "前180年", title: "文景之治", desc: "文帝、景帝休养生息，开创古代盛世" },
@@ -148,7 +141,6 @@ const HISTORY_DYNASTIES = [
         color: "#ef4444",
         emoji: "🐎",
         summary: "光武中兴，佛教传入",
-        rulers: "光武帝 → 明帝 → 章帝 → 和帝 → 殇帝 → 安帝 → 少帝 → 顺帝 → 冲帝 → 质帝 → 桓帝 → 灵帝 → 少帝 → 献帝(亡)",
         events: [
             { date: "25年", title: "东汉建立", desc: "刘秀称帝，建元建武，是为东汉光武帝" },
             { date: "92年", title: "宦官用权之始", desc: "汉和帝与宦官郑众定议，诛大将军窦宪" },
@@ -165,7 +157,6 @@ const HISTORY_DYNASTIES = [
         color: "#0d9488",
         emoji: "🏯",
         summary: "魏蜀吴三分天下",
-        rulers: "魏：曹丕 → 曹叡 → 曹芳 → 曹髦 → 曹奂(亡) | 蜀：刘备 → 刘禅(亡) | 吴：孙权 → 孙亮 → 孙休 → 孙皓(亡)",
         events: [
             { date: "208年", title: "赤壁之战", desc: "曹操被孙刘联军击败，奠定三国鼎立雏型" },
             { date: "220年", title: "曹魏建立", desc: "曹丕废汉献帝，建立魏国" },
@@ -183,7 +174,6 @@ const HISTORY_DYNASTIES = [
         color: "#10b981",
         emoji: "⚔️",
         summary: "短暂统一，八王之乱",
-        rulers: "武帝司马炎 → 惠帝 → 怀帝 → 愍帝(亡)",
         events: [
             { date: "265年", title: "西晋建立", desc: "司马炎废魏主，称帝，是为晋武帝，定都洛阳" },
             { date: "280年", title: "统一全国", desc: "晋灭吴，结束三国分裂局面" },
@@ -199,7 +189,6 @@ const HISTORY_DYNASTIES = [
         color: "#22c55e",
         emoji: "🏛️",
         summary: "衣冠南渡，南北对峙",
-        rulers: "元帝 → 明帝 → 成帝 → 康帝 → 穆帝 → 哀帝 → 废帝 → 简文帝 → 孝武帝 → 安帝 → 恭帝(亡)",
         events: [
             { date: "317年", title: "东晋建立", desc: "司马睿南迁建康，建立东晋" },
             { date: "357年", title: "前秦苻坚即位", desc: "前秦苻坚即位，称大秦天王，汉人王猛辅政" },
@@ -215,7 +204,6 @@ const HISTORY_DYNASTIES = [
         color: "#0d9488",
         emoji: "🎭",
         summary: "民族大融合，佛教兴盛",
-        rulers: "南朝：宋 → 齐 → 梁 → 陈 | 北朝：北魏 → 东魏 → 西魏 → 北齐 → 北周",
         events: [
             { date: "420年", title: "刘宋建立", desc: "刘裕废晋恭帝自立，国号宋，南朝开始" },
             { date: "494年", title: "孝文帝汉化", desc: "北魏孝文帝迁都洛阳，推行汉化改革" },
@@ -231,7 +219,6 @@ const HISTORY_DYNASTIES = [
         color: "#ca8a04",
         emoji: "🏛️",
         summary: "重新统一，开皇盛世，开凿大运河",
-        rulers: "文帝杨坚 → 炀帝杨广 → 恭帝杨侑(亡)",
         events: [
             { date: "581年", title: "隋朝建立", desc: "杨坚称帝，国号隋，是为隋文帝，建都长安" },
             { date: "589年", title: "统一南北", desc: "隋军南下灭陈，结束三百年分裂" },
@@ -249,7 +236,6 @@ const HISTORY_DYNASTIES = [
         color: "#ea580c",
         emoji: "🏮",
         summary: "盛世巅峰，诗歌鼎盛，万国来朝",
-        rulers: "高祖 → 太宗 → 高宗 → 中宗 → 睿宗 → 武周 → 中宗 → 睿宗 → 玄宗 → 肃宗 → 代宗 → 德宗 → 顺宗 → 宪宗 → 穆宗 → 敬宗 → 文宗 → 武宗 → 宣宗 → 懿宗 → 僖宗 → 昭宗 → 哀帝(亡)",
         events: [
             { date: "618年", title: "唐朝建立", desc: "李渊称帝，国号唐，是为唐高祖，隋朝亡" },
             { date: "626年", title: "贞观之治", desc: "太宗李世民登基，开创贞观盛世" },
@@ -272,7 +258,6 @@ const HISTORY_DYNASTIES = [
         color: "#a16207",
         emoji: "⚔️",
         summary: "大分裂时期，政权更迭频繁",
-        rulers: "后梁 → 后唐 → 后晋 → 后汉 → 后周",
         events: [
             { date: "907年", title: "后梁建立", desc: "朱温逼唐哀帝禅让，建立后梁，唐朝亡" },
             { date: "916年", title: "契丹建辽", desc: "耶律阿保机称帝，是为辽太祖，建契丹国" },
@@ -291,7 +276,6 @@ const HISTORY_DYNASTIES = [
         color: "#7c3aed",
         emoji: "📜",
         summary: "经济文化科技空前发达，四大发明成熟",
-        rulers: "北宋：太祖 → 太宗 → 真宗 → 仁宗 → 英宗 → 神宗 → 哲宗 → 徽宗 → 钦宗(亡) | 南宋：高宗 → 孝宗 → 光宗 → 宁宗 → 理宗 → 度宗 → 恭帝 → 端宗 → 帝昺(亡)",
         events: [
             { date: "960年", title: "北宋建立", desc: "陈桥兵变，赵匡胤即位，是为宋太祖" },
             { date: "993年", title: "王小波李顺起义", desc: "王小波、李顺起义" },
@@ -313,7 +297,6 @@ const HISTORY_DYNASTIES = [
         color: "#2563eb",
         emoji: "🐎",
         summary: "疆域空前，行省制度，戏曲繁荣",
-        rulers: "世祖忽必烈 → 成宗 → 武宗 → 仁宗 → 英宗 → 泰定帝 → 天顺帝 → 文宗 → 明宗 → 宁宗 → 顺帝(亡)",
         events: [
             { date: "1206年", title: "成吉思汗建蒙古国", desc: "铁木真统一蒙古各部，被尊为成吉思汗" },
             { date: "1271年", title: "元朝建立", desc: "忽必烈改国号为元，取《易经》大哉乾元" },
@@ -334,7 +317,6 @@ const HISTORY_DYNASTIES = [
         color: "#16a34a",
         emoji: "⛵",
         summary: "郑和下西洋，小说戏曲繁荣",
-        rulers: "太祖朱元璋 → 建文帝 → 成祖 → 仁宗 → 宣宗 → 英宗 → 代宗 → 宪宗 → 孝宗 → 武宗 → 世宗 → 穆宗 → 神宗 → 光宗 → 熹宗 → 思宗(亡)",
         events: [
             { date: "1368年", title: "明朝建立", desc: "朱元璋在应天府即帝位，国号明，是为明太祖" },
             { date: "1399—1402年", title: "靖难之役", desc: "燕王朱棣发动靖难之役，即位称帝，是为明成祖" },
@@ -364,7 +346,6 @@ const HISTORY_DYNASTIES = [
         color: "#4f46e5",
         emoji: "🏵️",
         summary: "最后封建王朝，康乾盛世，近代屈辱",
-        rulers: "太祖努尔哈赤 → 太宗皇太极 → 世祖顺治 → 圣祖康熙 → 世宗雍正 → 高宗乾隆 → 仁宗嘉庆 → 宣宗道光 → 文宗咸丰 → 穆宗同治 → 德宗光绪 → 宣统(亡)",
         events: [
             { date: "1636年", title: "改国号为清", desc: "皇太极即帝位，改国号为清" },
             { date: "1644年", title: "清军入关", desc: "多尔衮率军入关，定鼎北京" },
@@ -399,7 +380,6 @@ const HISTORY_DYNASTIES = [
         color: "#0ea5e9",
         emoji: "🚀",
         summary: "走向民族独立的复兴之路",
-        rulers: "孙中山 → 袁世凯 → 北洋政府 → 国民政府 → 新中国",
         events: [
             { date: "1912年", title: "中华民国成立", desc: "南京临时政府成立，孙中山就任临时大总统" },
             { date: "1915年", title: "新文化运动", desc: "陈独秀创办《青年杂志》，新文化运动开始" },
@@ -429,9 +409,6 @@ export function renderHistoryHTML() {
             <div class="htl-dynasty htl-${side}">
                 <div class="htl-dot" style="background:${d.color}"></div>
                 <div class="htl-line" style="background:${d.color}"></div>
-                <div class="htl-rulers-axis" style="background:${d.color}">
-                    <span class="htl-rulers-text">${d.rulers}</span>
-                </div>
                 <div class="htl-card" style="border-color:${d.color}">
                     <div class="htl-card-header" style="background:${d.color}">
                         <span class="htl-emoji">${d.emoji}</span>
@@ -445,10 +422,12 @@ export function renderHistoryHTML() {
                         <div class="htl-duration">${d.duration}</div>
                         <div class="htl-summary">${d.summary}</div>
                         <div class="htl-events">
-                            ${d.events.map((e, ei) => `
-                                <button class="htl-event-tag" data-dynasty="${d.id}" data-event-idx="${ei}" style="border-color:${d.color}">
-                                    ${e.title}
-                                </button>
+                            ${d.events.map(e => `
+                                <div class="htl-event">
+                                    <div class="htl-event-date">${e.date}</div>
+                                    <div class="htl-event-title">${e.title}</div>
+                                    <div class="htl-event-desc">${e.desc}</div>
+                                </div>
                             `).join("")}
                         </div>
                     </div>
@@ -471,16 +450,6 @@ export function renderHistoryHTML() {
             <div class="htl-footer">
                 <div class="htl-footer-line"></div>
                 <div class="htl-footer-text">🌟 五千年文明，生生不息</div>
-            </div>
-            <div class="htl-modal" id="htlModal">
-                <div class="htl-modal-backdrop"></div>
-                <div class="htl-modal-content">
-                    <button class="htl-modal-close" id="htlModalClose">✕</button>
-                    <div class="htl-modal-date" id="htlModalDate"></div>
-                    <div class="htl-modal-title" id="htlModalTitle"></div>
-                    <div class="htl-modal-desc" id="htlModalDesc"></div>
-                    <div class="htl-modal-dynasty" id="htlModalDynasty"></div>
-                </div>
             </div>
         </div>
     `;
@@ -625,7 +594,6 @@ export function injectHistoryStyle() {
             box-shadow: 0 8px 24px rgba(0,0,0,0.08);
             border: 2px solid;
             transition: all 0.3s ease;
-            margin-top: 78px;
         }
 
         .htl-card:hover {
@@ -695,38 +663,6 @@ export function injectHistoryStyle() {
         .htl-left .htl-duration {
             text-align: right;
         }
-
-        .htl-rulers-axis {
-            position: absolute;
-            top: 56px;
-            width: 260px;
-            padding: 6px 12px;
-            border-radius: 12px;
-            font-size: 11px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.18);
-            z-index: 3;
-            line-height: 1.5;
-            text-align: center;
-            word-break: break-all;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .htl-left .htl-rulers-axis {
-            right: -130px;
-        }
-
-        .htl-right .htl-rulers-axis {
-            left: -130px;
-        }
-
-        .htl-rulers-text {
-            color: #fff;
-            display: block;
-        }
-
         .htl-summary {
             font-size: 14px;
             color: #475569;
@@ -740,129 +676,45 @@ export function injectHistoryStyle() {
 
         .htl-events {
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: column;
             gap: 8px;
         }
 
-        .htl-event-tag {
-            cursor: pointer;
-            padding: 8px 14px;
-            background: #fff;
-            border: 2px solid;
-            border-radius: 999px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #334155;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-            text-align: center;
-            font-family: inherit;
-            white-space: nowrap;
-        }
-
-        .htl-event-tag:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-            filter: brightness(0.97);
-        }
-
-        .htl-event-tag:active {
-            transform: translateY(0);
-        }
-
-        .htl-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .htl-modal.show {
-            display: flex;
-            animation: htl-modal-in 0.25s ease;
-        }
-
-        @keyframes htl-modal-in {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .htl-modal-backdrop {
-            position: absolute;
-            inset: 0;
-            background: rgba(0,0,0,0.55);
-            backdrop-filter: blur(4px);
-        }
-
-        .htl-modal-content {
-            position: relative;
-            background: white;
-            border-radius: 20px;
-            padding: 28px 28px 24px;
-            max-width: 460px;
-            width: 100%;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.35);
-            overflow: hidden;
-        }
-
-        .htl-modal-close {
-            position: absolute;
-            top: 14px;
-            right: 16px;
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            border: none;
-            background: #f1f5f9;
-            color: #475569;
-            font-size: 16px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .htl-event {
+            padding: 10px 12px;
+            background: #fefce8;
+            border-radius: 8px;
+            border-left: 3px solid #eab308;
             transition: all 0.2s ease;
         }
 
-        .htl-modal-close:hover {
-            background: #e2e8f0;
-            transform: rotate(90deg);
+        .htl-event:hover {
+            background: #fef3c7;
+            transform: translateX(4px);
         }
 
-        .htl-modal-date {
+        .htl-event-date {
+            font-size: 12px;
+            color: #b45309;
+            font-weight: 700;
+            background: #fef3c7;
             display: inline-block;
-            font-size: 13px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-bottom: 4px;
+        }
+
+        .htl-event-title {
+            font-size: 14px;
             font-weight: 700;
             color: #92400e;
-            background: #fef3c7;
-            padding: 4px 12px;
-            border-radius: 999px;
-            margin-bottom: 14px;
+            margin-bottom: 4px;
         }
 
-        .htl-modal-title {
-            font-size: 26px;
-            font-weight: 800;
-            color: #1e293b;
-            margin-bottom: 14px;
-            line-height: 1.3;
-        }
-
-        .htl-modal-desc {
-            font-size: 15px;
-            color: #475569;
-            line-height: 1.8;
-            margin-bottom: 16px;
-            white-space: pre-wrap;
-        }
-
-        .htl-modal-dynasty {
+        .htl-event-desc {
             font-size: 13px;
-            color: #94a3b8;
-            padding-top: 12px;
-            border-top: 1px solid #e2e8f0;
+            color: #78350f;
+            line-height: 1.5;
         }
 
         .htl-footer {
@@ -924,21 +776,6 @@ export function injectHistoryStyle() {
                 text-align: left;
             }
 
-            .htl-rulers-axis {
-                position: relative !important;
-                top: auto !important;
-                left: auto !important;
-                right: auto !important;
-                width: calc(100% - 30px) !important;
-                margin: 0 0 10px 30px;
-                text-align: left;
-                -webkit-line-clamp: 2;
-            }
-
-            .htl-card {
-                margin-top: 0;
-            }
-
             .htl-hero-title {
                 font-size: 22px;
             }
@@ -963,75 +800,11 @@ export function injectHistoryStyle() {
 
             .htl-card-body {
                 padding: 12px;
-            }
-
-            .htl-rulers-text {
-                font-size: 10px;
-            }
-
-            .htl-event-tag {
-                padding: 6px 10px;
-                font-size: 12px;
-            }
-
-            .htl-modal-content {
-                padding: 22px 20px 18px;
-                border-radius: 16px;
-            }
-
-            .htl-modal-title {
-                font-size: 20px;
-            }
-
-            .htl-modal-desc {
-                font-size: 14px;
-            }
-        }
+            }        }
     `;
     document.head.appendChild(style);
 }
 
 export function initHistory() {
-    const page = document.getElementById("historyPage");
-    page.scrollTop = 0;
-
-    const modal = document.getElementById("htlModal");
-    const modalClose = document.getElementById("htlModalClose");
-    const modalBackdrop = modal.querySelector(".htl-modal-backdrop");
-
-    function openModal(dynastyId, eventIdx) {
-        const d = HISTORY_DYNASTIES.find(x => x.id === dynastyId);
-        if (!d) return;
-        const e = d.events[eventIdx];
-        if (!e) return;
-        document.getElementById("htlModalDate").textContent = e.date;
-        document.getElementById("htlModalTitle").textContent = e.title;
-        document.getElementById("htlModalDesc").textContent = e.desc;
-        document.getElementById("htlModalDynasty").textContent = `所属朝代：${d.name} · ${d.period}`;
-        modal.classList.add("show");
-        document.body.style.overflow = "hidden";
-    }
-
-    function closeModal() {
-        modal.classList.remove("show");
-        document.body.style.overflow = "";
-    }
-
-    modal.addEventListener("click", (e) => {
-        if (e.target.classList.contains("htl-modal-backdrop")) closeModal();
-    });
-    modalClose.addEventListener("click", closeModal);
-
-    page.addEventListener("click", (e) => {
-        const tag = e.target.closest(".htl-event-tag");
-        if (tag) {
-            const dynastyId = tag.dataset.dynasty;
-            const eventIdx = parseInt(tag.dataset.eventIdx, 10);
-            openModal(dynastyId, eventIdx);
-        }
-    });
-
-    document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && modal.classList.contains("show")) closeModal();
-    });
+    document.getElementById("historyPage").scrollTop = 0;
 }
