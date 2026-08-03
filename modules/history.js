@@ -10,7 +10,7 @@ const HISTORY_DYNASTIES = [
         duration: "两千余年",
         color: "#78716c",
         emoji: "🪨",
-        summary: "华夏文明的源头，三皇五帝传说",
+        summary: "指夏商周以前的时代，距今4000年以上，巫山人化石有200万年历史",
         events: [
             { date: "前4300—前2500年", title: "大汶口文化", desc: "大汶口文化中晚期，处于父系氏族公社时期" },
             { date: "约前3000年", title: "黄帝战蚩尤", desc: "黄帝于涿鹿之战击败蚩尤，被尊为华夏始祖" },
@@ -25,7 +25,7 @@ const HISTORY_DYNASTIES = [
         duration: "共471年",
         color: "#d97706",
         emoji: "👑",
-        summary: "中国历史上第一个王朝，开启家天下时代",
+        summary: "史书记载的第一个世袭制朝代，以青铜和玉制礼器为特征",
         events: [
             { date: "约前21世纪", title: "大禹治水", desc: "禹治水十三年，三过家门而不入，因治水有功被舜选为继承人" },
             { date: "约前2070年", title: "夏朝建立", desc: "禹将部落联盟首领之位传子启，夏朝建立，开启家天下" },
@@ -45,7 +45,7 @@ const HISTORY_DYNASTIES = [
         duration: "共554年",
         color: "#b45309",
         emoji: "🏺",
-        summary: "甲骨文、青铜器鼎盛，华夏文字形成",
+        summary: "中国历史上第二个朝代，第一个有直接同时期文字记载的王朝",
         events: [
             { date: "约前1600年", title: "商汤灭夏", desc: "成汤于鸣条之战击败夏桀，建立商朝" },
             { date: "约前16世纪", title: "商汤制刑", desc: "商汤制定刑法，后来称为《汤刑》" },
@@ -64,7 +64,7 @@ const HISTORY_DYNASTIES = [
         duration: "共275年",
         color: "#0891b2",
         emoji: "🎭",
-        summary: "分封制、礼乐制奠基",
+        summary: "分封制、礼乐制奠基，西周还是东周时期的国家名称",
         events: [
             { date: "前1046年", title: "武王伐纣", desc: "牧野之战，周武王灭商，建立周朝" },
             { date: "前1042年", title: "周公摄政", desc: "周公旦制礼作乐，辅佐成王，奠定周制" },
@@ -83,7 +83,7 @@ const HISTORY_DYNASTIES = [
         duration: "共515年",
         color: "#0e7490",
         emoji: "📜",
-        summary: "春秋争霸，战国七雄，百家争鸣",
+        summary: "前半期诸侯争霸称春秋，后半期三家分晋称战国",
         events: [
             { date: "前770年", title: "平王东迁", desc: "周平王自镐京东迁洛邑，东周开始" },
             { date: "前750年", title: "秦文公伐戎", desc: "秦文公伐戎，戎败，文公收其民" },
@@ -113,7 +113,7 @@ const HISTORY_DYNASTIES = [
         duration: "共16年",
         color: "#9333ea",
         emoji: "⚔️",
-        summary: "中国第一个大一统王朝，制度奠基",
+        summary: "由战国秦国发展而来，中国历史上第一个大一统王朝",
         events: [
             { date: "前221年", title: "秦朝建立", desc: "秦王嬴政灭六国，建立中国历史上第一个统一王朝" },
             { date: "前220年", title: "书同文车同轨", desc: "统一文字为小篆，统一度量衡、货币" },
@@ -131,7 +131,7 @@ const HISTORY_DYNASTIES = [
         duration: "共210年",
         color: "#dc2626",
         emoji: "🐉",
-        summary: "丝绸之路开通，汉文化定型",
+        summary: "继秦朝之后的大一统王朝，共历十二帝，享国二百一十年",
         events: [
             { date: "前202年", title: "西汉建立", desc: "刘邦称帝，建立汉朝，定都长安" },
             { date: "前180年", title: "文景之治", desc: "文帝、景帝休养生息，开创古代盛世" },
@@ -150,7 +150,7 @@ const HISTORY_DYNASTIES = [
         duration: "共195年",
         color: "#ef4444",
         emoji: "🐎",
-        summary: "光武中兴，佛教传入",
+        summary: "继西汉之后的大一统中原王朝，与西汉统称汉朝",
         events: [
             { date: "25年", title: "东汉建立", desc: "刘秀称帝，建元建武，是为东汉光武帝" },
             { date: "92年", title: "宦官用权之始", desc: "汉和帝与宦官郑众定议，诛大将军窦宪" },
@@ -166,7 +166,7 @@ const HISTORY_DYNASTIES = [
         duration: "共60年",
         color: "#0d9488",
         emoji: "🏯",
-        summary: "魏蜀吴三分天下",
+        summary: "上承东汉下启西晋，分曹魏、蜀汉、东吴三个政权",
         events: [
             { date: "208年", title: "赤壁之战", desc: "曹操被孙刘联军击败，奠定三国鼎立雏型" },
             { date: "220年", title: "曹魏建立", desc: "曹丕废汉献帝，建立魏国" },
@@ -183,7 +183,7 @@ const HISTORY_DYNASTIES = [
         duration: "共51年",
         color: "#10b981",
         emoji: "⚔️",
-        summary: "短暂统一，八王之乱",
+        summary: "三国之后的大一统王朝，与东晋合称晋朝，史称司马晋",
         events: [
             { date: "265年", title: "西晋建立", desc: "司马炎废魏主，称帝，是为晋武帝，定都洛阳" },
             { date: "280年", title: "统一全国", desc: "晋灭吴，结束三国分裂局面" },
@@ -198,7 +198,7 @@ const HISTORY_DYNASTIES = [
         duration: "共103年",
         color: "#22c55e",
         emoji: "🏛️",
-        summary: "衣冠南渡，南北对峙",
+        summary: "司马睿南迁建立，古称江左，寓晋室中兴之意",
         events: [
             { date: "317年", title: "东晋建立", desc: "司马睿南迁建康，建立东晋" },
             { date: "357年", title: "前秦苻坚即位", desc: "前秦苻坚即位，称大秦天王，汉人王猛辅政" },
@@ -213,7 +213,7 @@ const HISTORY_DYNASTIES = [
         duration: "共169年",
         color: "#0d9488",
         emoji: "🎭",
-        summary: "民族大融合，佛教兴盛",
+        summary: "大分裂与民族大融合时期，上承东晋下接隋朝",
         events: [
             { date: "420年", title: "刘宋建立", desc: "刘裕废晋恭帝自立，国号宋，南朝开始" },
             { date: "494年", title: "孝文帝汉化", desc: "北魏孝文帝迁都洛阳，推行汉化改革" },
@@ -228,7 +228,7 @@ const HISTORY_DYNASTIES = [
         duration: "共38年",
         color: "#ca8a04",
         emoji: "🏛️",
-        summary: "重新统一，开皇盛世，开凿大运河",
+        summary: "承南北朝下启唐朝的大一统朝代，国号随改隋",
         events: [
             { date: "581年", title: "隋朝建立", desc: "杨坚称帝，国号隋，是为隋文帝，建都长安" },
             { date: "589年", title: "统一南北", desc: "隋军南下灭陈，结束三百年分裂" },
@@ -245,7 +245,7 @@ const HISTORY_DYNASTIES = [
         duration: "共289年",
         color: "#ea580c",
         emoji: "🏮",
-        summary: "盛世巅峰，诗歌鼎盛，万国来朝",
+        summary: "继隋朝之后的大一统中原王朝，当时世界最强盛国家之一",
         events: [
             { date: "618年", title: "唐朝建立", desc: "李渊称帝，国号唐，是为唐高祖，隋朝亡" },
             { date: "626年", title: "贞观之治", desc: "太宗李世民登基，开创贞观盛世" },
@@ -271,7 +271,7 @@ const HISTORY_DYNASTIES = [
         duration: "共72年",
         color: "#a16207",
         emoji: "⚔️",
-        summary: "大分裂时期，政权更迭频繁",
+        summary: "五代与十国的合称，中国历史上的大分裂时期",
         events: [
             { date: "907年", title: "后梁建立", desc: "朱温逼唐哀帝禅让，建立后梁，唐朝亡" },
             { date: "916年", title: "契丹建辽", desc: "耶律阿保机称帝，是为辽太祖，建契丹国" },
@@ -289,7 +289,7 @@ const HISTORY_DYNASTIES = [
         duration: "共319年",
         color: "#7c3aed",
         emoji: "📜",
-        summary: "经济文化科技空前发达，四大发明成熟",
+        summary: "封建经济继续发展并出现衰落的阶段，经历319年",
         events: [
             { date: "960年", title: "北宋建立", desc: "陈桥兵变，赵匡胤即位，是为宋太祖" },
             { date: "993年", title: "王小波李顺起义", desc: "王小波、李顺起义" },
@@ -311,7 +311,7 @@ const HISTORY_DYNASTIES = [
         duration: "共98年",
         color: "#2563eb",
         emoji: "🐎",
-        summary: "疆域空前，行省制度，戏曲繁荣",
+        summary: "蒙古族建立，首次由少数民族建立的大一统王朝",
         events: [
             { date: "1206年", title: "成吉思汗建蒙古国", desc: "铁木真统一蒙古各部，被尊为成吉思汗" },
             { date: "1271年", title: "元朝建立", desc: "忽必烈改国号为元，取《易经》大哉乾元" },
@@ -331,7 +331,7 @@ const HISTORY_DYNASTIES = [
         duration: "共277年",
         color: "#16a34a",
         emoji: "⛵",
-        summary: "郑和下西洋，小说戏曲繁荣",
+        summary: "汉族建立的大一统王朝，共传十六帝，享国二百七十六年",
         events: [
             { date: "1368年", title: "明朝建立", desc: "朱元璋在应天府即帝位，国号明，是为明太祖" },
             { date: "1399—1402年", title: "靖难之役", desc: "燕王朱棣发动靖难之役，即位称帝，是为明成祖" },
@@ -368,7 +368,7 @@ const HISTORY_DYNASTIES = [
         duration: "共276年",
         color: "#4f46e5",
         emoji: "🏵️",
-        summary: "最后封建王朝，康乾盛世，近代屈辱",
+        summary: "中国历史上最后一个封建王朝，共传十二帝，国祚276年",
         events: [
             { date: "1636年", title: "改国号为清", desc: "皇太极即帝位，改国号为清" },
             { date: "1644年", title: "清军入关", desc: "多尔衮率军入关，定鼎北京" },
