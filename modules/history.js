@@ -445,12 +445,10 @@ export function renderHistoryHTML() {
                         <div class="htl-duration">${d.duration}</div>
                         <div class="htl-summary">${d.summary}</div>
                         <div class="htl-events">
-                            ${d.events.map(e => `
-                                <div class="htl-event">
-                                    <div class="htl-event-date">${e.date}</div>
-                                    <div class="htl-event-title">${e.title}</div>
-                                    <div class="htl-event-desc">${e.desc}</div>
-                                </div>
+                            ${d.events.map((e, ei) => `
+                                <button class="htl-event-tag" data-dynasty="${d.id}" data-event-idx="${ei}" style="border-color:${d.color}">
+                                    ${e.title}
+                                </button>
                             `).join("")}
                         </div>
                     </div>
@@ -473,6 +471,16 @@ export function renderHistoryHTML() {
             <div class="htl-footer">
                 <div class="htl-footer-line"></div>
                 <div class="htl-footer-text">🌟 五千年文明，生生不息</div>
+            </div>
+            <div class="htl-modal" id="htlModal">
+                <div class="htl-modal-backdrop"></div>
+                <div class="htl-modal-content">
+                    <button class="htl-modal-close" id="htlModalClose">✕</button>
+                    <div class="htl-modal-date" id="htlModalDate"></div>
+                    <div class="htl-modal-title" id="htlModalTitle"></div>
+                    <div class="htl-modal-desc" id="htlModalDesc"></div>
+                    <div class="htl-modal-dynasty" id="htlModalDynasty"></div>
+                </div>
             </div>
         </div>
     `;
@@ -732,45 +740,129 @@ export function injectHistoryStyle() {
 
         .htl-events {
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap;
             gap: 8px;
         }
 
-        .htl-event {
-            padding: 10px 12px;
-            background: #fefce8;
-            border-radius: 8px;
-            border-left: 3px solid #eab308;
+        .htl-event-tag {
+            cursor: pointer;
+            padding: 8px 14px;
+            background: #fff;
+            border: 2px solid;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            text-align: center;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .htl-event-tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+            filter: brightness(0.97);
+        }
+
+        .htl-event-tag:active {
+            transform: translateY(0);
+        }
+
+        .htl-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .htl-modal.show {
+            display: flex;
+            animation: htl-modal-in 0.25s ease;
+        }
+
+        @keyframes htl-modal-in {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .htl-modal-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(4px);
+        }
+
+        .htl-modal-content {
+            position: relative;
+            background: white;
+            border-radius: 20px;
+            padding: 28px 28px 24px;
+            max-width: 460px;
+            width: 100%;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.35);
+            overflow: hidden;
+        }
+
+        .htl-modal-close {
+            position: absolute;
+            top: 14px;
+            right: 16px;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: none;
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: all 0.2s ease;
         }
 
-        .htl-event:hover {
-            background: #fef3c7;
-            transform: translateX(4px);
+        .htl-modal-close:hover {
+            background: #e2e8f0;
+            transform: rotate(90deg);
         }
 
-        .htl-event-date {
-            font-size: 12px;
-            color: #b45309;
-            font-weight: 700;
-            background: #fef3c7;
+        .htl-modal-date {
             display: inline-block;
-            padding: 2px 8px;
-            border-radius: 4px;
-            margin-bottom: 4px;
-        }
-
-        .htl-event-title {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 700;
             color: #92400e;
-            margin-bottom: 4px;
+            background: #fef3c7;
+            padding: 4px 12px;
+            border-radius: 999px;
+            margin-bottom: 14px;
         }
 
-        .htl-event-desc {
+        .htl-modal-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 14px;
+            line-height: 1.3;
+        }
+
+        .htl-modal-desc {
+            font-size: 15px;
+            color: #475569;
+            line-height: 1.8;
+            margin-bottom: 16px;
+            white-space: pre-wrap;
+        }
+
+        .htl-modal-dynasty {
             font-size: 13px;
-            color: #78350f;
-            line-height: 1.5;
+            color: #94a3b8;
+            padding-top: 12px;
+            border-top: 1px solid #e2e8f0;
         }
 
         .htl-footer {
@@ -876,11 +968,70 @@ export function injectHistoryStyle() {
             .htl-rulers-text {
                 font-size: 10px;
             }
+
+            .htl-event-tag {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+
+            .htl-modal-content {
+                padding: 22px 20px 18px;
+                border-radius: 16px;
+            }
+
+            .htl-modal-title {
+                font-size: 20px;
+            }
+
+            .htl-modal-desc {
+                font-size: 14px;
+            }
         }
     `;
     document.head.appendChild(style);
 }
 
 export function initHistory() {
-    document.getElementById("historyPage").scrollTop = 0;
+    const page = document.getElementById("historyPage");
+    page.scrollTop = 0;
+
+    const modal = document.getElementById("htlModal");
+    const modalClose = document.getElementById("htlModalClose");
+    const modalBackdrop = modal.querySelector(".htl-modal-backdrop");
+
+    function openModal(dynastyId, eventIdx) {
+        const d = HISTORY_DYNASTIES.find(x => x.id === dynastyId);
+        if (!d) return;
+        const e = d.events[eventIdx];
+        if (!e) return;
+        document.getElementById("htlModalDate").textContent = e.date;
+        document.getElementById("htlModalTitle").textContent = e.title;
+        document.getElementById("htlModalDesc").textContent = e.desc;
+        document.getElementById("htlModalDynasty").textContent = `所属朝代：${d.name} · ${d.period}`;
+        modal.classList.add("show");
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeModal() {
+        modal.classList.remove("show");
+        document.body.style.overflow = "";
+    }
+
+    modal.addEventListener("click", (e) => {
+        if (e.target.classList.contains("htl-modal-backdrop")) closeModal();
+    });
+    modalClose.addEventListener("click", closeModal);
+
+    page.addEventListener("click", (e) => {
+        const tag = e.target.closest(".htl-event-tag");
+        if (tag) {
+            const dynastyId = tag.dataset.dynasty;
+            const eventIdx = parseInt(tag.dataset.eventIdx, 10);
+            openModal(dynastyId, eventIdx);
+        }
+    });
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && modal.classList.contains("show")) closeModal();
+    });
 }
