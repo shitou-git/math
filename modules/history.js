@@ -1227,17 +1227,19 @@ let isStreaming = false;
 
 function stripMarkdown(text) {
     if (!text) return "";
-    return text
-        .replace(/\*\*(.+?)\*\*/g, "$1")
-        .replace(/\*(.+?)\*/g, "$1")
-        .replace(/^#{1,6}\s+/gm, "")
-        .replace(/^[-*+]\s+/gm, "")
-        .replace(/^\d+\.\s+/gm, "")
-        .replace(/`([^`]+)`/g, "$1")
-        .replace(/^>\s+/gm, "")
-        .replace(/^\|.*\|$/gm, "")
-        .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-        .trim();
+    let t = text;
+    t = t.replace(/\*\*([^*]+)\*\*/g, "$1");
+    t = t.replace(/\*([^*]+)\*/g, "$1");
+    t = t.replace(/`([^`]+)`/g, "$1");
+    t = t.replace(/^#{1,6}\s+/gm, "");
+    t = t.replace(/^[-*+·•]\s+/gm, "");
+    t = t.replace(/^\d+[.、)）]\s+/gm, "");
+    t = t.replace(/^>\s+/gm, "");
+    t = t.replace(/^\|.*\|$/gm, "");
+    t = t.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
+    t = t.replace(/\*+/g, "");
+    t = t.replace(/\n{3,}/g, "\n\n");
+    return t.trim();
 }
 
 function renderAIExplanation(data, currentKey) {
