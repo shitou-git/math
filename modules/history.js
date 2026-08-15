@@ -1052,7 +1052,7 @@ const AI_SYSTEM_PROMPT = `你是一位博学的中国历史学者，请用中文
 请用简洁专业的风格，每部分2-3句话。`;
 
 const AI_CACHE_KEY = "history-ai-explanations-v2";
-const AI_CACHE_VERSION = 2;
+const AI_CACHE_VERSION = 3;
 const aiExplanationCache = new Map();
 
 function loadAICache() {
@@ -1228,16 +1228,24 @@ let isStreaming = false;
 function stripMarkdown(text) {
     if (!text) return "";
     let t = text;
-    t = t.replace(/\*\*([^*]+)\*\*/g, "$1");
-    t = t.replace(/\*([^*]+)\*/g, "$1");
+    t = t.replace(/```[\s\S]*?```/g, m => m.replace(/```/g, ""));
     t = t.replace(/`([^`]+)`/g, "$1");
+    t = t.replace(/\*\*([^*\n]+)\*\*/g, "$1");
+    t = t.replace(/__([^_\n]+)__/g, "$1");
+    t = t.replace(/\*([^*\n]+)\*/g, "$1");
+    t = t.replace(/_([^_\n]+)_/g, "$1");
+    t = t.replace(/~~([^~\n]+)~~/g, "$1");
     t = t.replace(/^#{1,6}\s+/gm, "");
-    t = t.replace(/^[-*+·•]\s+/gm, "");
-    t = t.replace(/^\d+[.、)）]\s+/gm, "");
+    t = t.replace(/^\s*[-*+·•●○■□◆◇★☆]\s+/gm, "");
+    t = t.replace(/^\s*\d+[\.\)）、:：]\s+/gm, "");
+    t = t.replace(/^\s*[a-zA-Z][\.\)）]\s+/gm, "");
     t = t.replace(/^>\s+/gm, "");
     t = t.replace(/^\|.*\|$/gm, "");
-    t = t.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
     t = t.replace(/\*+/g, "");
+    t = t.replace(/_+/g, "");
+    t = t.replace(/~+/g, "");
+    t = t.replace(/\[([^\]]*)\]\([^)]*\)/g, "$1");
+    t = t.replace(/<[^>]+>/g, "");
     t = t.replace(/\n{3,}/g, "\n\n");
     return t.trim();
 }
