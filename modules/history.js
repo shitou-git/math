@@ -1225,6 +1225,21 @@ let currentEvent = null;
 let currentColor = null;
 let isStreaming = false;
 
+function stripMarkdown(text) {
+    if (!text) return "";
+    return text
+        .replace(/\*\*(.+?)\*\*/g, "$1")
+        .replace(/\*(.+?)\*/g, "$1")
+        .replace(/^#{1,6}\s+/gm, "")
+        .replace(/^[-*+]\s+/gm, "")
+        .replace(/^\d+\.\s+/gm, "")
+        .replace(/`([^`]+)`/g, "$1")
+        .replace(/^>\s+/gm, "")
+        .replace(/^\|.*\|$/gm, "")
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+        .trim();
+}
+
 function renderAIExplanation(data, currentKey) {
     const sections = [
         { key: "background", title: "🏛️ 历史背景" },
@@ -1235,7 +1250,8 @@ function renderAIExplanation(data, currentKey) {
 
     let html = "";
     for (const s of sections) {
-        const content = data[s.key] || "";
+        const raw = data[s.key] || "";
+        const content = stripMarkdown(raw);
         if (content) {
             html += `
                 <div class="htl-ai-section">
