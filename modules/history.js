@@ -482,10 +482,11 @@ export function renderHistoryHTML() {
                         <div class="htl-summary">${d.summary}</div>
                         <div class="htl-events">
                             ${d.events.map(e => `
-                                <div class="htl-event">
+                                <div class="htl-event" data-dynasty="${d.name}" data-title="${e.title}" data-date="${e.date}" data-desc="${e.desc}" data-color="${d.color}">
                                     <div class="htl-event-date">${e.date}</div>
                                     <div class="htl-event-title">${e.title}</div>
                                     <div class="htl-event-desc">${e.desc}</div>
+                                    <div class="htl-event-ai-hint">✨ 点击查看AI详细解读</div>
                                 </div>
                             `).join("")}
                         </div>
@@ -776,6 +777,18 @@ export function injectHistoryStyle() {
             line-height: 1.5;
         }
 
+        .htl-event-ai-hint {
+            font-size: 11px;
+            color: #8b5cf6;
+            margin-top: 6px;
+            font-weight: 600;
+            opacity: 0.8;
+        }
+
+        .htl-event:hover .htl-event-ai-hint {
+            opacity: 1;
+        }
+
         .htl-footer {
             text-align: center;
             padding: 40px 20px;
@@ -860,10 +873,529 @@ export function injectHistoryStyle() {
             .htl-card-body {
                 padding: 12px;
             }        }
+
+        .htl-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .htl-modal.show {
+            display: flex;
+        }
+
+        .htl-modal-mask {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .htl-modal-content {
+            position: relative;
+            background: white;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 85vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: htl-modal-in 0.3s ease;
+        }
+
+        @keyframes htl-modal-in {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .htl-modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .htl-modal-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #1e293b;
+        }
+
+        .htl-modal-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: #f1f5f9;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .htl-modal-close:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .htl-modal-body {
+            padding: 16px 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .htl-modal-footer {
+            padding: 12px 20px;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .htl-ai-status {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .htl-ai-status.loading {
+            color: #8b5cf6;
+        }
+
+        .htl-ai-status.error {
+            color: #ef4444;
+        }
+
+        .htl-ai-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            color: white;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .htl-ai-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(139,92,246,0.4);
+        }
+
+        .htl-ai-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .htl-ai-content {
+            padding: 12px 0;
+        }
+
+        .htl-ai-waiting {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 14px;
+            padding: 20px;
+        }
+
+        .htl-ai-section {
+            margin-bottom: 16px;
+        }
+
+        .htl-ai-section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .htl-ai-section-content {
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.7;
+            padding: 10px 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 3px solid #8b5cf6;
+            white-space: pre-wrap;
+        }
     `;
     document.head.appendChild(style);
 }
 
+// ===================== AI 服务 =====================
+
+const AI_API_URL = "https://api.chatlz.dpdns.org";
+const AI_MODEL = "agnes-2.0-flash";
+const AI_SYSTEM_PROMPT = `你是一位博学的中国历史学者，请用中文为用户提供历史事件的详细解读。
+请按以下四个维度组织内容：
+1. 【历史背景】：事件发生的时代背景和前因后果
+2. 【主要人物】：涉及的关键人物及其角色
+3. 【历史意义】：事件的历史影响和价值
+4. 【延伸思考】：对当代的启示和思考
+
+请用简洁专业的风格，每部分2-3句话。`;
+
+const AI_CACHE_KEY = "history-ai-explanations-v2";
+const AI_CACHE_VERSION = 2;
+const aiExplanationCache = new Map();
+
+function loadAICache() {
+    try {
+        const raw = localStorage.getItem(AI_CACHE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (parsed.version !== AI_CACHE_VERSION) {
+            localStorage.removeItem(AI_CACHE_KEY);
+            return;
+        }
+        const entries = parsed.entries || {};
+        for (const [k, v] of Object.entries(entries)) {
+            aiExplanationCache.set(k, v);
+        }
+    } catch (e) {}
+}
+
+function saveAICache() {
+    try {
+        const entries = {};
+        aiExplanationCache.forEach((v, k) => { entries[k] = v; });
+        const obj = {
+            version: AI_CACHE_VERSION,
+            timestamp: Date.now(),
+            entries: entries,
+        };
+        localStorage.setItem(AI_CACHE_KEY, JSON.stringify(obj));
+    } catch (e) {
+        if (e.name === "QuotaExceededError" || e.code === 22) {
+            let oldestKey = null;
+            let oldestTime = Infinity;
+            for (const [k, v] of aiExplanationCache) {
+                if (v._timestamp && v._timestamp < oldestTime) {
+                    oldestTime = v._timestamp;
+                    oldestKey = k;
+                }
+            }
+            if (oldestKey) {
+                aiExplanationCache.delete(oldestKey);
+                saveAICache();
+            }
+        }
+    }
+}
+
+function buildUserPrompt(date, title, desc, dynasty) {
+    return `请解读以下中国历史事件：
+朝代：${dynasty}
+时间：${date}
+事件名称：${title}
+事件概述：${desc}`;
+}
+
+function parseAIStream(fullText) {
+    const sections = [
+        { key: "background", label: "【历史背景】", emoji: "🏛️" },
+        { key: "figures", label: "【主要人物】", emoji: "👥" },
+        { key: "significance", label: "【历史意义】", emoji: "🎯" },
+        { key: "extension", label: "【延伸思考】", emoji: "💡" },
+    ];
+
+    const result = {
+        background: "",
+        figures: "",
+        significance: "",
+        extension: "",
+    };
+
+    for (let i = 0; i < sections.length; i++) {
+        const start = fullText.indexOf(sections[i].label);
+        if (start === -1) continue;
+        let end = fullText.length;
+        if (i < sections.length - 1) {
+            const nextStart = fullText.indexOf(sections[i + 1].label, start + sections[i].label.length);
+            if (nextStart !== -1) end = nextStart;
+        }
+        const content = fullText.substring(start + sections[i].label.length, end).trim();
+        result[sections[i].key] = content;
+    }
+
+    return { fullText, partial: result };
+}
+
+export async function streamEventExplanation(date, title, desc, dynasty, callbacks) {
+    const { onUpdate, onDone, onError } = callbacks;
+    const cacheKey = `${dynasty}|${date}|${title}`;
+    const cached = aiExplanationCache.get(cacheKey);
+    if (cached) {
+        onUpdate(cached, null);
+        onDone(cached);
+        return;
+    }
+
+    if (!navigator.onLine) {
+        onError(new Error("当前网络离线，无法获取AI解读"));
+        return;
+    }
+
+    try {
+        const response = await fetch(`${AI_API_URL}/v1/chat/completions`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                model: AI_MODEL,
+                messages: [
+                    { role: "system", content: AI_SYSTEM_PROMPT },
+                    { role: "user", content: buildUserPrompt(date, title, desc, dynasty) },
+                ],
+                temperature: 0.7,
+                stream: true,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`API请求失败 (${response.status})`);
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let fullContent = "";
+        let buffer = "";
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split("\n");
+            buffer = lines.pop();
+
+            for (const line of lines) {
+                const trimmed = line.trim();
+                if (!trimmed || !trimmed.startsWith("data:")) continue;
+
+                const dataStr = trimmed.slice(5).trim();
+                if (!dataStr || dataStr === "[DONE]") continue;
+
+                try {
+                    const data = JSON.parse(dataStr);
+                    const delta = data.choices?.[0]?.delta?.content || "";
+                    if (delta) {
+                        fullContent += delta;
+                        const { partial } = parseAIStream(fullContent);
+                        onUpdate(partial, null);
+                    }
+                } catch (e) {}
+            }
+        }
+
+        const { partial } = parseAIStream(fullContent);
+        const finalResult = {
+            background: partial.background || "",
+            figures: partial.figures || "",
+            significance: partial.significance || "",
+            extension: partial.extension || "",
+            _timestamp: Date.now(),
+        };
+        aiExplanationCache.set(cacheKey, finalResult);
+        saveAICache();
+        onDone(finalResult);
+    } catch (error) {
+        onError(error instanceof Error ? error : new Error(String(error)));
+    }
+}
+
+// ===================== 交互逻辑 =====================
+
+let currentEvent = null;
+let currentColor = null;
+let isStreaming = false;
+
+function renderAIExplanation(data, currentKey) {
+    const sections = [
+        { key: "background", title: "🏛️ 历史背景" },
+        { key: "figures", title: "👥 主要人物" },
+        { key: "significance", title: "🎯 历史意义" },
+        { key: "extension", title: "💡 延伸思考" },
+    ];
+
+    let html = "";
+    for (const s of sections) {
+        const content = data[s.key] || "";
+        if (content) {
+            html += `
+                <div class="htl-ai-section">
+                    <div class="htl-ai-section-title">${s.title}</div>
+                    <div class="htl-ai-section-content">${content}</div>
+                </div>
+            `;
+        }
+    }
+
+    if (!html) {
+        html = '<div class="htl-ai-waiting">🤖 AI正在为您解读历史事件，请稍候...</div>';
+    }
+
+    aiContent.innerHTML = html;
+}
+
+function openModal(eventEl) {
+    const dynasty = eventEl.dataset.dynasty;
+    const title = eventEl.dataset.title;
+    const date = eventEl.dataset.date;
+    const desc = eventEl.dataset.desc;
+    const color = eventEl.dataset.color;
+
+    currentEvent = { dynasty, title, date, desc };
+    currentColor = color;
+
+    modalTitle.textContent = `${date} ${title}`;
+    modalBody.innerHTML = `
+        <div style="background:${color}15; border-left:3px solid ${color}; padding:12px 14px; border-radius:8px;">
+            <div style="font-size:13px; color:${color}; font-weight:700; margin-bottom:4px;">📅 ${date} · ${dynasty}</div>
+            <div style="font-size:15px; color:#1e293b; font-weight:800; margin-bottom:6px;">${title}</div>
+            <div style="font-size:13px; color:#475569; line-height:1.6;">${desc}</div>
+        </div>
+    `;
+
+    const cacheKey = `${dynasty}|${date}|${title}`;
+    const cached = aiExplanationCache.get(cacheKey);
+
+    if (cached) {
+        renderAIExplanation(cached, null);
+        aiStatus.textContent = "已完成";
+        aiStatus.className = "htl-ai-status";
+        aiBtn.style.display = "block";
+        aiBtn.disabled = false;
+        aiBtn.textContent = "🔄 重新生成";
+    } else {
+        aiStatus.textContent = "AI生成中...";
+        aiStatus.className = "htl-ai-status loading";
+        aiBtn.style.display = "none";
+        aiContent.innerHTML = '<div class="htl-ai-waiting">🤖 AI正在为您解读历史事件，请稍候...</div>';
+        generateAI();
+    }
+
+    modal.classList.add("show");
+    document.body.style.overflow = "hidden";
+}
+
+function closeModal() {
+    modal.classList.remove("show");
+    document.body.style.overflow = "";
+    currentEvent = null;
+}
+
+async function generateAI(forceRegenerate = false) {
+    if (!currentEvent || isStreaming) return;
+    isStreaming = true;
+    aiBtn.disabled = true;
+    aiBtn.style.display = "none";
+    aiStatus.textContent = "AI生成中...";
+    aiStatus.className = "htl-ai-status loading";
+    aiContent.innerHTML = '<div class="htl-ai-waiting">🤖 AI正在为您解读历史事件，请稍候...</div>';
+
+    if (forceRegenerate) {
+        const cacheKey = `${currentEvent.dynasty}|${currentEvent.date}|${currentEvent.title}`;
+        aiExplanationCache.delete(cacheKey);
+    }
+
+    await streamEventExplanation(
+        currentEvent.date,
+        currentEvent.title,
+        currentEvent.desc,
+        currentEvent.dynasty,
+        {
+            onUpdate: (partial, currentKey) => {
+                renderAIExplanation(partial, currentKey);
+            },
+            onDone: (result) => {
+                renderAIExplanation(result, null);
+                aiStatus.textContent = "已完成";
+                aiStatus.className = "htl-ai-status";
+                isStreaming = false;
+                aiBtn.style.display = "block";
+                aiBtn.disabled = false;
+                aiBtn.textContent = "🔄 重新生成";
+            },
+            onError: (err) => {
+                aiStatus.textContent = "生成失败";
+                aiStatus.className = "htl-ai-status error";
+                aiContent.innerHTML = `<div class="htl-ai-waiting" style="color:#ef4444;">❌ ${err.message || "请求失败"}<br><br>请点击下方按钮重试</div>`;
+                aiBtn.style.display = "block";
+                aiBtn.disabled = false;
+                aiBtn.textContent = "🔄 重试";
+                isStreaming = false;
+            },
+        }
+    );
+}
+
+let modal, modalTitle, modalBody, aiContent, aiBtn, aiStatus, modalClose;
+
 export function initHistory() {
-    document.getElementById("historyPage").scrollTop = 0;
+    loadAICache();
+
+    const page = document.getElementById("historyPage");
+
+    const modalHTML = `
+        <div class="htl-modal" id="htlModal">
+            <div class="htl-modal-mask"></div>
+            <div class="htl-modal-content">
+                <div class="htl-modal-header">
+                    <div class="htl-modal-title" id="htlModalTitle">事件详情</div>
+                    <button class="htl-modal-close" id="htlModalClose">✕</button>
+                </div>
+                <div class="htl-modal-body" id="htlModalBody"></div>
+                <div class="htl-modal-footer">
+                    <div class="htl-ai-status" id="htlAIStatus"></div>
+                    <button class="htl-ai-btn" id="htlAIBtn" style="display:none;">🔄 重新生成</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML("beforeend", modalHTML);
+
+    modal = document.getElementById("htlModal");
+    modalTitle = document.getElementById("htlModalTitle");
+    modalBody = document.getElementById("htlModalBody");
+    aiContent = document.createElement("div");
+    aiContent.className = "htl-ai-content";
+    aiContent.id = "htlAIContent";
+    modalBody.appendChild(aiContent);
+    aiBtn = document.getElementById("htlAIBtn");
+    aiStatus = document.getElementById("htlAIStatus");
+    modalClose = document.getElementById("htlModalClose");
+
+    modalClose.onclick = closeModal;
+    modal.querySelector(".htl-modal-mask").onclick = closeModal;
+    aiBtn.onclick = () => {
+        const label = aiBtn.textContent;
+        if (label.includes("重新生成") || label.includes("重试")) {
+            generateAI(true);
+        } else {
+            generateAI(false);
+        }
+    };
+
+    page.onclick = (e) => {
+        const eventEl = e.target.closest(".htl-event");
+        if (eventEl && page.contains(eventEl)) {
+            openModal(eventEl);
+        }
+    };
 }
