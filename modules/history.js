@@ -1270,7 +1270,9 @@ function openModal(eventEl) {
             <div style="font-size:15px; color:#1e293b; font-weight:800; margin-bottom:6px;">${title}</div>
             <div style="font-size:13px; color:#475569; line-height:1.6;">${desc}</div>
         </div>
+        <div class="htl-ai-content" id="htlAIContent"></div>
     `;
+    aiContent = document.getElementById("htlAIContent");
 
     const cacheKey = `${dynasty}|${date}|${title}`;
     const cached = aiExplanationCache.get(cacheKey);
@@ -1373,10 +1375,7 @@ export function initHistory() {
     modal = document.getElementById("htlModal");
     modalTitle = document.getElementById("htlModalTitle");
     modalBody = document.getElementById("htlModalBody");
-    aiContent = document.createElement("div");
-    aiContent.className = "htl-ai-content";
-    aiContent.id = "htlAIContent";
-    modalBody.appendChild(aiContent);
+    aiContent = document.getElementById("htlAIContent");
     aiBtn = document.getElementById("htlAIBtn");
     aiStatus = document.getElementById("htlAIStatus");
     modalClose = document.getElementById("htlModalClose");
