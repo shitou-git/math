@@ -1235,17 +1235,16 @@ function stripMarkdown(text) {
     t = t.replace(/\*([^*\n]+)\*/g, "$1");
     t = t.replace(/_([^_\n]+)_/g, "$1");
     t = t.replace(/~~([^~\n]+)~~/g, "$1");
-    t = t.replace(/^#{1,6}\s+/gm, "");
+    t = t.replace(/^#{1,6}\s*/gm, "");
     t = t.replace(/^\s*[-*+·•●○■□◆◇★☆]\s+/gm, "");
     t = t.replace(/^\s*\d+[\.\)）、:：]\s+/gm, "");
     t = t.replace(/^\s*[a-zA-Z][\.\)）]\s+/gm, "");
     t = t.replace(/^>\s+/gm, "");
     t = t.replace(/^\|.*\|$/gm, "");
-    t = t.replace(/\*+/g, "");
-    t = t.replace(/_+/g, "");
-    t = t.replace(/~+/g, "");
+    t = t.replace(/^\s*([-*_])\1{2,}\s*$/gm, "");
     t = t.replace(/\[([^\]]*)\]\([^)]*\)/g, "$1");
     t = t.replace(/<[^>]+>/g, "");
+    t = t.replace(/[*_~]{2,}/g, "");
     t = t.replace(/\n{3,}/g, "\n\n");
     return t.trim();
 }
